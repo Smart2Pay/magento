@@ -1,0 +1,24 @@
+<html>
+<head>
+    <title>{{var site_url}} : Order # {{var order_increment_id}}  - payment confirmation</title>
+    <style type='text/css'>
+        body,td { color:#2f2f2f; font:11px/1.35em Verdana, Arial, Helvetica, sans-serif; }
+    </style>
+</head>
+<body style='background:#F6F6F6; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;'>
+<table style='width:600; background: #fff; min-height: 300px; margin: 0px auto; padding: 10px; border:1px solid #E0E0E0;'>
+    <tr>
+        <td>
+            <a href='{{var site_url}}'>{{var site_name}}</a>
+            <h1 style='font-size:22px; font-weight:normal; line-height:22px;'>Hello, {{var customer_name}}!</h1>
+            <p>This is the payment confirmation of order # {{var order_increment_id}}, placed on {{var order_date}}, using Smart2Pay processor.</p>
+            <h2 style='font-size:18px; font-weight:normal; line-height:22px;'>Total paid: {{var total_paid}} {{var currency}}</h2>
+            <br />
+            <p>Thank you!</p>
+            <br />
+            <p>If you have any questions about your order please contact us at <a href='mailto:{{var support_email}}'>{{var support_email}}</a></p>
+        </td>
+        </td>
+</table>
+</body>
+</html>

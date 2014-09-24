@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Smart2Pay_Globalpay>
+            <version>1.1.3</version>
+        </Smart2Pay_Globalpay>
+    </modules>
+    <frontend>
+        <routers>
+            <globalpay>
+                <use>standard</use>
+                <args>
+                    <module>Smart2Pay_Globalpay</module>
+                    <frontName>globalpay</frontName>
+                </args>
+            </globalpay>
+        </routers>
+        <layout>
+            <updates>
+                <globalpay>
+                    <file>globalpay.xml</file>
+                </globalpay>
+            </updates>
+        </layout>
+        <translate>
+            <modules>
+                <Smart2Pay_Globalpay>
+                    <files>
+                        <default>Smart2Pay_Globalpay.csv</default>
+                    </files>
+                </Smart2Pay_Globalpay>
+            </modules>
+        </translate>
+    </frontend>
+
+    <global>
+
+        <template>
+            <email>
+                <payment_globalpay_payment_confirmation_template translate="label" module="globalpay">
+                    <label>Globalpay Confirmation Template</label>
+                    <file>smart2pay/globalpay/payment_confirmation.html</file>
+                    <type>html</type>
+                </payment_globalpay_payment_confirmation_template>
+            </email>
+            <email>
+                <payment_globalpay_payment_instructions_template translate="label" module="globalpay">
+                    <label>Globalpay Instructions Template</label>
+                    <file>smart2pay/globalpay/payment_instructions.html</file>
+                    <type>html</type>
+                </payment_globalpay_payment_instructions_template>
+            </email>
+        </template>
+
+        <resources>
+            <globalpay_setup>
+                <setup>
+                    <module>Smart2Pay_Globalpay</module>
+                    <class>Smart2Pay_Globalpay_Model_Resource_Setup</class>
+                </setup>
+            </globalpay_setup>
+        </resources>
+        
+    	<models>
+    		<globalpay>
+                    <class>Smart2Pay_Globalpay_Model</class>
+                     <resourceModel>globalpay_resource</resourceModel> 
+                </globalpay>
+                <globalpay_resource>
+                    <class>Smart2Pay_Globalpay_Model_Resource</class>
+                    <entities>
+                        <country>
+                            <table>s2p_gp_countries</table>
+                        </country>
+                        <method>
+                            <table>s2p_gp_methods</table>
+                        </method>
+                        <countrymethod>
+                            <table>s2p_gp_countries_methods</table>
+                        </countrymethod>
+                        <logger>
+                            <table>s2p_gp_logs</table>
+                        </logger>
+                    </entities>
+                </globalpay_resource>
+    	</models>
+    	<blocks>
+    		<globalpay>
+                    <class>Smart2Pay_Globalpay_Block</class>
+                </globalpay>
+    	</blocks>
+        <helpers>
+            <globalpay>
+                    <class>Smart2Pay_Globalpay_Helper</class>
+                </globalpay>
+        </helpers>
+    </global>
+    <default>
+        <payment>
+            <globalpay>
+                <active>1</active>
+                <model>globalpay/pay</model>
+                <order_status>holded</order_status>
+                <order_status_on_2>processing</order_status_on_2>
+                <order_status_on_3>canceled</order_status_on_3>
+                <order_status_on_4>canceled</order_status_on_4>
+                <order_status_on_5>canceled</order_status_on_5>
+                <title>Alternative payment methods</title>
+                <post_url_live>https://api.smart2pay.com</post_url_live>
+                <post_url_test>https://apitest.smart2pay.com</post_url_test>
+                <methods>1,2,3,4,5,8,9,12,13,14,18,19,20,22,23,24,25,27,28,29,32,33,34,35,36,37,40,42,43,44,46,47,48,49,62,63,64,65,66,67,72,73,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1025,1026,1027,1028,1029,1030,1031,1033,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043</methods>
+                <allowspecific>0</allowspecific>
+                <autoselect_s2p>1</autoselect_s2p>
+                <product_description_ref>1</product_description_ref>
+                <skip_payment_page>1</skip_payment_page>
+                <debug_form>0</debug_form>
+                <grid_column_number>3</grid_column_number>
+                <return_url>http://www.example.com/index.php/globalpay/index/info/</return_url>
+                <message_data_2>Thank you, the transaction has been processed successfuly. After we receive the final confirmation, we will release the goods.</message_data_2>
+                <message_data_4>There was a problem processing your payment. Please try again.</message_data_4>
+                <message_data_3>You have canceled the payment.</message_data_3>
+                <message_data_7>Thank you, the transaction is pending. After we receive the final confirmation, we will release the goods.</message_data_7>
+            </globalpay>
+         </payment>
+    </default>
+</config>

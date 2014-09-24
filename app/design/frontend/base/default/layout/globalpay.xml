@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <globalpay_index_index>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="globalpay/paymethod_sendform" name="globalpay_sendform" template="smart2pay/globalpay/paymethod/sendform.phtml"/>
+        </reference>
+    </globalpay_index_index>
+    <globalpay_index_info>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="globalpay/info" name="globalpay_info" template="smart2pay/globalpay/info.phtml"/>
+        </reference>
+    </globalpay_index_info>
+    <default>
+        <reference name="head">
+            <block type="core/text" name="jquery.js"><action method="setText"><text><![CDATA[<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script><script>jQuery.noConflict();</script>]]></text></action></block>
+        </reference>
+    </default>
+</layout>
