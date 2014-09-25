@@ -8,6 +8,16 @@
             <block type="globalpay/paymethod_sendform" name="globalpay_sendform" template="smart2pay/globalpay/paymethod/sendform.phtml"/>
         </reference>
     </globalpay_index_index>
+
+    <checkout_onepage_success>
+        <reference name="root">
+            <action method="setTemplate"><template>page/1column.phtml</template></action>
+        </reference>
+        <reference name="content">
+            <block type="globalpay/paymentinstructions" name="globalpay_instructions" template="smart2pay/globalpay/paymentinstructions.phtml"/>
+        </reference>
+    </checkout_onepage_success>
+
     <globalpay_index_info>
         <reference name="root">
             <action method="setTemplate"><template>page/1column.phtml</template></action>

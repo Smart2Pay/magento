@@ -29,7 +29,7 @@
                     'send_customer_name' => $this->getConfigData('send_customer_name'),
                     'send_country' => $this->getConfigData('send_country'),
                     'send_payment_method' => $this->getConfigData('send_payment_method'),
-                    'notify_payment_details'  => $this->getConfigData('notify_payment_details'),
+                    'notify_payment_instructions'  => $this->getConfigData('notify_payment_instructions'),
                     'send_product_description' => $this->getConfigData('send_product_description'),
                     'product_description_ref' => $this->getConfigData('product_description_ref'),
                     'product_description_custom' => $this->getConfigData('product_description_custom'),
@@ -65,8 +65,8 @@
             {   
                 $_SESSION['s2p_handle_payment'] = true;
                 //return Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB)."index.php/globalpay/"; 
-		 Mage::getModel('globalpay/logger')->write(Mage::getUrl('globalpay', array('_secure' => true)), 'info');
-		return Mage::getUrl('globalpay', array('_secure' => true));
+                Mage::getModel('globalpay/logger')->write(Mage::getUrl('globalpay', array('_secure' => true)), 'info');
+                return Mage::getUrl('globalpay', array('_secure' => true));
             }	
 	}
 ?>

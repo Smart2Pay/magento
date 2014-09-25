@@ -44,33 +44,33 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 
         try {
             $raw_input = file_get_contents("php://input");
-	    parse_str($raw_input, $response);
+	        parse_str($raw_input, $response);
 		
-	    $vars = array();
-	    $recomposedHashString = '';
-	    if(!empty($raw_input)){
-		$pairs    = explode("&", $raw_input);
-		foreach ($pairs as $pair) {
-			$nv                = explode("=", $pair);
-			$name            = $nv[0];
-			$vars[$name]    = $nv[1];
-			if(strtolower($name) != 'hash'){
-				$recomposedHashString .= $name . $vars[$name];
-			}
-		}
+            $vars = array();
+            $recomposedHashString = '';
+            if(!empty($raw_input)){
+            $pairs    = explode("&", $raw_input);
+            foreach ($pairs as $pair) {
+                $nv                = explode("=", $pair);
+                $name            = $nv[0];
+                $vars[$name]    = $nv[1];
+                if(strtolower($name) != 'hash'){
+                    $recomposedHashString .= $name . $vars[$name];
+                }
+            }
 	   }
 
 	    $recomposedHashString .= $payMethod->method_config['signature'];
 
             Mage::getModel('globalpay/logger')->write('NotificationRecevied:\"' . $raw_input . '\"', 'info');
-	
+
             // Message is intact
             if($s2pHelper->computeSHA256Hash($recomposedHashString) == $response['Hash']){
 
                 Mage::getModel('globalpay/logger')->write('Hashes match', 'info');
-		
+
                 $order->loadByIncrementId($response['MerchantTransactionID']);
-				$order->addStatusHistoryComment('Smart2Pay :: notification received:<br>' . $raw_input);
+                $order->addStatusHistoryComment('Smart2Pay :: notification received:<br>' . $raw_input);
                 /**
                  * Check status ID
                  */
@@ -78,45 +78,45 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                     // Status = success
                     case "2":
                         // cheking amount  and currency
-					$orderAmount =  number_format($order->getGrandTotal(), 2, '.', '') * 100;
-					$orderCurrency = $order->getOrderCurrency()->getCurrencyCode();
+                    $orderAmount =  number_format($order->getGrandTotal(), 2, '.', '') * 100;
+                    $orderCurrency = $order->getOrderCurrency()->getCurrencyCode();
 
-					if( strcmp($orderAmount,$response['Amount']) == 0 && $orderCurrency == $response['Currency']){
-							$order->addStatusHistoryComment('Smart2Pay :: order has been paid. [MethodID:'. $response['MethodID'] .']', $payMethod->method_config['order_status_on_2'] );
-        	                if ($payMethod->method_config['auto_invoice']) {
-                	            // Create and pay Order Invoice
-                        	    if($order->canInvoice()) {
-	                                $invoice = Mage::getModel('sales/service_order', $order)->prepareInvoice();
-	                                $invoice->setRequestedCaptureCase(Mage_Sales_Model_Order_Invoice::CAPTURE_OFFLINE);
-	                                $invoice->register();
-	                                $transactionSave = Mage::getModel('core/resource_transaction')
-                	                    ->addObject($invoice)
-        	                            ->addObject($invoice->getOrder());
-	                                $transactionSave->save();
-	                                $order->addStatusHistoryComment('Smart2Pay :: order has been automatically invoiced.', $payMethod->method_config['order_status_on_2']);
-	                            } else {
-	                                Mage::getModel('globalpay/logger')->write('Order can not be invoiced', 'warning');
-	                            }
-	                        }
-	                        if ($payMethod->method_config['auto_ship']) {
-	                            if ($order->canShip()) {
-	                                $itemQty =  $order->getItemsCollection()->count();
-	                                $shipment = Mage::getModel('sales/service_order', $order)->prepareShipment($itemQty);
-	                                $shipment = new Mage_Sales_Model_Order_Shipment_Api();
-	                                $shipmentId = $shipment->create($order->getIncrementId());
-	                                $order->addStatusHistoryComment('Smart2Pay :: order has been automatically shipped.', $payMethod->method_config['order_status_on_2']);
-	                            } else {
-	                                Mage::getModel('globalpay/logger')->write('Order can not be shipped', 'warning');
-	                            }
-	                        }
-	                        if ($payMethod->method_config['notify_customer']) {
-	                            // Inform customer
-	                            $this->informCustomer($order, $response['Amount'], $response['Currency']);
-	                        }
-					}
-					else{
-						$order->addStatusHistoryComment('Smart2Pay :: notification has different amount['.$orderAmount.'/'.$response['Amount'] . '] and/or currency['.$orderCurrency.'/' . $response['Currency'] . ']!. Please contact support@smart2pay.com', $payMethod->method_config['order_status_on_4']);
-					}
+                    if( strcmp($orderAmount,$response['Amount']) == 0 && $orderCurrency == $response['Currency']){
+                            $order->addStatusHistoryComment('Smart2Pay :: order has been paid. [MethodID:'. $response['MethodID'] .']', $payMethod->method_config['order_status_on_2'] );
+                            if ($payMethod->method_config['auto_invoice']) {
+                                // Create and pay Order Invoice
+                                if($order->canInvoice()) {
+                                    $invoice = Mage::getModel('sales/service_order', $order)->prepareInvoice();
+                                    $invoice->setRequestedCaptureCase(Mage_Sales_Model_Order_Invoice::CAPTURE_OFFLINE);
+                                    $invoice->register();
+                                    $transactionSave = Mage::getModel('core/resource_transaction')
+                                        ->addObject($invoice)
+                                        ->addObject($invoice->getOrder());
+                                    $transactionSave->save();
+                                    $order->addStatusHistoryComment('Smart2Pay :: order has been automatically invoiced.', $payMethod->method_config['order_status_on_2']);
+                                } else {
+                                    Mage::getModel('globalpay/logger')->write('Order can not be invoiced', 'warning');
+                                }
+                            }
+                            if ($payMethod->method_config['auto_ship']) {
+                                if ($order->canShip()) {
+                                    $itemQty =  $order->getItemsCollection()->count();
+                                    $shipment = Mage::getModel('sales/service_order', $order)->prepareShipment($itemQty);
+                                    $shipment = new Mage_Sales_Model_Order_Shipment_Api();
+                                    $shipmentId = $shipment->create($order->getIncrementId());
+                                    $order->addStatusHistoryComment('Smart2Pay :: order has been automatically shipped.', $payMethod->method_config['order_status_on_2']);
+                                } else {
+                                    Mage::getModel('globalpay/logger')->write('Order can not be shipped', 'warning');
+                                }
+                            }
+                            if ($payMethod->method_config['notify_customer']) {
+                                // Inform customer
+                                $this->informCustomer($order, $response['Amount'], $response['Currency']);
+                            }
+                    }
+                    else{
+                        $order->addStatusHistoryComment('Smart2Pay :: notification has different amount['.$orderAmount.'/'.$response['Amount'] . '] and/or currency['.$orderCurrency.'/' . $response['Currency'] . ']!. Please contact support@smart2pay.com', $payMethod->method_config['order_status_on_4']);
+                    }
                     break;
                     // Status = canceled
                     case 3:
@@ -227,70 +227,50 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
         }
 	
 		$paymethod = Mage::getModel('globalpay/pay');
-			$query = $this->getRequest()->getQuery();
-			$data = $query['data'];
+        $query = $this->getRequest()->getQuery();
+        $data = $query['data'];
 		
 		if ($data == 2){
-
-            //Show Payment Details if available
-            $paymentInstructions = "";
-
-            if(isset($query['MerchantTransactionID'])) {
-                $merchantTransactionID = $query['MerchantTransactionID'];
-                //$paymentDetails .= "Order #: " . $merchantTransactionID . "\n";
-            }
             if(isset($query['ReferenceNumber'])) {
                 $referenceNumber = $query['ReferenceNumber'];
-                $paymentInstructions = "<style>#bankTransferInfo tr td{text-align:left;}</style>";
-                $paymentInstructions .= "<br/><p align=\"left\">" . $this->__('BankTransferMessage') . "</p>";
-                $paymentInstructions .= "<p align=\"left\"><b>" . $this->__('BankTransferTerms') . "</b></br></br><hr style=\"height:1px; color:transparent;border-bottom: 1px solid #CCC;\"></p></br>";
-                $paymentInstructions .= "<table id=\"bankTransferInfo\"><tr><td width=\"200\">" . $this->__('ReferenceNumber') . ":</td><td>" . $referenceNumber . "</td></tr>";
 
                 if (isset($query['AmountToPay'])) {
                     $amountToPay = $query['AmountToPay'];
-                    $paymentInstructions .= "<tr><td width=\"200\">" . $this->__('AmountToPay') . ":</td><td>" . $amountToPay . "</td></tr>";
                 }
                 if (isset($query['AccountHolder'])) {
                     $accountHolder = $query['AccountHolder'];
-                    $paymentInstructions .= "<tr><td width=\"200\">" . $this->__('AccountHolder') . ":</td><td>" . $accountHolder . "</td></tr>";
                 }
                 if (isset($query['BankName'])) {
                     $bankName = $query['BankName'];
-                    $paymentInstructions .= "<tr><td width=\"200\">" . $this->__('BankName') . ":</td><td>" . $bankName . "</td></tr>";
                 }
                 if (isset($query['AccountNumber'])) {
                     $accountNumber = $query['AccountNumber'];
-                    $paymentInstructions .= "<tr><td width=\"200\">" . $this->__('AccountNumber') . ":</td><td>" . $accountNumber . "</td></tr>";
                 }
                 if (isset($query['SWIFT_BIC'])) {
                     $SWIFT_BIC = $query['SWIFT_BIC'];
-                    $paymentInstructions .= "<tr><td width=\"200\">" . $this->__('SWIFT_BIC') . ":</td><td>" . $SWIFT_BIC . "</td></tr>";
                 }
                 if (isset($query['AccountCurrency'])) {
                     $accountCurrency = $query['AccountCurrency'];
-                    $paymentInstructions .= "<tr><td width=\"200\">" . $this->__('AccountCurrency') . ":</td><td>" . $accountCurrency . "</td></tr>";
                 }
-                $paymentInstructions .= "</table></br>";
+
                 if (isset($query['MerchantTransactionID'])) {
-                    Mage::getSingleton('checkout/session')->addSuccess($paymentInstructions);
-                    //send payment details by e-mail
-                    $payMethod = Mage::getModel('globalpay/pay');
                     $order = Mage::getModel('sales/order');
                     $order->loadByIncrementId($query['MerchantTransactionID']);
-                    $this->sendPaymentDetails($order, $paymentInstructions);
-                    if ($payMethod->method_config['notify_payment_instructions']) {
+                    //$this->sendPaymentDetails($order, $referenceNumber, $amountToPay, $accountHolder, $bankName, $accountNumber, $SWIFT_BIC, $accountCurrency);
+                    if ($paymethod->method_config['notify_payment_instructions']) {
                         // Inform customer
-                        $this->sendPaymentDetails($order, $paymentInstructions);
+                        $this->sendPaymentDetails($order, $referenceNumber, $amountToPay, $accountHolder, $bankName, $accountNumber, $SWIFT_BIC, $accountCurrency);
                     }
 
                 }
+                session_write_close();
+                $this->_redirect('checkout/onepage/success', $query); //send the payment details further to onepage/success
             }
             else{
                 Mage::getSingleton('checkout/session')->addSuccess($paymethod->method_config['message_data_' . $data]);
+                session_write_close();
+                $this->_redirect('checkout/onepage/success');
             }
-
-			session_write_close();
-				$this->_redirect('checkout/onepage/success');
 		}
 		else if (in_array($data, array(3, 4))) {
 				Mage::getSingleton('checkout/session')->addError($paymethod->method_config['message_data_' . $data]);
@@ -304,7 +284,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 			}
     }
 
-    public function sendPaymentDetails(Mage_Sales_Model_Order $order, $paymentInstructions)
+    public function sendPaymentDetails(Mage_Sales_Model_Order $order, $referenceNumber, $amountToPay, $accountHolder, $bankName, $accountNumber, $SWIFT_BIC, $accountCurrency)
     {
         try{
             /** @var $order Mage_Sales_Model_Order */
@@ -314,7 +294,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
             $siteUrl = Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK);
             $siteName = Mage::app()->getWebsite(1)->getName();
 
-            $subject = $siteName." - Payment instructions";
+            $subject = $siteName." - ".$this->__('PaymentInstructions');
 
             $supportEmail = Mage::getStoreConfig('trans_email/ident_support/email');
             $supportName = Mage::getStoreConfig('trans_email/ident_support/name');
@@ -336,7 +316,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 
             $mailTemplate->setSenderName($supportName);
             $mailTemplate->setSenderEmail($supportEmail);
-            $mailTemplate->setTemplateSubject('Payment Instructions');
+            $mailTemplate->setTemplateSubject($this->__('PaymentInstructions'));
             $mailTemplate->setTemplateSubject($subject);
 
             $mailTemplate->send($order->getCustomerEmail(), $order->getCustomerName(), array(
@@ -345,7 +325,13 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                     'site_name' => $siteName,
                     'customer_name' => $order->getCustomerName(),
                     'order_date' => $order->getCreatedAtDate(),
-                    'payment_instructions' => $paymentInstructions,
+                    'reference_number' => $referenceNumber,
+                    'amount_to_pay' => $amountToPay,
+                    'account_holder' => $accountHolder,
+                    'bank_name' => $bankName,
+                    'account_number' => $accountNumber,
+                    'swift_bic' => $SWIFT_BIC,
+                    'account_currency' => $accountCurrency,
                     'support_email' => $supportEmail
                 )
             );

@@ -1,0 +1,120 @@
+<?php if(isset($this->referenceNumber)){ ?>
+
+<style type="text/css">
+
+    #BankTransferInfo{
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #BankTransferInfo tr {
+            text-align: left;
+    }
+
+    #BankTransferInfo td {
+        width: 250px;
+        text-align: left;
+    }
+
+
+    #BankTransferMessage{
+            text-align: left;
+    }
+    #BankTransferTerms{
+            text-align: left;
+            font-weight: bold;
+    }
+
+    #PaymentDetails{
+        background-color: #eeeeee;
+        padding: 5px;
+    }
+
+</style>
+
+
+<div id="PaymentDetails">
+
+<p id="BankTransferMessage"> <?php echo $this->__('BankTransferMessage');?></p></br>
+<p id="BankTransferTerms"><?php echo $this->__('BankTransferTerms');?></p></br></br>
+
+<table id="BankTransferInfo">
+
+        <tr>
+            <td>
+                <?php echo $this->__('ReferenceNumber');?>
+            </td>
+            <td>
+                <?php echo $this->referenceNumber;?>
+            </td>
+        </tr>
+    <?php } ?>
+
+    <?php if(isset($this->bankName)){?>
+        <tr>
+            <td>
+                <?php echo $this->__('BankName');?>
+            </td>
+            <td>
+                <?php echo $this->bankName;?>
+            </td>
+        </tr>
+    <?php }?>
+    <?php if(isset($this->accountHolder)){?>
+        <tr>
+            <td>
+                <?php echo $this->__('AccountHolder');?>
+            </td>
+            <td>
+                <?php echo $this->accountHolder;?>
+            </td>
+        </tr>
+    <?php }?>
+
+    <?php if(isset($this->accountNumber)){?>
+        <tr>
+            <td>
+                <?php echo $this->__('AccountNumber');?>
+            </td>
+            <td>
+                <?php echo $this->accountNumber;?>
+            </td>
+        </tr>
+    <?php }?>
+    <?php if(isset($this->SWIFT_BIC)){?>
+        <tr>
+            <td>
+                <?php echo $this->__('SWIFT_BIC');?>
+            </td>
+            <td>
+                <?php echo $this->SWIFT_BIC;?>
+            </td>
+        </tr>
+    <?php }?>
+    <?php if(isset($this->amountToPay)){?>
+        <tr>
+            <td>
+                <?php echo $this->__('AmountToPay');?>
+            </td>
+            <td>
+                <?php echo $this->amountToPay;?>
+            </td>
+        </tr>
+    <?php }?>
+    <?php if(isset($this->accountCurrency)){?>
+        <tr>
+            <td>
+                <?php echo $this->__('AccountCurrency');?>
+            </td>
+            <td>
+                <?php echo $this->accountCurrency;?>
+            </td>
+        </tr>
+
+
+</table>
+
+
+</div>
+
+<?php }?>
