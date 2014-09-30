@@ -67,7 +67,7 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
             }
 
             if($this->form_data['skip_payment_page']){
-                if(!in_array($this->form_data['method_id'], array(1, 20)) || $this->form_data['notify_payment_details']){
+                if(!in_array($this->form_data['method_id'], array(1, 20)) || $this->form_data['notify_payment_instructions']){
                     $messageToHash .= "SkipHpp1";
                 }
             }
