@@ -10,7 +10,6 @@ class Smart2Pay_Globalpay_Block_Paymentinstructions extends /*Mage_Core_Block_Te
     public $SWIFT_BIC;
     public $accountCurrency;
 
-
     public function __construct() {
         parent::__construct();
 
