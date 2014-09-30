@@ -17,7 +17,7 @@
                             <sort_order>0</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </active>
                         <environment translate="label">
                             <label><![CDATA[<b>&raquo; Environment</b>]]> </label>
@@ -26,7 +26,7 @@
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </environment>
                         <post_url_live translate="label">
                             <label><![CDATA[<b>&raquo; Post URL Live</b>]]></label>
@@ -67,7 +67,7 @@
                         <site_id translate="label">
                             <label>Site ID</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>35</sort_order>
+                            <sort_order>8</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -76,7 +76,7 @@
                             <label><![CDATA[<b>&raquo; Signature Live</b>]]></label>
                             <comment></comment>
                             <frontend_type>text</frontend_type>
-                            <sort_order>4</sort_order>
+                            <sort_order>9</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -85,16 +85,16 @@
                             <label><![CDATA[<b>&raquo; Signature Test</b>]]></label>
                             <comment></comment>
                             <frontend_type>text</frontend_type>
-                            <sort_order>5</sort_order>
+                            <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </signature_test>
                         <return_url translate="label">
                             <label><![CDATA[<b>&raquo; Return URL</b>]]></label>
                             <comment></comment>
                             <frontend_type>text</frontend_type>
-                            <sort_order>8</sort_order>
+                            <sort_order>11</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -103,7 +103,7 @@
                             <label>Title</label>
                             <comment>Insert a custom title for this payment module</comment>
                             <frontend_type>text</frontend_type>
-                            <sort_order>9</sort_order>
+                            <sort_order>12</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -111,60 +111,40 @@
                         <methods translate="label">
                             <label>Active methods</label>
                             <frontend_type>multiselect</frontend_type>
-                            <sort_order>10</sort_order>
+                            <sort_order>13</sort_order>
                             <source_model>globalpay/source_methods</source_model>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </methods>
                         <methods_display_mode translate="label">
                             <label>Methods display mode</label>
                             <frontend_type>select</frontend_type>
                             <source_model>globalpay/source_displaymodes</source_model>
-                            <sort_order>11</sort_order>
+                            <sort_order>14</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </methods_display_mode>
                         <show_methods_in_grid translate="label">
                             <label>Show methods in grid</label>
                             <comment>By default, methods will be displayed as a two columns table, having paymentm method's logo or name and description. When set to yes, description is omitted, and columns number can be specified bellow.</comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>12</sort_order>
+                            <sort_order>15</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </show_methods_in_grid>
                         <grid_column_number translate="label">
                             <label>Grid column number</label>
                             <comment>Please provide a number, if left blank, the  default value is 3 (This value is used only if above option is set to yes)</comment>
                             <frontend_type>text</frontend_type>
-                            <sort_order>13</sort_order>
+                            <sort_order>16</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </grid_column_number>
-                        <!--adjust_for_one_page_checkout translate="label">
-                            <label>Adjust for one page checkout</label>
-                            <comment>Setting this option to Yes will prepend a checkbox to each of the payment methods provided by Smart2Pay</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>14</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </adjust_for_one_page_checkout-->
-                        <autoselect_s2p>
-                            <label>Autoselect Smart2Pay</label>
-                            <comment>Smart2Pay payment method's radio button will be checked by default if Yes is selected</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>14</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </autoselect_s2p>
                         <product_description_ref translate="label">
                             <label>Send order number as product description</label>
                             <comment>If "No" is selected, the below custom description will be send</comment>
@@ -173,7 +153,7 @@
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </product_description_ref>
                         <product_description_custom translate="label">
                             <label>Custom product description</label>
@@ -182,9 +162,8 @@
                             <sort_order>21</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </product_description_custom>
-
                         <notify_customer translate="label">
                             <label>Notify customer by email</label>
                             <comment>Send a confirmation email to the customer on success payment notification</comment>
@@ -193,7 +172,7 @@
                             <sort_order>22</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </notify_customer>
                         <payment_confirmation_template translate="label">
                             <label>Payment Confirmation Template</label>
@@ -212,7 +191,7 @@
                             <sort_order>24</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </notify_payment_instructions>
                         <payment_instructions_template translate="label">
                             <label>Payment Instructions Template</label>
@@ -232,7 +211,7 @@
                             <sort_order>26</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </auto_invoice>
 
                         <auto_ship translate="label">
@@ -242,7 +221,7 @@
                             <sort_order>27</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </auto_ship>
 
                         <order_status translate="label">
@@ -290,8 +269,6 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </order_status_on_5>
-
-
                         <skip_payment_page translate="label">
                             <label>Skip payment page</label>
                             <frontend_type>select</frontend_type>
@@ -299,7 +276,7 @@
                             <sort_order>33</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </skip_payment_page>
                         <redirect_in_iframe translate="label">
                             <label>Redirect in iframe</label>
@@ -308,26 +285,16 @@
                             <sort_order>34</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </redirect_in_iframe>
-                        <site_id translate="label">
-                            <label>Site ID</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>35</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </site_id>
-
+                        </redirect_in_iframe>
                         <skin_id translate="label">
                             <label>Skin ID</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>36</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </skin_id>
-
                         <message_data_2 translate="label">
                             <label>Message Success</label>
                             <frontend_type>textarea</frontend_type>
@@ -368,7 +335,7 @@
                             <sort_order>41</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                         </debug_form>
                     </fields>
                 </globalpay>
