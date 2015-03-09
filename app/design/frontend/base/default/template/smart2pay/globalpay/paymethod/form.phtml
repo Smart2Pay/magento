@@ -4,225 +4,209 @@ $s2pMethods = $this->getPaymentMethods();
 ?>
 
 <style type="text/css">
-    .s2p-method-wrapper{
-        display: block;
-        white-space: nowrap;
-        float: left;
-    }
-    .s2p-method-a{
-        text-decoration: none;
-    }
-    .s2p-method-name{
-        display: block;
-        float: left;
-    }
-    .s2p-method-img{
-        vertical-align: middle;
-        max-height:40px;
-        max-width:130px;
-    }
-    a .s2p-method-img,
-    a .s2p-method-name,
-    a .s2p-method-img-name,
-    .s2p-method-ck{
-        cursor: pointer;
-    }
+.s2p-method-wrapper { display: block; white-space: nowrap; float: left; }
+.s2p-method-name { display: block; float: left; }
+.s2p-method-img { float: left; vertical-align: middle; max-height:40px; max-width:130px; }
+a .s2p-method-img, a .s2p-method-name, a .s2p-method-img-name, .s2p-method-ck { cursor: pointer; float: left; }
+.s2p-method-ck { margin-top: 10px; max-width: 30px; }
+.s2p-method-img-wrapper { min-height: 40px; vertical-align: middle; padding-left: 30px; }
 
-#payment_form_globalpay{
-	background-color: #F3F3F3;
-	border-left: 2px solid #CCC;
-	border: 1px solid #CCC;
+#payment_form_globalpay { background-color: #F3F3F3; border: 1px solid #CCC; border-left: 2px solid #CCC; }
+
+<?php
+if( !$this->method_config['show_methods_in_grid'] )
+{
+?>
+#payment_form_globalpay td { padding: 10px; }
+.s2p-method-img-name.no-grid-w-description-title {
+    border-bottom: 1px solid #CCCCCC;
+    font-size: 100%;
+    font-weight: bold;
+    margin-bottom: 2px;
+    padding-bottom: 2px;
 }
+.s2p-method-img-name.no-grid-w-description-content { font-size: 80%; }
+<?php
+} elseif( $this->method_config['grid_column_number'] == 1 )
+{
+?>
+.grid.one-column { text-align: left; padding: 15px; }
+.s2p-method-img-name { padding: 5px 0px 0px 26px; }
+<?php
+} else
+{
+?>
+.grid.one-column { padding: 15px; }
+.s2p-method-img-name { padding: 5px 0px 0px 26px; }
+<?php
+}
+?>
 
-<?php if (!$this->method_config['show_methods_in_grid']):?>
-
-	#payment_form_globalpay td {
-			padding: 10px;
-	}
-
-
-	.s2p-method-img-name.no-grid-w-description-title{
-	    border-bottom: 1px solid #CCCCCC;
-	    font-size: 100%;
-	    font-weight: bold;
-	    margin-bottom: 2px;
-	    padding-bottom: 2px;
-	}
-
-
-	 .s2p-method-img-name.no-grid-w-description-content{
-            font-size: 80%;
-        }
-
-
-<?php endif; ?>	
-
-
-<?php if ($this->method_config['show_methods_in_grid']  && $this->method_config['grid_column_number'] == 1) :?>
-
-	.grid.one-column{
-		text-align: left;
-		padding: 15px;
-	}
-
-	.s2p-method-img-name{
-		padding: 5px 0px 0px 26px;
-	}
-
-<?php endif; ?>
-
-<?php if ($this->method_config['show_methods_in_grid']  && $this->method_config['grid_column_number'] > 1) :?>
-
-        .grid.one-column{
-                padding: 15px;
-        }
-
-        .s2p-method-img-name{
-                padding: 5px 0px 0px 26px;
-        }
-
-<?php endif; ?>
-
-
-
-    .s2p-method-img-name{
-        display: block;
-        /*float: right;*/
-    }
-
-    .s2p-method-img{
-		padding-left:10px;
-	}
+.s2p-method-img-name { display: block; /*float: right;*/ }
+.s2p-method-img { padding-left: 15px; }
 </style>
 
-<input type="hidden" id="s2p-payment-method" name="payment[method_id]" value="<?php echo isset($s2pMethods[0]['method_id']) ? $s2pMethods[0]['method_id'] : ""?>" />
-
+<input type="hidden" id="s2p-payment-method" name="payment[method_id]" value="0" />
 <div id="payment_form_globalpay" style="display: none;">
-    <?php
+<?php
     /*
      * Send payment method
      */
-    if(!empty($s2pMethods)):
+    if( !empty( $s2pMethods ) and is_array( $s2pMethods ) )
+    {
+        $s2pMethods_count = count( $s2pMethods );
         ?>
-        <table>
-            <?php
-            /*
-             * Show methods in grid
-             */
-            if($this->method_config['show_methods_in_grid']): //show methods in grid
-                $grid_col_number = ((int) $this->method_config['grid_column_number'] > 0) ? (int) $this->method_config['grid_column_number'] : 3;
-                $printed_grid_cols = 0;
-                while ($printed_grid_cols <= sizeof($s2pMethods) - 1):
-                    echo "<tr>";
-                    for($c=0; $c<$grid_col_number; $c++):
-                        if(isset($s2pMethods[$printed_grid_cols])):
-                            $method = $s2pMethods[$printed_grid_cols];
-                            ?>
-                            <td class="grid one-column">
-                                    <span class="s2p-method-wrapper" style="">
-                                    <input type="radio"  class="s2p-method-ck" data-method-id="<?php echo $method['method_id'] ?>"  <?php if($c==0 && $printed_grid_cols==0): ?> checked="checked" <?php endif;?>>
-									<?php if ($this->method_config['methods_display_mode'] == 'text'): ?> 
-										<?php echo $this->__($method['display_name']); ?>
-										&nbsp;&nbsp;
-                                     <?php elseif ($this->method_config['methods_display_mode'] == 'logo'): ?>
-                                                    <img class="s2p-method-img" alt="<?php echo $this->__($method['display_name']); ?>" src='<?php echo $this->getSkinUrl('images/smart2pay/methods/'.$method['logo_url'])?>' />
-                                     <?php else: ?>
-                                                    <img class="s2p-method-img" alt="<?php echo $this->__($method['display_name']); ?>" src='<?php echo $this->getSkinUrl('images/smart2pay/methods/'.$method['logo_url'])?>' />
-                                                    <br />
-                                                    <span class="s2p-method-img-name"><?php echo $this->__($method['display_name']); ?></span>
-                                     <?php endif; ?>
-                                            <!--/a-->
-                                     </span>
-                            </td>
-                        <?php
-                        else:
-                            echo "<td></td>";
-                        endif;
-                        $printed_grid_cols++;
-                    endfor;
-                    echo "</tr>";
-                endwhile;
+        <table style="width: 100%;">
+        <?php
+        /*
+         * Show methods in grid
+         */
+        if( $this->method_config['show_methods_in_grid'] )
+        {
+            //show methods in grid
+            $grid_col_number = ((int)$this->method_config['grid_column_number'] > 0) ? (int)$this->method_config['grid_column_number'] : 3;
+            $printed_grid_cols = 0;
+            while( $printed_grid_cols < $s2pMethods_count )
+            {
+                ?><tr><?php
+
+                for( $c = 0; $c < $grid_col_number; $c++ )
+                {
+                    if( isset( $s2pMethods[$printed_grid_cols] ) )
+                    {
+                        $method = $s2pMethods[$printed_grid_cols];
+
+                        ?>
+                        <td class="grid one-column"><label class="s2p-method-wrapper" style="width: 100%;">
+                            <input type="radio" class="s2p-method-ck" data-method-id="<?php echo $method['method_id'] ?>" <?php echo (($printed_grid_cols == 0)?'id="s2p-first-method-ck"':'')?> />
+                            <div class="s2p-method-img-wrapper">
+                            <?php
+
+                            if( $this->method_config['methods_display_mode'] == 'text' )
+                            {
+                                ?><span class="s2p-method-img-name"><?php echo $this->__( $method['display_name'] )?></span><?php
+                            } elseif( $this->method_config['methods_display_mode'] == 'logo' )
+                            {
+                                ?>
+                                <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ); ?>' />
+                                <?php
+                            } else
+                            {
+                                ?>
+                                <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ); ?>' />
+                                <div style="clear: both;"></div>
+                                <span class="s2p-method-img-name"><?php echo $this->__( $method['display_name'] ); ?></span>
+                                <?php
+                            }
+
+                            ?></div></label></td><?php
+                    } else
+                    {
+                        ?><td></td><?php
+                    }
+
+                    $printed_grid_cols++;
+                }
+
+                ?></tr><?php
+            }
             /*
              * Show methods in 2 column table
              */
-            else:
-				{
-				$k=0;
-                foreach($s2pMethods as $key => $method):
-                    ?>
-                    <tr>
-                        <td style='vertical-align: middle;'>
-                                    <span class="s2p-method-wrapper">
-                                        <input type="radio" class="s2p-method-ck" data-method-id="<?php echo $method['method_id'] ?>" <?php if($k==0): ?> checked="checked" <?php endif;?>>&nbsp;&nbsp;
-                                        <!--a class="s2p-method-a" data-method-id="<?php echo $method['method_id'] ?>" title="<?php echo $this->__($method['display_name']); ?>"-->
-                                            <?php if ($this->method_config['methods_display_mode'] == 'text'): ?>
-                                                <span class="s2p-method-name">&raquo <?php echo $this->__($method['display_name']); ?></span>
-                                            <?php elseif ($this->method_config['methods_display_mode'] == 'logo'): ?>
-                                                <img class="s2p-method-img" alt="<?php echo $this->__($method['display_name']); ?>" src='<?php echo $this->getSkinUrl('images/smart2pay/methods/'.$method['logo_url'])?>' />
-                                            <?php else: ?>
-                                                <img class="s2p-method-img" alt="<?php echo $this->__($method['display_name']); ?>" src='<?php echo $this->getSkinUrl('images/smart2pay/methods/'.$method['logo_url'])?>' />
-                                            <?php endif; ?>
-                                        <!--/a-->&nbsp;&nbsp;&nbsp;
-                                        <?php echo ($this->method_config['show_text_img']) ? "<br />" : ""?>
-                                    </span>
-                        </td>
-                        <td style='padding-bottom: 10px; padding-left: 10px;'>
-                                <div class="s2p-method-img-name no-grid-w-description-title"><?php echo $this->__($method['display_name']); ?></div>
-  				<div class="s2p-method-img-name no-grid-w-description-content">                          
-				<?php echo $this->__($method['description']); ?>
-				</div>
-                        </td>
-                    </tr>
+        } else
+        {
+            $k = 0;
+            foreach( $s2pMethods as $key => $method )
+            {
+                ?>
+                <tr>
+                    <td style='vertical-align: middle;'><label class="s2p-method-wrapper" style="width: 100%;">
+                        <input type="radio" class="s2p-method-ck" data-method-id="<?php echo $method['method_id'] ?>" <?php echo (($k == 0)?'id="s2p-first-method-ck"':'')?> /> &nbsp;&nbsp;
+                        <div class="s2p-method-img-wrapper">
+                        <?php
+                        if( $this->method_config['methods_display_mode'] == 'text' )
+                        {
+                            ?><span class="s2p-method-name">&raquo <?php echo $this->__( $method['display_name'] ); ?></span><?php
+                        } elseif( $this->method_config['methods_display_mode'] == 'logo' )
+                        {
+                            ?><img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ) ?>' /><?php
+                        } else
+                        {
+                            ?><img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ) ?>' /><?php
+                        }
+                        ?>
+                    </label></td>
+                    <td style='padding-bottom: 10px; padding-left: 10px;'>
+                        <div class="s2p-method-img-name no-grid-w-description-title"><?php echo $this->__( $method['display_name'] ); ?></div>
+                        <div class="s2p-method-img-name no-grid-w-description-content"><?php echo $this->__( $method['description'] ); ?></div>
+                    </td>
+                </tr>
                 <?php
+
                 $k++;
-                endforeach;
-				}
-            endif;
-	endif;
-        ?>
-        </table>
-</div>
-
-<script type="text/javascript" defer="defer" async="async">
-    jQuery.noConflict();
-
-    jQuery(document).ready(function(){
-        <?php if(empty($s2pMethods)): ?>
-        jQuery('#p_method_globalpay').parent().hide();
-        <?php endif; ?>
-
-        function s2pChooseMethod(methodId){
-            jQuery('#s2p-payment-method').removeAttr('disabled');
-            jQuery('#s2p-payment-method').val(methodId);
-            checkS2PMethod(methodId);
-            if (typeof payment.save == "function") {
-                //uncomment if you need to submit on radiobox checking event
-                //payment.save();
             }
         }
+    }
+    ?>
+    </table>
+</div>
 
-        function checkS2PMethod(methodId){
-            jQuery('.s2p-method-ck').prop('checked', false);
-            jQuery('.s2p-method-ck[data-method-id=' + methodId + ']').prop('checked', true);
+<script type="text/javascript">
+    jQuery.noConflict();
+
+    function s2pChooseMethod( methodId )
+    {
+        jQuery('#s2p-payment-method').removeAttr('disabled');
+        jQuery('#s2p-payment-method').val( methodId );
+
+        checkS2PMethod( methodId );
+
+        if( typeof payment.save == "function" )
+        {
+            // uncomment if you want to submit payment choice on radiobox checking event
+            //payment.save();
         }
+    }
 
-        jQuery('.s2p-method-a').on('click', function(){
-            s2pChooseMethod(jQuery(this).data('methodId'));
+    function checkS2PMethod( methodId )
+    {
+        jQuery('.s2p-method-ck').prop('checked', false);
+        jQuery('.s2p-method-ck[data-method-id=' + methodId + ']').prop('checked', true );
+    }
+
+    function enableHiddenS2PField()
+    {
+        jQuery('#s2p-payment-method').removeAttr('disabled');
+    }
+
+    jQuery(document).ready(function()
+    {
+        jQuery('.s2p-method-ck').on('click', function(e) {
+            s2pChooseMethod( jQuery(this).data('methodId') );
         });
 
-        jQuery('.s2p-method-ck').on('click', function(e){
-            s2pChooseMethod(jQuery(this).data('methodId'));
-        });
-
-        <?php if($this->method_config['autoselect_s2p'] && !empty($s2pMethods)): ?>
-        jQuery(function(){
-            jQuery('html, body').mousemove(function(){
-                jQuery('#s2p-payment-method').removeAttr('disabled');
-            });
-            jQuery('#p_method_globalpay').click();
-           
-            
-        });
-        <?php endif; ?>
+        <?php
+        if( empty( $s2pMethods ) )
+        {
+            ?>
+            jQuery('#p_method_globalpay').parent().hide();
+            jQuery('#s2p-payment-method').parent().hide();
+            <?php
+        } else
+        {
+            if( $this->method_config['autoselect_s2p']
+            and !empty( $s2pMethods ) )
+            {
+                ?>
+                jQuery('#p_method_globalpay').click();
+                <?php
+            }
+            ?>
+            jQuery('#s2p-first-method-ck').click();
+            <?php
+        }
+        ?>
     })
+
+    setTimeout( enableHiddenS2PField, 100 );
 </script>

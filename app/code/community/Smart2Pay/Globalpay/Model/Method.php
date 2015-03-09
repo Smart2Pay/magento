@@ -8,5 +8,4 @@ class Smart2Pay_Globalpay_Model_Method extends Mage_Core_Model_Abstract
         $this->_init('globalpay/method');
     }
        
-} 
-?>
+}

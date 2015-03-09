@@ -1,17 +1,17 @@
 <?php
-class Smart2Pay_Globalpay_Model_Source_Methods{
-    
+class Smart2Pay_Globalpay_Model_Source_Methods
+{
     public $methods = array();
-    
-    
-    public function __construct() {
+
+    public function __construct()
+    {
         $methods = Mage::getModel('globalpay/method')->getCollection()->toArray();
-        foreach($methods['items'] as $item){
+        foreach( $methods['items'] as $item )
+        {
             $this->methods[$item['method_id']] = $item['display_name'];
         }
     }    
-    
-    
+
     /**
      * Options getter
      *
@@ -27,9 +27,9 @@ class Smart2Pay_Globalpay_Model_Source_Methods{
          * 
          */
         $to_return = array();
-        foreach($this->methods as $value => $label){
-            array_push($to_return, array('value' => $value, 'label' => $label));
-        }
+        foreach( $this->methods as $value => $label )
+            $to_return[] = array( 'value' => $value, 'label' => $label );
+
         return $to_return;
     }
 
@@ -43,4 +43,4 @@ class Smart2Pay_Globalpay_Model_Source_Methods{
         return $this->methods;
     }
 }
-?>
+

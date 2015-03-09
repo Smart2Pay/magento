@@ -1,111 +1,64 @@
 <html>
 <head>
-    <title>{{var site_url}} : Order # {{var order_increment_id}}  - payment instructions</title>
+    <title>{{var site_url}}: Order #{{var order_increment_id}}  - payment instructions</title>
     <style type='text/css'>
-        body,td { color:#2f2f2f; font:11px/1.35em Verdana, Arial, Helvetica, sans-serif; }
+    body,td { color:#2f2f2f; font:11px/1.35em Verdana, Arial, Helvetica, sans-serif; }
 
-        #BankTransferInfo{
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        #BankTransferInfo tr {
-            text-align: left;
-        }
-
-        #BankTransferInfo td {
-            width: 250px;
-            text-align: left;
-        }
-
-
-        #BankTransferMessage{
-            text-align: left;
-        }
-        #BankTransferTerms{
-            text-align: left;
-            font-weight: bold;
-        }
-
-        #PaymentDetails{
-            background-color: #eeeeee;
-            padding: 5px;
-        }
-
+    #BankTransferInfo { margin-left: auto; margin-right: auto; }
+    #BankTransferInfo tr { text-align: left; }
+    #BankTransferInfo td { width: 250px; text-align: left; }
+    #BankTransferMessage { text-align: left; }
+    #BankTransferTerms { text-align: left; font-weight: bold; }
+    #PaymentDetails { background-color: #eeeeee; padding: 5px; }
     </style>
 </head>
-<body style='background:#F6F6F6; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;'>
-<table style='width:600; background: #fff; min-height: 300px; margin: 0px auto; padding: 10px; border:1px solid #E0E0E0;'>
+<body style='background:#f6f6f6; font-family:Verdana, Arial, Helvetica, sans-serif; font-size:12px;'>
+<table style='width:600px; background: #fff; min-height: 300px; margin: 0 auto; padding: 10px; border:1px solid #e0e0e0;'>
     <tr>
         <td>
             <a href='{{var site_url}}'>{{var site_name}}</a>
             <h1 style='font-size:22px; font-weight:normal; line-height:22px;'>Hello, {{var customer_name}}!</h1>
 
-            <p id="BankTransferMessage">You have chosen to pay using bank transfer. Please find below your personal reference number and our bank details. Always enter the reference number under ""Purpose of payment"" when making a bank transfer.</p></br>
-            <p id="BankTransferTerms">A bank transfer payment is reported by the bank in 1-3 bank days (Saturday, Sunday and national holidays not included)!</p></br></br>
+            <p id="BankTransferMessage">You have chosen to pay using bank transfer. Please find below your personal reference number and our bank details. Always enter the reference number under "Purpose of payment" when making a bank transfer.</p></br>
+            <p id="BankTransferTerms">A bank transfer payment is reported by the bank in 1-3 bank days (Saturday, Sunday and national holidays not included)!</p><br/><br/>
 
             <div id="PaymentDetails">
-                <table id="BankTransferInfo">
+            <table id="BankTransferInfo">
 
-                    <tr>
-                        <td>
-                            Reference Number
-                        </td>
-                        <td>
-                            {{var reference_number}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Bank Name
-                        </td>
-                        <td>
-                            {{var bank_name}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Account Holder
-                        </td>
-                        <td>
-                            {{var account_holder}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Account Number
-                        </td>
-                        <td>
-                            {{var account_number}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            SWIFT_BIC
-                        </td>
-                        <td>
-                            {{var swift_bic}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Amount To Pay
-                        </td>
-                        <td>
-                            {{var amount_to_pay}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Account Currency
-                        </td>
-                        <td>
-                            {{var account_currency}}
-                        </td>
-                    </tr>
-                    <?php }?>
+                <tr>
+                    <td>Reference Number</td>
+                    <td>{{var reference_number}}</td>
+                </tr>
+                <tr>
+                    <td>Bank Name</td>
+                    <td>{{var bank_name}}</td>
+                </tr>
+                <tr>
+                    <td>Account Holder</td>
+                    <td>{{var account_holder}}</td>
+                </tr>
+                <tr>
+                    <td>Account Number</td>
+                    <td>{{var account_number}}</td>
+                </tr>
+                <tr>
+                    <td>SWIFT/BIC</td>
+                    <td>{{var swift_bic}}</td>
+                </tr>
+                <tr>
+                    <td>IBAN</td>
+                    <td>{{var iban}}</td>
+                </tr>
+                <tr>
+                    <td>Amount To Pay</td>
+                    <td>{{var amount_to_pay}}</td>
+                </tr>
+                <tr>
+                    <td>Account Currency</td>
+                    <td>{{var account_currency}}</td>
+                </tr>
 
-                </table>
+            </table>
             </div>
             <p>If you have any questions about your order please contact us at <a href='mailto:{{var support_email}}'>{{var support_email}}</a></p>
         </td>

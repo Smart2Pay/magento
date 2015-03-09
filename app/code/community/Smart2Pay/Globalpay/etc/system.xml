@@ -65,7 +65,7 @@
                             <show_in_store>0</show_in_store>
                         </mid_test>
                         <site_id translate="label">
-                            <label>Site ID</label>
+                            <label><![CDATA[Site ID]]></label>
                             <frontend_type>text</frontend_type>
                             <sort_order>8</sort_order>
                             <show_in_default>1</show_in_default>
@@ -100,7 +100,7 @@
                             <show_in_store>1</show_in_store>
                         </return_url>
                         <title translate="label">
-                            <label>Title</label>
+                            <label><![CDATA[Title]]></label>
                             <comment>Insert a custom title for this payment module</comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>12</sort_order>
@@ -109,7 +109,7 @@
                             <show_in_store>1</show_in_store>
                         </title>
                         <methods translate="label">
-                            <label>Active methods</label>
+                            <label><![CDATA[Active methods]]></label>
                             <frontend_type>multiselect</frontend_type>
                             <sort_order>13</sort_order>
                             <source_model>globalpay/source_methods</source_model>
@@ -118,7 +118,7 @@
                             <show_in_store>1</show_in_store>
                         </methods>
                         <methods_display_mode translate="label">
-                            <label>Methods display mode</label>
+                            <label><![CDATA[Methods display mode]]></label>
                             <frontend_type>select</frontend_type>
                             <source_model>globalpay/source_displaymodes</source_model>
                             <sort_order>14</sort_order>
@@ -127,7 +127,7 @@
                             <show_in_store>1</show_in_store>
                         </methods_display_mode>
                         <show_methods_in_grid translate="label">
-                            <label>Show methods in grid</label>
+                            <label><![CDATA[Show methods in grid]]></label>
                             <comment>By default, methods will be displayed as a two columns table, having paymentm method's logo or name and description. When set to yes, description is omitted, and columns number can be specified bellow.</comment>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
@@ -194,7 +194,7 @@
                             <show_in_store>1</show_in_store>
                         </notify_payment_instructions>
                         <payment_instructions_template translate="label">
-                            <label>Payment Instructions Template</label>
+                            <label><![CDATA[Payment Instructions Template (for Bank Transafer)]]></label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_email_template</source_model>
                             <sort_order>25</sort_order>
@@ -202,6 +202,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </payment_instructions_template>
+                        <payment_instructions_template_sibs translate="label">
+                            <label><![CDATA[Payment Instructions Template (for Multibanco SIBS)]]></label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_email_template</source_model>
+                            <sort_order>25</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </payment_instructions_template_sibs>
 
                         <auto_invoice translate="label">
                             <label>Create invoice on success</label>
@@ -269,11 +278,20 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
                         </order_status_on_5>
+                        <autoselect_s2p translate="label">
+                            <label>Auto-select GlobalPay payment methods</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>33</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </autoselect_s2p>
                         <skip_payment_page translate="label">
                             <label>Skip payment page</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>33</sort_order>
+                            <sort_order>34</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -282,7 +300,7 @@
                             <label>Redirect in iframe</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>34</sort_order>
+                            <sort_order>35</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>

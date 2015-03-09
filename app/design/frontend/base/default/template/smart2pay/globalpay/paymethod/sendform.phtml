@@ -1,197 +1,159 @@
 <div style="<?php echo ($this->form_data['debug_form']) ? "display: table;" : "display: none;" ?>">
 
-    <?php if($this->form_data['debug_form']): ?>
-    <p><b>Message to hash</b>: <?php echo strtolower($this->message_to_hash);?></p>
-    <p><b>Hash</b>: <?php echo $this->hash?></p>
-    <?php endif; ?>
+    <?php
+        if( $this->form_data['debug_form'] )
+        {
+            ?>
+            <p><b>Message to hash</b>: <?php echo strtolower($this->message_to_hash);?></p>
+            <p><b>Hash</b>: <?php echo $this->hash?></p>
+            <?php
+        }
+    ?>
 
-    <form action="<?php echo  $this->form_data['post_url'] ?>" id="s2pform" method="POST" <?php if($this->form_data['redirect_in_iframe']) echo 'target="merchantIframe"'; ?>>
+    <form action="<?php echo  $this->form_data['post_url'] ?>" id="s2pform" method="post" <?php if($this->form_data['redirect_in_iframe']) echo 'target="merchantIframe"'; ?>>
         <table>
             <tr>
-                <td>
-                    MerchantID
-                </td>
-                <td>
-                    <input type="text" name="MerchantID" value="<?php echo  $this->form_data['mid'] ?>"/>
-                </td>
+                <td>MerchantID</td>
+                <td><input type="text" name="MerchantID" value="<?php echo  $this->form_data['mid'] ?>" /></td>
             </tr>
             <tr>
-                <td>
-                    MerchantTransactionID
-                </td>
-                <td>
-                    <input type="text" name="MerchantTransactionID" value="<?php echo  $this->form_data['order_id'] ?>"/>
-                </td>
+                <td>MerchantTransactionID</td>
+                <td><input type="text" name="MerchantTransactionID" value="<?php echo  $this->form_data['order_id'] ?>"/></td>
             </tr>
             <tr>
-                <td>
-                    Amount
-                </td>
-                <td>
-                    <input type="text" name="Amount" value="<?php echo  $this->form_data['amount'] ?>"/>
-                </td>
+                <td>Amount</td>
+                <td><input type="text" name="Amount" value="<?php echo  $this->form_data['amount'] ?>"/></td>
             </tr>
             <tr>
-                <td>
-                    Currency
-                </td>
-                <td>
-                    <input type="text" name="Currency" value="<?php echo  $this->form_data['currency'] ?>"/>
-                </td>
+                <td>Currency</td>
+                <td><input type="text" name="Currency" value="<?php echo  $this->form_data['currency'] ?>"/></td>
             </tr>
             <tr>
-                <td>
-                    ReturnURL
-                </td>
-                <td>
-                    <input type="text" name="ReturnURL" value="<?php echo  $this->form_data['return_url'] ?>"/>
-                </td>
+                <td>ReturnURL</td>
+                <td><input type="text" name="ReturnURL" value="<?php echo  $this->form_data['return_url'] ?>"/></td>
             </tr>
-            <?php if(!$this->form_data['method_id']):?>
+            <?php
+                if( !$this->form_data['method_id'] )
+                {
+                    ?>
+                    <tr>
+                        <td>
+                            IncludeMethodIDs
+                        </td>
+                        <td>
+                            <input type="text" name="IncludeMethodIDs" value="<?php echo $this->form_data['methods'] ?>"/>
+                        </td>
+                    </tr>
+                    <?php
+                }
+
+                if( $this->form_data['site_id'] )
+                {
+                    ?>
+                    <tr>
+                        <td>
+                            SiteID
+                        </td>
+                        <td>
+                            <input type="text" name="SiteID" value="<?php echo  $this->form_data['site_id'] ?>"/>
+                        </td>
+                    </tr>
+                    <?php
+                }
+            ?>
             <tr>
-                <td>
-                    IncludeMethodIDs
-                </td>
-                <td>
-                    <input type="text" name="IncludeMethodIDs" value="<?php echo  $this->form_data['methods'] ?>"/>
-                </td>
+                <td colspan="2">Optional:</td>
             </tr>
-            <?php endif; ?>
-            <?php if($this->form_data['site_id']):?>
-                <tr>
-                    <td>
-                        SiteID
-                    </td>
-                    <td>
-                        <input type="text" name="SiteID" value="<?php echo  $this->form_data['site_id'] ?>"/>
-                    </td>
-                </tr>
-            <?php endif; ?>
             <tr>
-                <td colspan="2">
-                    Optional:
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    CustomerName
-                </td>
-                <td>
-                    <input type="text" name="CustomerName" value="<?php echo  $this->form_data['customer_name'] ?>"/>
-                </td>
+                <td>CustomerName</td>
+                <td><input type="text" name="CustomerName" value="<?php echo  $this->form_data['customer_name'] ?>" /></td>
             </tr>
 
 			<tr>
-                <td>
-                    CustomerLastName
-                </td>
-                <td>
-                    <input type="text" name="CustomerLastName" value="<?php echo  $this->form_data['customer_last_name'] ?>"/>
-                </td>
+                <td>CustomerLastName</td>
+                <td><input type="text" name="CustomerLastName" value="<?php echo  $this->form_data['customer_last_name'] ?>"/></td>
             </tr>
             
 			<tr>
-                <td>
-                    CustomerFirstName
-                </td>
-                <td>
-                    <input type="text" name="CustomerFirstName" value="<?php echo  $this->form_data['customer_first_name'] ?>"/>
-                </td>
+                <td>CustomerFirstName</td>
+                <td><input type="text" name="CustomerFirstName" value="<?php echo  $this->form_data['customer_first_name'] ?>"/></td>
             </tr>
 
             <tr>
-                <td>
-                    CustomerEmail
-                </td>
-                <td>
-                    <input type="text" name="CustomerEmail" value="<?php echo  $this->form_data['customer_email'] ?>"/>
-                </td>
+                <td>CustomerEmail</td>
+                <td><input type="text" name="CustomerEmail" value="<?php echo  $this->form_data['customer_email'] ?>"/></td>
             </tr>
             <tr>
-                <td>
-                    Country
-                </td>
-                <td>
-                    <input type="text" name="Country" value="<?php echo  $this->form_data['country'] ?>"/>
-                </td>
+                <td>Country</td>
+                <td><input type="text" name="Country" value="<?php echo  $this->form_data['country'] ?>"/></td>
             </tr>
                <tr>
-                <td>
-                    MethodID
-                </td>
-                <td>
-                    <input type="text" name="MethodID" value="<?php echo  $this->form_data['method_id'] ?>"/>
-                </td>
+                <td>MethodID</td>
+                <td><input type="text" name="MethodID" value="<?php echo  $this->form_data['method_id'] ?>"/></td>
             </tr>
 
 
-            <?php if($this->form_data['product_description_ref']): ?>
-                <tr>
-                    <td>
-                        Description
-                    </td>
-                    <td>
-                        <input type="text" name="Description" value="<?php echo  "Ref. no.: ".$this->form_data['order_id'] ?>"/>
-                    </td>
-                </tr>
-                <?php else: ?>
-                <tr>
-                    <td>
-                        Description
-                    </td>
-                    <td>
-                        <input type="text" name="Description" value="<?php echo  $this->form_data['product_description_custom'] ?>"/>
-                    </td>
-                </tr>
-            <?php endif; ?>
+            <?php
+                if( $this->form_data['product_description_ref'] )
+                {
+                    ?>
+                    <tr>
+                        <td>Description</td>
+                        <td><input type="text" name="Description" value="<?php echo "Ref. no.: ".$this->form_data['order_id'] ?>"/></td>
+                    </tr>
+                    <?php
+                } else
+                {
+                    ?>
+                    <tr>
+                        <td>Description</td>
+                        <td>
+                            <input type="text" name="Description" value="<?php echo $this->form_data['product_description_custom'] ?>"/>
+                        </td>
+                    </tr>
+                    <?php
+                }
 
-            <?php if($this->form_data['skip_payment_page']): ?>
-            <?php if(!in_array($this->form_data['method_id'], array(1, 20)) || $this->form_data['notify_payment_instructions']): ?>
-                <tr>
-                    <td>
-                        SkipHPP
-                    </td>
-                    <td>
-                        <input type="text" name="SkipHPP" value="1"/>
-                    </td>
-                </tr>
-                <?php endif; ?>
-            <?php endif; ?>
+                if( $this->form_data['skip_payment_page']
+                and (!in_array( $this->form_data['method_id'], array( 1, 20 ) )
+                            or $this->form_data['notify_payment_instructions']
+                    ) )
+                {
+                    ?>
+                    <tr>
+                        <td>SkipHPP</td>
+                        <td><input type="text" name="SkipHPP" value="1" /></td>
+                    </tr>
+                    <?php
+                }
 
-            <?php if($this->form_data['redirect_in_iframe']): ?>
+                if( $this->form_data['redirect_in_iframe'] )
+                {
+                    ?>
+                    <tr>
+                        <td>RedirectInIframe</td>
+                        <td><input type="text" name="RedirectInIframe" value="1"/></td>
+                    </tr>
+                    <?php
+                }
+
+                if( $this->form_data['skin_id'] )
+                {
+                    ?>
+                    <tr>
+                        <td>SkinID</td>
+                        <td><input type="text" name="SkinID" value="<?php echo $this->form_data['skin_id']?>" /></td>
+                    </tr>
+                    <?php
+                }
+            ?>
+
             <tr>
-                <td>
-                    RedirectInIframe
-                </td>
-                <td>
-                    <input type="text" name="RedirectInIframe" value="1"/>
-                </td>
-            </tr>
-            <?php endif; ?>
-
-            <?php if($this->form_data['skin_id']): ?>
-            <tr>
-                <td>
-                    SkinID
-                </td>
-                <td>
-                    <input type="text" name="SkinID" value="<?php echo $this->form_data['skin_id']?>"/>
-                </td>
-            </tr>
-            <?php endif; ?>
-
-            <tr>
-                <td>
-                    Hash
-                </td>
-                <td>
-                    <input type="text" name="Hash" value="<?php echo  $this->form_data['hash'] ?>"/>
-                </td>
+                <td>Hash</td>
+                <td><input type="text" name="Hash" value="<?php echo  $this->form_data['hash'] ?>" /></td>
             </tr>
             <tr>
-                <td colspan='2'>
-                    <input type="submit" value="Submit"/>
-                </td>
+                <td colspan='2'><input type="submit" value="Submit"/></td>
             </tr>
         </table>
     </form>
@@ -202,12 +164,14 @@
         <div style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%; background: #333; opacity: 0.5; filter:alpha(opacity=50)"></div>
         <div style="position: absolute; top: 0px; left: 0px; width: 100%; height: 100%;">
             <div style="display: table; margin: 0px auto; margin-top: 50px;">
-                <?php if($this->form_data['redirect_in_iframe'] && $this->form_data['skip_payment_page'] && ($this->form_data['method_id'] == 1001 || $this->form_data['method_id'] == 1002 || $this->form_data['method_id'] == 76)):?>
+                <?php
+                    if( $this->form_data['redirect_in_iframe']
+                     && $this->form_data['skip_payment_page']
+                     && ($this->form_data['method_id'] == 1001 || $this->form_data['method_id'] == 1002 || $this->form_data['method_id'] == 76)):?>
 				<iframe style='border: none; margin: 0px auto; background-color: #ffffff;' id="merchantIframe" name="merchantIframe" src="" width="780" height="500">
 				<?php else:?>
 				<iframe style='border: none; margin: 0px auto; background-color: transparent;' id="merchantIframe" name="merchantIframe" src="" width="900" height="800">
 				<?php endif;?>
-				
 				</iframe>
             </div>
         </div>
@@ -253,7 +217,8 @@
             else if  (e.data.substring(0, 12) == "redirectURL="){
                 window.location = e.data.substring(12);
             }
-        }
+        };
+
         // set event listener for smart2pay
         if(typeof window.addEventListener != 'undefined') {
             window.addEventListener('message', onmessage, false);

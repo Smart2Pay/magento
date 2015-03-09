@@ -1,18 +1,22 @@
 <?php
 
-class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form {
+class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form
+{
             
     public $method_config = array();
     
-    protected function _construct() {
+    protected function _construct()
+    {
         parent::_construct();        
         // set template
         $this->setTemplate('smart2pay/globalpay/paymethod/form.phtml');
+
         // set method config
         $this->method_config = Mage::getModel('globalpay/pay')->method_config;
     }
     
-    public function getPaymentMethods(){
+    public function getPaymentMethods()
+    {
         $pay_method = Mage::getModel('globalpay/pay');
         $chkout = Mage::getSingleton('checkout/session');
         $quote = $chkout->getQuote();
@@ -38,5 +42,3 @@ class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form {
         return $collection->getData();
     }
 }
-
-?>

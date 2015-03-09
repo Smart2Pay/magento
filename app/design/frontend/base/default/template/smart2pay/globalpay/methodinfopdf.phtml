@@ -1,0 +1,17 @@
+<p>!!!Smart2Pay: <?php echo $this->escapeHtml( $this->getMethod()->getTitle() ) ?></p>
+<?php if ($_specificInfo = $this->getSpecificInformation()):?>
+<table style="width:100%;">
+    <tbody>
+    <?php foreach ($_specificInfo as $_label => $_value):?>
+        <tr>
+            <td><?php echo $this->__( $_label )?></td>
+        </tr>
+        <tr>
+            <td><?php echo nl2br(implode($this->getValueAsArray($_value, true), "\n"))?></td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+<?php endif;?>
+
+<?php echo $this->getChildHtml()?>
