@@ -14,7 +14,7 @@
           `site_id` int(11) NOT NULL DEFAULT '0' COMMENT 'S2P Site ID',
           `extra_data` text COMMENT 'Key-Value extra details for transaction',
           `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          `updated` timestamp NOT NULL DEFAULT '0',
+          `updated` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
           PRIMARY KEY (`id`),
           KEY `merchant_transaction_id` (`merchant_transaction_id`),
           KEY `method_id` (`method_id`),
