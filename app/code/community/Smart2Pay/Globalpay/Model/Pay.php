@@ -33,6 +33,7 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
             'show_methods_in_grid' => $this->getConfigData('show_methods_in_grid'),
             'grid_column_number' => $this->getConfigData('grid_column_number'),
             'adjust_for_one_page_checkout' => $this->getConfigData('adjust_for_one_page_checkout'),
+            'display_surcharge' => $this->getConfigData('display_surcharge'),
             'autoselect_s2p' => $this->getConfigData('autoselect_s2p'),
             'send_customer_email' => $this->getConfigData('send_customer_email'),
             'send_customer_name' => $this->getConfigData('send_customer_name'),
@@ -73,7 +74,48 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
         if( !($data instanceof Varien_Object) )
             $data = new Varien_Object($data);
 
-        $_SESSION['globalpay_method'] = $data->getMethodId();
+        /** @var Mage_Checkout_Model_Session $chkout */
+        /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
+        if( !($method_id = $data->getMethodId())
+         or !($chkout = Mage::getSingleton('checkout/session'))
+         or !($quote = $chkout->getQuote())
+         or !($billingAddress = $quote->getBillingAddress())
+         or !($countryCode = $billingAddress->getCountryId())
+         or !($countryId = Mage::getModel('globalpay/country')->load($countryCode, 'code')->getId())
+         or !($configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' ))
+         or !($enabled_methods = $configured_methods_obj->get_configured_methods( $countryId, array( 'id_in_index' => true ) ))
+         or empty( $enabled_methods[$method_id] ) )
+        {
+            Mage::throwException( Mage::helper('payment')->__( 'Couldn\'t get quote details. Please try again.' ) );
+            return $this;
+        }
+
+        $_SESSION['globalpay_method'] = $method_id;
+
+        $logger_obj = Mage::getModel( 'globalpay/logger' );
+        $logger_obj->write( 'setat magic ['.$enabled_methods[$method_id]['display_name'].']', 'pe_la_spate' );
+
+        if( !empty( $enabled_methods[$method_id]['surcharge'] ) )
+        {
+            // apply surcharge to quote...
+            $logger_obj->write( 'creating item', 'pe_la_spate' );
+            $item = new Mage_Sales_Model_Quote_Item();
+            $item->setId( 0 );
+            $item->setDiscountPercent( $enabled_methods[$method_id]['surcharge'] );
+            $item->setDescription( 'Surcharge tax' );
+            $item->setName( 'Name surcharge' );
+
+            $item->setProductId( 0 );
+            $item->setWeight( 0 );
+
+            $logger_obj->write( 'adding to quote', 'pe_la_spate' );
+            $quote->addItem( $item );
+
+            $logger_obj->write( 'saving quote', 'pe_la_spate' );
+            //$quote->save();
+
+            $logger_obj->write( 'saved quote', 'pe_la_spate' );
+        }
 
         return $this;
     }

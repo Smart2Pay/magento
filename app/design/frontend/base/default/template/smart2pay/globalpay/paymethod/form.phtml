@@ -1,4 +1,5 @@
 <?php
+/** @var Smart2Pay_Globalpay_Block_Paymethod_Form $this */
 $_code = $this->getMethodCode();
 $s2pMethods = $this->getPaymentMethods();
 ?>
@@ -95,7 +96,12 @@ if( !$this->method_config['show_methods_in_grid'] )
                                 ?>
                                 <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ); ?>' />
                                 <div style="clear: both;"></div>
-                                <span class="s2p-method-img-name"><?php echo $this->__( $method['display_name'] ); ?></span>
+                                <span class="s2p-method-img-name"><?php echo $this->__( $method['display_name'] ); ?><?php
+                                        echo $this->__( $method['display_name'] );
+                                        if( !empty( $method['surcharge'] )
+                                            and (int)$this->method_config['display_surcharge'] )
+                                            echo ' ('.($method['surcharge']>0?'+':'').$method['surcharge'].'%)';
+                                    ?></span>
                                 <?php
                             }
 
@@ -121,7 +127,7 @@ if( !$this->method_config['show_methods_in_grid'] )
                 ?>
                 <tr>
                     <td style='vertical-align: middle;'><label class="s2p-method-wrapper" style="width: 100%;">
-                        <input type="radio" class="s2p-method-ck" data-method-id="<?php echo $method['method_id'] ?>" <?php echo (($k == 0)?'id="s2p-first-method-ck"':'')?> /> &nbsp;&nbsp;
+                        <input type="radio" class="s2p-method-ck" data-method-id="<?php echo $method['method_id'] ?>" <?php echo (($k == 0)?'id="s2p-first-method-ck"':'')?> />
                         <div class="s2p-method-img-wrapper">
                         <?php
                         if( $this->method_config['methods_display_mode'] == 'text' )
@@ -135,9 +141,16 @@ if( !$this->method_config['show_methods_in_grid'] )
                             ?><img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ) ?>' /><?php
                         }
                         ?>
-                    </label></td>
+                    </div></label></td>
                     <td style='padding-bottom: 10px; padding-left: 10px;'>
-                        <div class="s2p-method-img-name no-grid-w-description-title"><?php echo $this->__( $method['display_name'] ); ?></div>
+                        <div class="s2p-method-img-name no-grid-w-description-title">
+                        <?php
+                            echo $this->__( $method['display_name'] );
+                            if( !empty( $method['surcharge'] )
+                            and (int)$this->method_config['display_surcharge'] )
+                                echo ' ('.($method['surcharge']>0?'+':'').$method['surcharge'].'%)';
+                        ?>
+                        </div>
                         <div class="s2p-method-img-name no-grid-w-description-content"><?php echo $this->__( $method['description'] ); ?></div>
                     </td>
                 </tr>

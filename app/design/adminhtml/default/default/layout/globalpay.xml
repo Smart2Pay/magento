@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<layout>
+
+    <adminhtml_system_config_edit_section_payment>
+        <reference name="head">
+            <block type="core/text" name="jquery.js"><action method="setText"><text><![CDATA[<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script><script>jQuery.noConflict();</script>]]></text></action></block>
+        </reference>
+    </adminhtml_system_config_edit_section_payment>
+
+    <default>
+        <reference name="head">
+            <!--
+            <block type="core/text" name="jquery.js"><action method="setText"><text><![CDATA[<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script><script>jQuery.noConflict();</script>]]></text></action></block>
+            <action method="addJs">
+                <script>vendor/qtip/jquery.qtip.min.js</script>
+            </action>
+            -->
+        </reference>
+    </default>
+
+</layout>

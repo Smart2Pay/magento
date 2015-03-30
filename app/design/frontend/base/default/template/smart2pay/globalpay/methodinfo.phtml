@@ -1,3 +1,6 @@
+<?php
+    /** @var Smart2Pay_Globalpay_Block_Info_Globalpay $this */
+?>
 <p><?php echo $this->escapeHtml( $this->getMethod()->getTitle() ) ?></p>
 
 <?php if ($_specificInfo = $this->getSpecificInformation()):?>
@@ -5,8 +8,14 @@
     <tbody>
     <?php foreach ($_specificInfo as $_label => $_value):?>
         <tr>
-            <td><em><?php echo $this->__( $_label )?></em></td>
-            <td><?php echo nl2br(implode($this->getValueAsArray($_value, true), "\n"))?></td>
+            <td class="label"><label><em><?php echo $this->__( $_label )?></em></label></td>
+            <?php
+            if( empty( $this->_display_lines ) )
+            {
+                ?></tr><tr><?php
+            }
+            ?>
+            <td class="value"><?php echo nl2br(implode($this->getValueAsArray($_value, true), "\n"))?></td>
         </tr>
     <?php endforeach; ?>
     </tbody>

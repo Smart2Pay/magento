@@ -17,12 +17,25 @@ class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form
     
     public function getPaymentMethods()
     {
+        /** @var Mage_Checkout_Model_Session $chkout */
+        if( !($chkout = Mage::getSingleton('checkout/session'))
+         or !($quote = $chkout->getQuote())
+         or !($billingAddress = $quote->getBillingAddress())
+         or !($countryCode = $billingAddress->getCountryId())
+         or !($countryId = Mage::getModel('globalpay/country')->load($countryCode, 'code')->getId()) )
+            return array();
+
+
+        /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
+        $configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' );
+
+        return $configured_methods_obj->get_configured_methods( $countryId );
+        /**
+         *
+         * OLD way...
+         *
         $pay_method = Mage::getModel('globalpay/pay');
-        $chkout = Mage::getSingleton('checkout/session');
-        $quote = $chkout->getQuote();
-        $billingAddress = $quote->getBillingAddress();
-        $countryCode = $billingAddress->getCountryId();
-        $countryId = Mage::getModel('globalpay/country')->load($countryCode, 'code')->getId();
+
         $collection = Mage::getModel('globalpay/countrymethod')->getCollection();
         $collection->addFieldToSelect('*');
         $collection->addFieldToFilter('country_id', array(
@@ -40,5 +53,7 @@ class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form
         );
         $collection->setOrder('priority', 'ASC');
         return $collection->getData();
+         *
+        **/
     }
 }

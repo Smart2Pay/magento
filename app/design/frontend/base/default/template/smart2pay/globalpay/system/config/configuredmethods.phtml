@@ -1,0 +1,127 @@
+<style type="text/css">
+.s2p-method-img-td { height:50px; width: 134px; text-align: center; }
+.s2p-method-img { vertical-align: middle; max-height:40px; max-width:130px; }
+.sp2-middle-all { text-align: center; vertical-align: middle; }
+#s2p_methods_table  { min-width: 450px; width: 100%; margin: 0; paddin: 0; }
+#s2p_methods_table th { padding: 2px; text-align: center; font-weight: bold; background-color: #b6b6b6; color: black; }
+#s2p_methods_table td { padding: 2px; border-bottom: 1px solid black !important; }
+</style>
+<script type="text/javascript">
+function s2p_config_js_select_all()
+{
+    form_obj = document.getElementById( 'config_edit_form' );
+    if( form_obj && form_obj.elements && form_obj.elements.length )
+    {
+        for( i = 0; i < form_obj.elements.length; i++ )
+        {
+            if( form_obj.elements[i].type == 'checkbox' && form_obj.elements[i].name == 's2p_enabled_methods[]' )
+            {
+                if( !form_obj.elements[i].checked )
+                    form_obj.elements[i].click();
+            }
+        }
+    }
+}
+function s2p_config_js_deselect_all()
+{
+    form_obj = document.getElementById( 'config_edit_form' );
+    if( form_obj && form_obj.elements && form_obj.elements.length )
+    {
+        for( i = 0; i < form_obj.elements.length; i++ )
+        {
+            if( form_obj.elements[i].type == 'checkbox' && form_obj.elements[i].name == 's2p_enabled_methods[]' )
+            {
+                if( form_obj.elements[i].checked )
+                    form_obj.elements[i].click();
+            }
+        }
+    }
+}
+function s2p_config_js_invert()
+{
+    form_obj = document.getElementById( 'config_edit_form' );
+    if( form_obj && form_obj.elements && form_obj.elements.length )
+    {
+        for( i = 0; i < form_obj.elements.length; i++ )
+        {
+            if( form_obj.elements[i].type == 'checkbox' && form_obj.elements[i].name == 's2p_enabled_methods[]' )
+            {
+                form_obj.elements[i].click();
+            }
+        }
+    }
+}
+</script>
+<?php
+
+    if( !($all_methods = $this->get_all_methods()) )
+        $all_methods = array();
+
+?>
+<table id="s2p_methods_table">
+<thead>
+<tr>
+    <th style="width: 30px;">#</th>
+    <th style="width: 60px;">Enabled?</th>
+    <th style="width: 90px;">Surcharge</th>
+    <th colspan="2">Method</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td colspan="5">
+        <p>
+            <a href="javascript:void(0);" onclick="s2p_config_js_select_all()">Select all</a>
+            |
+            <a href="javascript:void(0);" onclick="s2p_config_js_invert()">Invert</a>
+            |
+            <a href="javascript:void(0);" onclick="s2p_config_js_deselect_all()">Select none</a>
+        </p>
+
+    </td>
+</tr>
+<?php
+$knti = 1;
+foreach( $all_methods as $method_arr )
+{
+    ?>
+    <tr class="s2p-method-tr">
+        <td class="sp2-middle-all"><?php echo $knti?></td>
+        <td class="sp2-middle-all"><input type="checkbox" id="s2p_enabled_method_<?php echo $method_arr['method_id']?>" name="s2p_enabled_methods[]" value="<?php echo $method_arr['method_id']?>" /></td>
+        <td class="sp2-middle-all"><input type="text" class="input-text" style="width: 50px !important;" name="s2p_surcharge[<?php echo $method_arr['method_id']?>]" id="s2p_surcharge_<?php echo $method_arr['method_id']?>" />%</td>
+        <td class="sp2-middle-all s2p-method-img-td"><img class="s2p-method-img" alt="<?php echo $this->__( $method_arr['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method_arr['logo_url'] ); ?>' /></td>
+        <td>
+            <label for="s2p_enabled_method<?php echo $method_arr['method_id']?>"><strong><?php echo $this->__( $method_arr['display_name'] ); ?></strong></label>
+            <br/>
+            <?php echo $this->__( $method_arr['description'] ); ?>
+            <br/>
+            <strong>Available in following countries</strong>:
+            <?php
+            if( empty( $method_arr['countries_list'] )
+                or !is_array( $method_arr['countries_list'] ) )
+                echo 'N/A';
+
+            else
+            {
+                $first = true;
+                foreach( $method_arr['countries_list'] as $country_id => $country_arr )
+                {
+                    if( !$first )
+                        echo ', ';
+
+                    echo $country_arr['name'];
+                    $first = false;
+
+                }
+                echo '.';
+            }
+            ?>
+
+        </td>
+    </tr>
+    <?php
+    $knti++;
+}
+?>
+</tbody>
+</table>

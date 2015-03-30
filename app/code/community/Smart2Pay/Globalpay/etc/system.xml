@@ -3,13 +3,30 @@
    <sections>
         <payment>
             <groups>
-                <globalpay translate="label" module="paygate">
+                <globalpay translate="label" module="globalpay">
+
                     <label>Smart2Pay Payment Module</label>
                     <sort_order>670</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website> 
                     <show_in_store>1</show_in_store>
+                    <frontend_class>complex</frontend_class>
+
                     <fields>
+
+                    <general_settings type="group" translate="label">
+
+                        <label>General Settings</label>
+                        <frontend_type>text</frontend_type>
+                        <show_in_default>1</show_in_default>
+                        <show_in_website>1</show_in_website>
+                        <show_in_store>1</show_in_store>
+                        <frontend_model>adminhtml/system_config_form_fieldset</frontend_model>
+                        <sort_order>10</sort_order>
+                        <expanded>1</expanded>
+
+                        <fields>
+
                         <active translate="label">
                             <label>Enabled</label>
                             <frontend_type>select</frontend_type>
@@ -18,6 +35,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/active</config_path>
                         </active>
                         <environment translate="label">
                             <label><![CDATA[<b>&raquo; Environment</b>]]> </label>
@@ -27,6 +45,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/environment</config_path>
                         </environment>
                         <post_url_live translate="label">
                             <label><![CDATA[<b>&raquo; Post URL Live</b>]]></label>
@@ -36,6 +55,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
+                            <config_path>payment/globalpay/post_url_live</config_path>
                         </post_url_live>
                         <post_url_test translate="label">
                             <label><![CDATA[<b>&raquo; Post URL Test</b>]]></label>
@@ -45,6 +65,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
+                            <config_path>payment/globalpay/post_url_test</config_path>
                         </post_url_test>
                         <mid_live translate="label">
                             <label><![CDATA[<b>&raquo; MID Live</b>]]></label>
@@ -54,6 +75,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
+                            <config_path>payment/globalpay/mid_live</config_path>
                         </mid_live>
                         <mid_test translate="label">
                             <label><![CDATA[<b>&raquo; MID Test</b>]]></label>
@@ -63,6 +85,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
+                            <config_path>payment/globalpay/mid_test</config_path>
                         </mid_test>
                         <site_id translate="label">
                             <label><![CDATA[Site ID]]></label>
@@ -71,6 +94,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/site_id</config_path>
                         </site_id>
                         <signature_live translate="label">
                             <label><![CDATA[<b>&raquo; Signature Live</b>]]></label>
@@ -80,6 +104,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/signature_live</config_path>
                         </signature_live>
                         <signature_test translate="label">
                             <label><![CDATA[<b>&raquo; Signature Test</b>]]></label>
@@ -89,6 +114,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/signature_test</config_path>
                         </signature_test>
                         <return_url translate="label">
                             <label><![CDATA[<b>&raquo; Return URL</b>]]></label>
@@ -98,6 +124,7 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/return_url</config_path>
                         </return_url>
                         <title translate="label">
                             <label><![CDATA[Title]]></label>
@@ -107,204 +134,8 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/title</config_path>
                         </title>
-                        <methods translate="label">
-                            <label><![CDATA[Active methods]]></label>
-                            <frontend_type>multiselect</frontend_type>
-                            <sort_order>13</sort_order>
-                            <source_model>globalpay/source_methods</source_model>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </methods>
-                        <methods_display_mode translate="label">
-                            <label><![CDATA[Methods display mode]]></label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>globalpay/source_displaymodes</source_model>
-                            <sort_order>14</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </methods_display_mode>
-                        <show_methods_in_grid translate="label">
-                            <label><![CDATA[Show methods in grid]]></label>
-                            <comment>By default, methods will be displayed as a two columns table, having paymentm method's logo or name and description. When set to yes, description is omitted, and columns number can be specified bellow.</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>15</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </show_methods_in_grid>
-                        <grid_column_number translate="label">
-                            <label>Grid column number</label>
-                            <comment>Please provide a number, if left blank, the  default value is 3 (This value is used only if above option is set to yes)</comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>16</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </grid_column_number>
-                        <product_description_ref translate="label">
-                            <label>Send order number as product description</label>
-                            <comment>If "No" is selected, the below custom description will be send</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>20</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </product_description_ref>
-                        <product_description_custom translate="label">
-                            <label>Custom product description</label>
-                            <frontend_type>textarea</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>21</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </product_description_custom>
-                        <notify_customer translate="label">
-                            <label>Notify customer by email</label>
-                            <comment>Send a confirmation email to the customer on success payment notification</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>22</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </notify_customer>
-                        <payment_confirmation_template translate="label">
-                            <label>Payment Confirmation Template</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_email_template</source_model>
-                            <sort_order>23</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </payment_confirmation_template>
-						 <notify_payment_instructions translate="label">
-                            <label>Send payment instructions on order creation</label>
-                            <comment>Send a confirmation email to the customer on order creation with payment details</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>24</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </notify_payment_instructions>
-                        <payment_instructions_template translate="label">
-                            <label><![CDATA[Payment Instructions Template (for Bank Transafer)]]></label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_email_template</source_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </payment_instructions_template>
-                        <payment_instructions_template_sibs translate="label">
-                            <label><![CDATA[Payment Instructions Template (for Multibanco SIBS)]]></label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_email_template</source_model>
-                            <sort_order>25</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </payment_instructions_template_sibs>
-
-                        <auto_invoice translate="label">
-                            <label>Create invoice on success</label>
-                            <comment>Create an invoice if payment is successfully done. Invoice is automatically set to paid</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>26</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </auto_invoice>
-
-                        <auto_ship translate="label">
-                            <label>Automate shipping</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>27</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </auto_ship>
-
-                        <order_status translate="label">
-                            <label>New Order status</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_order_status</source_model>
-                            <sort_order>28</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </order_status>
-                        <order_status_on_2 translate="label">
-                            <label>Order status on SUCCESS</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_order_status</source_model>
-                            <sort_order>29</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </order_status_on_2>
-                        <order_status_on_3 translate="label">
-                            <label>Order status on CANCEL</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_order_status</source_model>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </order_status_on_3>
-                        <order_status_on_4 translate="label">
-                            <label>Order status on FAIL</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_order_status</source_model>
-                            <sort_order>31</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </order_status_on_4>
-                        <order_status_on_5 translate="label">
-                            <label>Order status on EXPIRED</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_order_status</source_model>
-                            <sort_order>32</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                        </order_status_on_5>
-                        <autoselect_s2p translate="label">
-                            <label>Auto-select GlobalPay payment methods</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>33</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </autoselect_s2p>
-                        <skip_payment_page translate="label">
-                            <label>Skip payment page</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>34</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </skip_payment_page>
-                        <redirect_in_iframe translate="label">
-                            <label>Redirect in iframe</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>35</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </redirect_in_iframe>
                         <skin_id translate="label">
                             <label>Skin ID</label>
                             <frontend_type>text</frontend_type>
@@ -312,39 +143,8 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/skin_id</config_path>
                         </skin_id>
-                        <message_data_2 translate="label">
-                            <label>Message Success</label>
-                            <frontend_type>textarea</frontend_type>
-                            <sort_order>37</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </message_data_2>
-                        <message_data_4 translate="label">
-                            <label>Message Failed</label>
-                            <frontend_type>textarea</frontend_type>
-                            <sort_order>38</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </message_data_4>
-                        <message_data_3 translate="label">
-                            <label>Message Canceled</label>
-                            <frontend_type>textarea</frontend_type>
-                            <sort_order>39</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </message_data_3>
-                        <message_data_7 translate="label">
-                            <label>Message Pending</label>
-                            <frontend_type>textarea</frontend_type>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </message_data_7>
                         <debug_form translate="label">
                             <label>[ Debug Form ]</label>
                             <comment>Show form data before submiting it to Smart2Pay</comment>
@@ -354,9 +154,380 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/debug_form</config_path>
                         </debug_form>
+
+                        </fields>
+
+                    </general_settings>
+
+                    <methods_settings type="group" translate="label">
+                        <label><![CDATA[Methods Display Settings <small><em>Click for details</em></small>]]></label>
+                        <frontend_type>text</frontend_type>
+                        <show_in_default>1</show_in_default>
+                        <show_in_website>1</show_in_website>
+                        <show_in_store>1</show_in_store>
+                        <frontend_model>adminhtml/system_config_form_fieldset</frontend_model>
+                        <sort_order>20</sort_order>
+                        <expanded>0</expanded>
+
+                        <fields>
+
+                            <display_surcharge translate="label">
+                                <label>Display surcharge to client</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>10</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/display_surcharge</config_path>
+                            </display_surcharge>
+
+                            <methods translate="label">
+                                <label><![CDATA[Active methods]]></label>
+                                <frontend_type>multiselect</frontend_type>
+                                <sort_order>13</sort_order>
+                                <source_model>globalpay/source_methods</source_model>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/methods</config_path>
+                            </methods>
+
+                            <methods_display_mode translate="label">
+                                <label><![CDATA[Methods display mode]]></label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>globalpay/source_displaymodes</source_model>
+                                <sort_order>14</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/methods_display_mode</config_path>
+                            </methods_display_mode>
+                            <show_methods_in_grid translate="label">
+                                <label><![CDATA[Show methods in grid]]></label>
+                                <comment>By default, methods will be displayed as a two columns table, having paymentm method's logo or name and description. When set to yes, description is omitted, and columns number can be specified bellow.</comment>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>15</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/show_methods_in_grid</config_path>
+                            </show_methods_in_grid>
+                            <grid_column_number translate="label">
+                                <label>Grid column number</label>
+                                <comment>Please provide a number, if left blank, the  default value is 3 (This value is used only if above option is set to yes)</comment>
+                                <frontend_type>text</frontend_type>
+                                <sort_order>16</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/grid_column_number</config_path>
+                            </grid_column_number>
+
+                            <product_description_ref translate="label">
+                                <label>Send order number as product description</label>
+                                <comment>If "No" is selected, the below custom description will be send</comment>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>20</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/product_description_ref</config_path>
+                            </product_description_ref>
+
+                            <product_description_custom translate="label">
+                                <label>Custom product description</label>
+                                <frontend_type>textarea</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>21</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/product_description_custom</config_path>
+                            </product_description_custom>
+
+                        </fields>
+
+                    </methods_settings>
+
+                    <email_settings type="group" translate="label">
+                        <label><![CDATA[Email Settings <small><em>Click for details</em></small>]]></label>
+                        <frontend_type>text</frontend_type>
+                        <show_in_default>1</show_in_default>
+                        <show_in_website>1</show_in_website>
+                        <show_in_store>1</show_in_store>
+                        <frontend_model>adminhtml/system_config_form_fieldset</frontend_model>
+                        <sort_order>30</sort_order>
+                        <expanded>0</expanded>
+
+                        <fields>
+
+                            <notify_customer translate="label">
+                                <label>Notify customer by email</label>
+                                <comment>Send a confirmation email to the customer on success payment notification</comment>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>22</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/notify_customer</config_path>
+                            </notify_customer>
+                            <payment_confirmation_template translate="label">
+                                <label>Payment Confirmation Template</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_email_template</source_model>
+                                <sort_order>23</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/payment_confirmation_template</config_path>
+                            </payment_confirmation_template>
+                            <notify_payment_instructions translate="label">
+                                <label>Send payment instructions on order creation</label>
+                                <comment>Send a confirmation email to the customer on order creation with payment details</comment>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>24</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/notify_payment_instructions</config_path>
+                            </notify_payment_instructions>
+                            <payment_instructions_template translate="label">
+                                <label><![CDATA[Payment Instructions Template (for Bank Transafer)]]></label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_email_template</source_model>
+                                <sort_order>25</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/payment_instructions_template</config_path>
+                            </payment_instructions_template>
+                            <payment_instructions_template_sibs translate="label">
+                                <label><![CDATA[Payment Instructions Template (for Multibanco SIBS)]]></label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_email_template</source_model>
+                                <sort_order>25</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/payment_instructions_template_sibs</config_path>
+                            </payment_instructions_template_sibs>
+
+                        </fields>
+
+                    </email_settings>
+
+                    <order_settings type="group" translate="label">
+                        <label><![CDATA[Order Related Settings <small><em>Click for details</em></small>]]></label>
+                        <frontend_type>text</frontend_type>
+                        <show_in_default>1</show_in_default>
+                        <show_in_website>1</show_in_website>
+                        <show_in_store>1</show_in_store>
+                        <frontend_model>adminhtml/system_config_form_fieldset</frontend_model>
+                        <sort_order>40</sort_order>
+                        <expanded>0</expanded>
+
+
+                        <fields>
+
+                            <auto_invoice translate="label">
+                                <label>Create invoice on success</label>
+                                <comment>Create an invoice if payment is successfully done. Invoice is automatically set to paid</comment>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>26</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/auto_invoice</config_path>
+                            </auto_invoice>
+
+                            <auto_ship translate="label">
+                                <label>Automate shipping</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>27</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/auto_ship</config_path>
+                            </auto_ship>
+
+                            <order_status translate="label">
+                                <label>New Order status</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_order_status</source_model>
+                                <sort_order>28</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>0</show_in_store>
+                                <config_path>payment/globalpay/order_status</config_path>
+                            </order_status>
+                            <order_status_on_2 translate="label">
+                                <label>Order status on SUCCESS</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_order_status</source_model>
+                                <sort_order>29</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>0</show_in_store>
+                                <config_path>payment/globalpay/order_status_on_2</config_path>
+                            </order_status_on_2>
+                            <order_status_on_3 translate="label">
+                                <label>Order status on CANCEL</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_order_status</source_model>
+                                <sort_order>30</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>0</show_in_store>
+                                <config_path>payment/globalpay/order_status_on_3</config_path>
+                            </order_status_on_3>
+                            <order_status_on_4 translate="label">
+                                <label>Order status on FAIL</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_order_status</source_model>
+                                <sort_order>31</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>0</show_in_store>
+                                <config_path>payment/globalpay/order_status_on_4</config_path>
+                            </order_status_on_4>
+                            <order_status_on_5 translate="label">
+                                <label>Order status on EXPIRED</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_order_status</source_model>
+                                <sort_order>32</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>0</show_in_store>
+                                <config_path>payment/globalpay/order_status_on_5</config_path>
+                            </order_status_on_5>
+
+                        </fields>
+
+                    </order_settings>
+
+                    <payment_flow_settings type="group" translate="label">
+                        <label><![CDATA[Payment Flow Settings <small><em>Click for details</em></small>]]></label>
+                        <frontend_type>text</frontend_type>
+                        <show_in_default>1</show_in_default>
+                        <show_in_website>1</show_in_website>
+                        <show_in_store>1</show_in_store>
+                        <frontend_model>adminhtml/system_config_form_fieldset</frontend_model>
+                        <sort_order>50</sort_order>
+                        <expanded>0</expanded>
+
+                        <fields>
+
+                            <autoselect_s2p translate="label">
+                                <label>Auto-select GlobalPay payment methods</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>33</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/autoselect_s2p</config_path>
+                            </autoselect_s2p>
+                            <skip_payment_page translate="label">
+                                <label>Skip payment page</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>34</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/skip_payment_page</config_path>
+                            </skip_payment_page>
+                            <redirect_in_iframe translate="label">
+                                <label>Redirect in iframe</label>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>35</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/redirect_in_iframe</config_path>
+                            </redirect_in_iframe>
+                            <message_data_2 translate="label">
+                                <label>Message Success</label>
+                                <frontend_type>textarea</frontend_type>
+                                <sort_order>37</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/message_data_2</config_path>
+                            </message_data_2>
+                            <message_data_4 translate="label">
+                                <label>Message Failed</label>
+                                <frontend_type>textarea</frontend_type>
+                                <sort_order>38</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/message_data_4</config_path>
+                            </message_data_4>
+                            <message_data_3 translate="label">
+                                <label>Message Canceled</label>
+                                <frontend_type>textarea</frontend_type>
+                                <sort_order>39</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/message_data_3</config_path>
+                            </message_data_3>
+                            <message_data_7 translate="label">
+                                <label>Message Pending</label>
+                                <frontend_type>textarea</frontend_type>
+                                <sort_order>40</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/message_data_7</config_path>
+                            </message_data_7>
+
+                        </fields>
+                    </payment_flow_settings>
+
+                    <selected_methods type="group" translate="label">
+                        <label>Select Methods</label>
+                        <frontend_type>text</frontend_type>
+                        <show_in_default>1</show_in_default>
+                        <show_in_website>1</show_in_website>
+                        <show_in_store>1</show_in_store>
+                        <frontend_model>globalpay/adminhtml_system_config_fieldset_simple</frontend_model>
+                        <sort_order>60</sort_order>
+                        <expanded>1</expanded>
+
+                        <fields>
+
+                            <using_methods translate="label">
+                                <label>Methods</label>
+                                <frontend_type>text</frontend_type>
+                                <frontend_model>globalpay/adminhtml_system_config_configuredmethods</frontend_model>
+                                <backend_model>globalpay/system_config_backend_configuredmethods</backend_model>
+                                <sort_order>1</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/selected_methods2</config_path>
+                            </using_methods>
+
+                        </fields>
+
+                    </selected_methods>
+
                     </fields>
+
                 </globalpay>
+
             </groups>
         </payment>
     </sections>
