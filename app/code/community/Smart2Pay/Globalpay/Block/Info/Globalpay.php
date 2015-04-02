@@ -79,6 +79,14 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
             {
                 $payment_info_arr['Payment Method'] .= ' ('.($method_arr['surcharge']>0?'+':'').$method_arr['surcharge'].'%)';
             }
+
+            $info = $this->getInfo();
+
+            $payment_info_arr['Surcharge'] = $info->getS2pSurchargePercent().'%';
+
+            $amount_str = $quote->getStore()->formatPrice( $info->getS2pSurchargeAmount(), false );
+
+            $payment_info_arr['Surcharge Amount'] = $amount_str;
         } else
         {
             // display details when in view order...

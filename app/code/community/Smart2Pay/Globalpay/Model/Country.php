@@ -1,4 +1,5 @@
 <?php
+
 class Smart2Pay_Globalpay_Model_Country extends Mage_Core_Model_Abstract
 {
     protected $_resourceCollectionName = 'globalpay/country_collection';
@@ -8,4 +9,3 @@ class Smart2Pay_Globalpay_Model_Country extends Mage_Core_Model_Abstract
         $this->_init('globalpay/country');
     }
 } 
-?>

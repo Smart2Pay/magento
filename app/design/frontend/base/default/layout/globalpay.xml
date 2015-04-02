@@ -27,6 +27,40 @@
         </reference>
     </globalpay_index_info>
 
+
+    <sales_order_view>
+        <reference name="order_totals">
+            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+        </reference>
+    </sales_order_view>
+    <sales_order_print>
+        <reference name="order_totals">
+            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+        </reference>
+    </sales_order_print>
+    <sales_email_order_items>
+        <reference name="order_totals">
+            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+        </reference>
+    </sales_email_order_items>
+
+    <sales_order_invoice>
+        <reference name="invoice_totals">
+            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+        </reference>
+    </sales_order_invoice>
+    <sales_order_printinvoice>
+        <reference name="invoice_totals">
+            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+        </reference>
+    </sales_order_printinvoice>
+    <sales_email_order_invoice_items>
+        <reference name="invoice_totals">
+            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+        </reference>
+    </sales_email_order_invoice_items>
+
+
     <default>
         <reference name="head">
             <block type="core/text" name="jquery.js"><action method="setText"><text><![CDATA[<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script><script>jQuery.noConflict();</script>]]></text></action></block>

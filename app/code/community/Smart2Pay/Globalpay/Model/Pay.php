@@ -7,7 +7,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
     const PAYMENT_METHOD_BT = 1, PAYMENT_METHOD_SIBS = 20;
 
     protected $_code = 'globalpay';
-
     protected $_formBlockType = 'globalpay/paymethod_form';
     protected $_infoBlockType = 'globalpay/info_globalpay';
 
@@ -86,35 +85,51 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
          or !($enabled_methods = $configured_methods_obj->get_configured_methods( $countryId, array( 'id_in_index' => true ) ))
          or empty( $enabled_methods[$method_id] ) )
         {
-            Mage::throwException( Mage::helper('payment')->__( 'Couldn\'t get quote details. Please try again.' ) );
+            Mage::throwException( Mage::helper('payment')->__( 'Couldn\'t get payment method details. Please try again.' ) );
             return $this;
         }
 
+        $info = $this->getInfoInstance();
+
+        //$info->setMethodId( $method_id );
+
         $_SESSION['globalpay_method'] = $method_id;
 
+        /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
         $logger_obj = Mage::getModel( 'globalpay/logger' );
-        $logger_obj->write( 'setat magic ['.$enabled_methods[$method_id]['display_name'].']', 'pe_la_spate' );
 
         if( !empty( $enabled_methods[$method_id]['surcharge'] ) )
         {
-            // apply surcharge to quote...
-            $logger_obj->write( 'creating item', 'pe_la_spate' );
-            $item = new Mage_Sales_Model_Quote_Item();
-            $item->setId( 0 );
-            $item->setDiscountPercent( $enabled_methods[$method_id]['surcharge'] );
-            $item->setDescription( 'Surcharge tax' );
-            $item->setName( 'Name surcharge' );
+            $info->setS2pSurchargePercent( $enabled_methods[$method_id]['surcharge'] );
 
-            $item->setProductId( 0 );
-            $item->setWeight( 0 );
+            if( ($total_amount = $quote->getGrandTotal()) )
+                $total_amount -= $info->getS2pSurchargeAmount();
+            if( ($total_base_amount = $quote->getBaseGrandTotal()) )
+                $total_base_amount -= $info->getS2pSurchargeBaseAmount();
 
-            $logger_obj->write( 'adding to quote', 'pe_la_spate' );
-            $quote->addItem( $item );
+            $surcharge_amount = 0;
+            if( !empty( $total_amount ) )
+                $surcharge_amount = ( $total_amount * $enabled_methods[ $method_id ]['surcharge'] ) / 100;
+            $surcharge_base_amount = 0;
+            if( !empty( $total_base_amount ) )
+                $surcharge_base_amount = ($total_base_amount * $enabled_methods[$method_id]['surcharge']) / 100;
 
-            $logger_obj->write( 'saving quote', 'pe_la_spate' );
-            //$quote->save();
+            $logger_obj->write( 'Total ['.$total_amount.'], Surcharge ['.$surcharge_amount.'] ['.$enabled_methods[$method_id]['surcharge'].'%]' );
 
-            $logger_obj->write( 'saved quote', 'pe_la_spate' );
+            $info->setS2pSurchargeAmount( $surcharge_amount );
+            $info->setS2pSurchargeBaseAmount( $surcharge_base_amount );
+
+            $quote->setTotalsCollectedFlag( false );
+
+            // if( !$quote->setTotalsCollectedFlag( true ) )
+                $quote->collectTotals();
+
+            //$s2p_surcharge = array(
+            //    's2p_surcharge_percent' => $enabled_methods[$method_id]['surcharge'],
+            //    's2p_surcharge_amount' => $surcharge_amount,
+            //);
+            //
+            //$info->setAdditionalInformation( $s2p_surcharge );
         }
 
         return $this;

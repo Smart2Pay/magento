@@ -1,12 +1,25 @@
 <?php
     //die('Trying to setup Smart2Pay_Globalpay database');
-    
+
+    /* @var $installer Mage_Paypal_Model_Resource_Setup */
+    /* @var $this Mage_Paypal_Model_Resource_Setup */
     $installer = $this;
     $installer->startSetup();
 
-    // Adding fields in quote for our surcharge fee
-    $installer->run( "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_fee_amount` DECIMAL( 10, 2 ) NOT NULL;".
-                     "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_base_fee_amount` DECIMAL( 10, 2 ) NOT NULL;" );
+    // Adding fields in quote address for our surcharge fee
+    $installer->run( "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_percent` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';" );
+
+    // Adding fields in quote payment for our surcharge fee
+    $installer->run( "ALTER TABLE  `".$this->getTable('sales/quote_payment')."` ADD  `s2p_surcharge_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/quote_payment')."` ADD  `s2p_surcharge_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/quote_payment')."` ADD  `s2p_surcharge_percent` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';" );
+
+    // Adding fields in order for our surcharge fee
+    $installer->run( "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_percent` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';" );
 
     $installer->run("
 

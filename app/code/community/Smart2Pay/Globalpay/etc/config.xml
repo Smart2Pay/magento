@@ -61,15 +61,75 @@
 
     <global>
 
+        <events>
+            <checkout_cart_save_after>
+                <observers>
+                    <sales_observer>
+                        <type>singleton</type>
+                        <class>globalpay/sales_observer</class>
+                        <method>remove_surcharge_from_cart</method>
+                    </sales_observer>
+                </observers>
+            </checkout_cart_save_after>
+
+            <checkout_quote_init>
+                <observers>
+                    <sales_observer>
+                        <type>singleton</type>
+                        <class>globalpay/sales_observer</class>
+                        <method>remove_surcharge_from_quote</method>
+                    </sales_observer>
+                </observers>
+            </checkout_quote_init>
+            <checkout_quote_destroy>
+                <observers>
+                    <sales_observer>
+                        <type>singleton</type>
+                        <class>globalpay/sales_observer</class>
+                        <method>remove_surcharge_from_quote</method>
+                    </sales_observer>
+                </observers>
+            </checkout_quote_destroy>
+
+            <sales_quote_add_item>
+                <observers>
+                    <sales_observer>
+                        <type>singleton</type>
+                        <class>globalpay/sales_observer</class>
+                        <method>remove_surcharge_from_quote_item</method>
+                    </sales_observer>
+                </observers>
+            </sales_quote_add_item>
+            <sales_quote_remove_item>
+                <observers>
+                    <sales_observer>
+                        <type>singleton</type>
+                        <class>globalpay/sales_observer</class>
+                        <method>remove_surcharge_from_quote_item</method>
+                    </sales_observer>
+                </observers>
+            </sales_quote_remove_item>
+        </events>
+
         <sales>
             <quote>
                 <totals>
-                    <fee>
-                        <class>globalpay/sales_quote_address_total_fee</class>
-                    </fee>
+                    <Smart2Pay_Globalpay>
+                        <class>globalpay/sales_quote_address_total_surcharge</class>
+                        <!-- <after>shipping</after> -->
+                        <before>shipping</before>
+                        <!--<before>grand_total</before>-->
+                    </Smart2Pay_Globalpay>
                 </totals>
             </quote>
         </sales>
+
+        <fieldsets>
+            <sales_convert_quote_payment>
+                <s2p_surcharge_amount><to_order_payment>*</to_order_payment></s2p_surcharge_amount>
+                <s2p_surcharge_percent><to_order_payment>*</to_order_payment></s2p_surcharge_percent>
+            </sales_convert_quote_payment>
+        </fieldsets>
 
         <template>
             <email>
@@ -133,18 +193,28 @@
                 </entities>
             </globalpay_resource>
     	</models>
+
     	<blocks>
     		<globalpay>
                 <class>Smart2Pay_Globalpay_Block</class>
             </globalpay>
     	</blocks>
+
         <helpers>
             <globalpay>
                 <class>Smart2Pay_Globalpay_Helper</class>
             </globalpay>
         </helpers>
     </global>
+
     <default>
+
+        <sales>
+            <totals_sort>
+                <Smart2Pay_Globalpay>99</Smart2Pay_Globalpay>
+            </totals_sort>
+        </sales>
+
         <payment>
             <globalpay>
                 <active>1</active>

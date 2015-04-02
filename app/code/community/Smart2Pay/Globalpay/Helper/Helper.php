@@ -11,6 +11,24 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
         return false;
     }
 
+    public function s2p_mb_substr( $message, $start, $length )
+    {
+        if( function_exists( 'mb_substr' ) )
+            return mb_substr( $message, $start, $length, 'UTF-8' );
+        else
+            return substr( $message, $start, $length );
+    }
+
+    public function format_surcharge_label( $amount, $percent )
+    {
+        return $this->__( 'Payment Method Fee' ).' ('.$percent.'%)';
+    }
+
+    public function format_surcharge_value( $amount, $percent )
+    {
+        return $amount;
+    }
+
     public function computeSHA256Hash( $message )
     {
         if( function_exists( 'mb_strtolower' ) )
