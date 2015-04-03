@@ -19,14 +19,78 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
             return substr( $message, $start, $length );
     }
 
-    public function format_surcharge_label( $amount, $percent )
+    public function format_surcharge_percent_label( $amount, $percent, $params = false )
     {
-        return $this->__( 'Payment Method Fee' ).' ('.$percent.'%)';
+        if( empty( $params ) or !is_array( $params ) )
+            $params = array();
+
+        if( !isset( $params['use_translate'] ) )
+            $params['use_translate'] = true;
+
+        $label = 'Payment Method Percent';
+
+        return (!empty( $params['use_translate'] )?$this->__( $label ):$label);
     }
 
-    public function format_surcharge_value( $amount, $percent )
+    public function format_surcharge_percent_value( $amount, $percent )
     {
-        return $amount;
+        return $percent.'%';
+    }
+
+    public function format_surcharge_label( $amount, $percent, $params = false )
+    {
+        if( empty( $params ) or !is_array( $params ) )
+            $params = array();
+
+        if( !isset( $params['include_percent'] ) )
+            $params['include_percent'] = true;
+        if( !isset( $params['use_translate'] ) )
+            $params['use_translate'] = true;
+
+        if( !empty( $params['use_translate'] ) )
+            $label = $this->__( 'Payment Method Fee' );
+
+        else
+        {
+            $label = 'Payment Method Fee';
+
+            if( !empty( $params['include_percent'] ) )
+                $label .= ' (' . $percent . '%)';
+        }
+
+        return $label;
+    }
+
+    public function format_surcharge_value( $amount, $percent, $params = false )
+    {
+        if( empty( $params ) or !is_array( $params ) )
+            $params = array();
+
+        if( empty( $params['format_price'] ) )
+            $params['format_price'] = false;
+
+        if( !empty( $params['format_price'] )
+        and (!isset( $params['format_currency'] ) or !($params['format_currency'] instanceof Mage_Directory_Model_Currency)) )
+            $params['format_currency'] = Mage::app()->getStore()->getDefaultCurrency();
+        else
+            $params['format_currency'] = false;
+
+        if( !isset( $params['include_container'] ) )
+            $params['include_container'] = true;
+
+        if( empty( $params['format_options'] ) or !is_array( $params['format_options'] ) )
+            $params['format_options'] = array();
+        if( !isset( $params['format_options']['precision'] ) )
+            $params['format_options']['precision'] = 2;
+
+        if( empty( $params['format_price'] )
+         or empty( $params['format_currency'] ) )
+            $amount_str = $amount;
+
+        else
+            $amount_str = $params['format_currency']->format( $amount, $params['format_options'], $params['include_container'] );
+
+        return $amount_str;
     }
 
     public function computeSHA256Hash( $message )

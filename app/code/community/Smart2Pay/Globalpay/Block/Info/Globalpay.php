@@ -41,12 +41,23 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
 
         /** @var Smart2Pay_Globalpay_Model_Pay $s2pPayModel */
         $s2pPayModel = Mage::getModel( 'globalpay/pay' );
+        /** @var Smart2Pay_Globalpay_Helper_Helper $s2pHelper */
+        $s2pHelper = Mage::helper( 'globalpay/helper' );
+        /** @var Smart2Pay_Globalpay_Model_Logger $s2pLogger */
+        $s2pLogger = Mage::getModel( 'globalpay/logger' );
 
-        $no_information_available_arr = array( $this->__( 'No information available' ) => '' );
+        $controller_module_name = $this->getRequest()->getControllerModule();
+        $controller_name = $this->getRequest()->getControllerName();
+        $action_name = $this->getRequest()->getActionName();
+        $route_name = $this->getRequest()->getRouteName();
+        $module_name = $this->getRequest()->getModuleName();
+
+        $s2pLogger->write( 'Called from ['.$controller_module_name.']['.$controller_name.']'.
+                           '['.$action_name.']['.$route_name.']['.$module_name.']', 'payment_info' );
 
         $payment_info_arr = array();
-        if( 'checkout' == $this->getRequest()->getRouteName()
-        and 'checkout' == $this->getRequest()->getModuleName() )
+        if( 'onepage' == $controller_name
+        and 'checkout' == $module_name )
         {
             // Display details in checkout...
             $this->_display_lines = false;
@@ -74,66 +85,102 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
             else
                 $payment_info_arr['Payment Method'] = $method_arr['display_name'];
 
-            if( !empty( $method_arr['surcharge'] )
-            and (int)$s2pPayModel->method_config['display_surcharge'] )
-            {
-                $payment_info_arr['Payment Method'] .= ' ('.($method_arr['surcharge']>0?'+':'').$method_arr['surcharge'].'%)';
-            }
-
             $info = $this->getInfo();
 
-            $payment_info_arr['Surcharge'] = $info->getS2pSurchargePercent().'%';
+            $surcharge_amount = $info->getS2pSurchargeAmount();
+            $surcharge_percent = $info->getS2pSurchargePercent();
 
-            $amount_str = $quote->getStore()->formatPrice( $info->getS2pSurchargeAmount(), false );
+            $surcharge_amount_label = $s2pHelper->format_surcharge_label( $surcharge_amount, $surcharge_percent, array( 'include_percent' => false, 'use_translate' => false ) );
 
-            $payment_info_arr['Surcharge Amount'] = $amount_str;
-        } else
+            if( !empty( $method_arr['surcharge'] )
+                and (int)$s2pPayModel->method_config['display_surcharge'] )
+            {
+                $surcharge_percent_label = $s2pHelper->format_surcharge_percent_label( $surcharge_amount, $surcharge_percent, array( 'use_translate' => false ) );
+                $payment_info_arr[$surcharge_percent_label] = $s2pHelper->format_surcharge_percent_value( $surcharge_amount, $surcharge_percent );
+            }
+
+            $surcharge_amount_str = $quote->getStore()->getCurrentCurrency()->format( $surcharge_amount, array(), false );
+
+            $payment_info_arr[$surcharge_amount_label] = $s2pHelper->format_surcharge_value( $surcharge_amount_str, $surcharge_percent,
+                                                            array(
+                                                                'format_price' => false,
+                                                                //'include_container' => false,
+                                                                //'format_currency' => $quote->getStore()->getCurrentCurrency(),
+                                                                ) );
+        } elseif( in_array( $controller_name, array( 'sales_order', 'sales_order_invoice', 'order' ) ) )
         {
+            if( $action_name == 'print' )
+                $this->_display_lines = false;
+
             // display details when in view order...
 
             /** @var Mage_Sales_Model_Order $order */
             $order = Mage::getModel( 'sales/order' );
-            /** @var Smart2Pay_Globalpay_Helper_Helper $s2pHelper */
-            $s2pHelper = Mage::helper( 'globalpay/helper' );
             /** @var Smart2Pay_Globalpay_Model_Resource_Method_Collection $s2pMethodCollection */
             $s2pMethodCollection = Mage::getModel( 'globalpay/method' )->getCollection();
-            /** @var Smart2Pay_Globalpay_Model_Logger $s2pLogger */
-            $s2pLogger = Mage::getModel( 'globalpay/logger' );
             /** @var Smart2Pay_Globalpay_Model_Transactionlogger $s2pTransactionLogger */
             $s2pTransactionLogger = Mage::getModel( 'globalpay/transactionlogger' );
 
-            try
+            if( !($info = $this->getInfo())
+             or empty( $info['parent_id'] )
+             or !$order->load( $info['parent_id'] )
+             or !($merchant_transaction_id = $order->getIncrementId()) )
+                return $transport;
+
+            $payment_info_arr = array();
+
+            if( !($s2p_transaction_arr = $s2pTransactionLogger->getTransactionDetailsAsArray( $merchant_transaction_id )) )
+                return $transport;
+
+            if( empty( $s2p_transaction_arr['method_id'] ) )
+                $payment_info_arr['Payment Method'] = 'N/A';
+
+            else
             {
-                if( ! ($info = $this->getInfo())
-                    or empty( $info['entity_id'] )
-                    or !$order->load( $info['entity_id'] )
-                    or !($merchant_transaction_id = $order->getIncrementId()) )
-                    return $transport;
+                $method_arr = false;
+                $s2pMethodCollection->addFieldToSelect( '*' )
+                                    ->addFieldToFilter( 'method_id', $s2p_transaction_arr['method_id'] );
+                if( ($methods_list_arr = $s2pMethodCollection->getData())
+                and is_array( $methods_list_arr ) )
+                    $method_arr = array_pop( $methods_list_arr );
 
-                if( !($s2p_transaction_arr = $s2pTransactionLogger->getTransactionDetailsAsArray( $merchant_transaction_id )) )
-                    return $transport->addData( $no_information_available_arr );
-
-                $payment_info_arr = array();
-
-                if( empty( $s2p_transaction_arr['method_id'] ) )
+                if( empty( $method_arr ) )
                     $payment_info_arr['Payment Method'] = 'N/A';
-
                 else
-                {
-                    $method_arr = false;
-                    $s2pMethodCollection->addFieldToSelect( '*' )
-                                        ->addFieldToFilter( 'method_id', $s2p_transaction_arr['method_id'] );
-                    if( ( $methods_list_arr = $s2pMethodCollection->getData() )
-                        and is_array( $methods_list_arr )
-                    )
-                        $method_arr = array_pop( $methods_list_arr );
+                    $payment_info_arr['Payment Method'] = $method_arr['display_name'];
+            }
 
-                    if( empty( $method_arr ) )
-                        $payment_info_arr['Payment Method'] = 'N/A';
-                    else
-                        $payment_info_arr['Payment Method'] = $method_arr['display_name'];
+            if( ($payment = $order->getPayment())
+            and $payment->getS2pSurchargeAmount() )
+            {
+                $surcharge_amount = $payment->getS2pSurchargeAmount();
+                $surcharge_percent = $payment->getS2pSurchargePercent();
+
+                $surcharge_amount_label = $s2pHelper->format_surcharge_label( $surcharge_amount, $surcharge_percent, array( 'include_percent' => false, 'use_translate' => false ) );
+
+                if( $s2pHelper->isAdmin()
+                 or (int)$s2pPayModel->method_config['display_surcharge'] )
+                {
+                    $surcharge_percent_label = $s2pHelper->format_surcharge_percent_label( $surcharge_amount, $surcharge_percent, array( 'use_translate' => false ) );
+                    $payment_info_arr[$surcharge_percent_label] = $s2pHelper->format_surcharge_percent_value( $surcharge_amount, $surcharge_percent );
                 }
 
+                $surcharge_amount_str = $order->getOrderCurrency()->format( $surcharge_amount, array(), false );
+
+                $payment_info_arr[$surcharge_amount_label] = $s2pHelper->format_surcharge_value( $surcharge_amount_str, $surcharge_percent,
+                                                                array(
+                                                                    'format_price' => false,
+                                                                    //'include_container' => false,
+                                                                    //'format_currency' => $quote->getStore()->getCurrentCurrency(),
+                                                                ) );
+            }
+
+            if( ($controller_name == 'order'
+                    and in_array( $action_name, array( 'view' ) ))
+            or ($controller_name == 'sales_order'
+                    and in_array( $action_name, array( 'view' ) ))
+              )
+            {
                 if( $s2pHelper->isAdmin() )
                 {
                     $payment_info_arr['PaymentID'] = ( ! empty( $s2p_transaction_arr['payment_id'] ) ? $s2p_transaction_arr['payment_id'] : 'N/A' );
@@ -157,10 +204,6 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
                     foreach( $extra_data_arr as $key => $val )
                         $payment_info_arr[ $this->__( $key ) ] = $val;
                 }
-            } catch( Exception $e )
-            {
-                $s2pLogger->write( 'Exception (' . $e->getMessage() . ')', 'trans_logger' );
-                //$transport->addData( $no_information_available_arr );
             }
         }
 

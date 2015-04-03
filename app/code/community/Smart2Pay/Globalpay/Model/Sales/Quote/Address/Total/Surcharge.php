@@ -9,7 +9,7 @@ class Smart2Pay_Globalpay_Model_Sales_Quote_Address_Total_Surcharge extends Mage
         parent::collect( $address );
 
         /** @var Smart2Pay_Globalpay_Model_Pay $pay_obj */
-        if( $address->getAddressType() != 'billing'
+        if( $address->getAddressType() != Mage_Sales_Model_Quote_Address::TYPE_BILLING
          or !($quote = $address->getQuote())
          or !($payment_obj = $quote->getPayment()) )
             return $this;
@@ -23,7 +23,6 @@ class Smart2Pay_Globalpay_Model_Sales_Quote_Address_Total_Surcharge extends Mage
             $payment_base_amount = 0;
         if( !($payment_percent = $payment_obj->getS2pSurchargePercent()) )
             $payment_percent = 0;
-
 
         if( $payment_obj->isDeleted() )
         {
@@ -43,12 +42,11 @@ class Smart2Pay_Globalpay_Model_Sales_Quote_Address_Total_Surcharge extends Mage
             }
 
             $payment_obj->setS2pSurchargeAmount( 0 );
-            $address->setS2pSurchargeAmount( 0 );
-
             $payment_obj->setS2pSurchargeBaseAmount( 0 );
-            $address->setS2pSurchargeBaseAmount( 0 );
-
             $payment_obj->setS2pSurchargePercent( 0 );
+
+            $address->setS2pSurchargeAmount( 0 );
+            $address->setS2pSurchargeBaseAmount( 0 );
             $address->setS2pSurchargePercent( 0 );
 
             $this->_setAmount( 0 );
@@ -57,29 +55,19 @@ class Smart2Pay_Globalpay_Model_Sales_Quote_Address_Total_Surcharge extends Mage
             return $this;
         }
 
-        $address_amount = $address->getS2pSurchargeAmount();
-        $address_base_amount = $address->getS2pSurchargeBaseAmount();
-        $address_percent = $address->getS2pSurchargePercent();
+        $logger_obj->write( 'Surcharge ['.$payment_amount.'] Base ['.$payment_base_amount.'] Percent ['.$payment_percent.']' );
 
-        if( true or $address_amount != $payment_amount )
-        {
-            $balance = $payment_amount - $address_amount;
+        $address->setS2pSurchargeAmount( $payment_amount );
+        //$address->setGrandTotal( $address->getGrandTotal() + $address->getS2pSurchargeAmount() );
 
-            $logger_obj->write( 'Address [' . $address_amount . '(' . $address_percent . '%)] Payment [' . $payment_amount . '(' . $payment_percent . '%)] DIF [' . $balance . ']' );
+        $this->_addAmount( $address->getS2pSurchargeAmount() );
 
-            $address->setS2pSurchargeAmount( $payment_amount );
-            $address->setGrandTotal( $address->getGrandTotal() + $address->getS2pSurchargeAmount() );
-        }
+        $address->setS2pSurchargeBaseAmount( $payment_base_amount );
+        //$address->setBaseGrandTotal( $address->getBaseGrandTotal() + $address->getS2pSurchargeBaseAmount() );
 
-        if( true or $address_base_amount != $payment_base_amount )
-        {
-            $balance = $payment_base_amount - $address_base_amount;
+        $this->_addBaseAmount( $address->getS2pSurchargeBaseAmount() );
 
-            $logger_obj->write( 'Base Address [' . $address_amount . '(' . $address_percent . '%)] Payment [' . $payment_amount . '(' . $payment_percent . '%)] DIF [' . $balance . ']' );
-
-            $address->setS2pSurchargeBaseAmount( $payment_base_amount );
-            $address->setBaseGrandTotal( $address->getBaseGrandTotal() + $address->getS2pSurchargeBaseAmount() );
-        }
+        $logger_obj->write( 'Total ['.$address->getGrandTotal().'] Base ['.$address->getBaseGrandTotal().']' );
 
         $address->setS2pSurchargePercent( $payment_percent );
 
@@ -89,7 +77,7 @@ class Smart2Pay_Globalpay_Model_Sales_Quote_Address_Total_Surcharge extends Mage
     public function fetch( Mage_Sales_Model_Quote_Address $address )
     {
         /** @var Smart2Pay_Globalpay_Model_Pay $pay_obj */
-        if( $address->getAddressType() != 'billing'
+        if( $address->getAddressType() != Mage_Sales_Model_Quote_Address::TYPE_BILLING
          or !($quote = $address->getQuote())
          or !($payment_obj = $quote->getPayment())
          or $payment_obj->isDeleted()
@@ -102,7 +90,7 @@ class Smart2Pay_Globalpay_Model_Sales_Quote_Address_Total_Surcharge extends Mage
 
         $address->addTotal( array(
             'code'  => $this->getCode(),
-            'title' => $helper_obj->format_surcharge_label( $payment_amount, $payment_percent ),
+            'title' => $helper_obj->format_surcharge_label( $payment_amount, $payment_percent, array( 'use_translate' => true ) ),
             'value' => $helper_obj->format_surcharge_value( $payment_amount, $payment_percent ),
         ) );
 

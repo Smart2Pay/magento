@@ -118,4 +118,37 @@ class Smart2Pay_Globalpay_Model_Sales_Observer
 
         return $this;
     }
+
+    public function invoice_save( Varien_Event_Observer $observer )
+    {
+        /** @var Mage_Sales_Model_Order_Invoice $invoice */
+        /** @var Mage_Sales_Model_Order $order */
+        if( !($event = $observer->getEvent())
+         or !($invoice = $event->getInvoice())
+         or (!(float)$invoice->getS2pSurchargeAmount() and !(float)$invoice->getS2pSurchargeBaseAmount())
+         or !($order = $invoice->getOrder())
+         or !($order_payment = $order->getPayment()) )
+            return $this;
+
+        $order_payment->setS2pSurchargeAmountInvoiced( $order_payment->getS2pSurchargeAmountInvoiced() + $invoice->getS2pSurchargeAmount() );
+        $order_payment->setS2pSurchargeBaseAmountInvoiced( $order_payment->getS2pSurchargeBaseAmountInvoiced() + $invoice->getS2pSurchargeBaseAmount() );
+
+        return $this;
+    }
+
+    public function order_payment_place( Varien_Event_Observer $observer )
+    {
+        /** @var Mage_Sales_Model_Order_Payment $payment */
+        /** @var Mage_Sales_Model_Order $order */
+        if( !($event = $observer->getEvent())
+         or !($payment = $event->getPayment())
+         or !($order = $payment->getOrder())
+         or (!(float)$payment->getS2pSurchargeAmount() and !(float)$payment->getS2pSurchargeBaseAmount()) )
+            return $this;
+
+        $order->setGrandTotal( $order->getGrandTotal() + $payment->getS2pSurchargeAmount() );
+        $order->setBaseGrandTotal( $order->getBaseGrandTotal() + $payment->getS2pSurchargeBaseAmount() );
+
+        return $this;
+    }
 }

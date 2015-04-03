@@ -1,6 +1,6 @@
-<p>!!!Smart2Pay: <?php echo $this->escapeHtml( $this->getMethod()->getTitle() ) ?></p>
+<p><?php echo $this->escapeHtml( $this->getMethod()->getTitle() ) ?></p>
 <?php if ($_specificInfo = $this->getSpecificInformation()):?>
-<table style="width:100%;">
+<table>
     <tbody>
     <?php foreach ($_specificInfo as $_label => $_value):?>
         <tr>

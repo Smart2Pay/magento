@@ -114,22 +114,16 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
             if( !empty( $total_base_amount ) )
                 $surcharge_base_amount = ($total_base_amount * $enabled_methods[$method_id]['surcharge']) / 100;
 
-            $logger_obj->write( 'Total ['.$total_amount.'], Surcharge ['.$surcharge_amount.'] ['.$enabled_methods[$method_id]['surcharge'].'%]' );
+            $logger_obj->write( 'Total ['.$total_amount.'] Base ('.$total_base_amount.'), '.
+                                'Surcharge ['.$surcharge_amount.'] Base ('.$surcharge_base_amount.') '.
+                                ' ['.$enabled_methods[$method_id]['surcharge'].'%]' );
 
             $info->setS2pSurchargeAmount( $surcharge_amount );
             $info->setS2pSurchargeBaseAmount( $surcharge_base_amount );
 
+            // Recollect totals for surcharge amount
             $quote->setTotalsCollectedFlag( false );
-
-            // if( !$quote->setTotalsCollectedFlag( true ) )
-                $quote->collectTotals();
-
-            //$s2p_surcharge = array(
-            //    's2p_surcharge_percent' => $enabled_methods[$method_id]['surcharge'],
-            //    's2p_surcharge_amount' => $surcharge_amount,
-            //);
-            //
-            //$info->setAdditionalInformation( $s2p_surcharge );
+            $quote->collectTotals();
         }
 
         return $this;

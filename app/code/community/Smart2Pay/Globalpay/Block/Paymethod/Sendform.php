@@ -25,7 +25,7 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
         $order = Mage::getModel('sales/order');
 
 
-        $order->load($order_id);
+        $order->load( $order_id );
 
         $order_id = $order->getRealOrderId();
 

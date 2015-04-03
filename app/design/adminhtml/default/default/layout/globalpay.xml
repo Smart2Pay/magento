@@ -7,6 +7,30 @@
         </reference>
     </adminhtml_system_config_edit_section_payment>
 
+    <adminhtml_sales_order_invoice_print>
+        <reference name="invoice_totals">
+            <block type="globalpay/adminhtml_sales_order_total" name="globalpay.sales.order.invoice.total" />
+        </reference>
+    </adminhtml_sales_order_invoice_print>
+
+    <adminhtml_sales_order_invoice_view>
+        <reference name="invoice_totals">
+            <block type="globalpay/adminhtml_sales_order_total" name="globalpay.sales.order.invoice.total" />
+        </reference>
+    </adminhtml_sales_order_invoice_view>
+
+    <adminhtml_sales_order_invoice_new>
+        <reference name="invoice_totals">
+            <block type="globalpay/adminhtml_sales_order_total" name="globalpay.sales.order.invoice.total" />
+        </reference>
+    </adminhtml_sales_order_invoice_new>
+
+    <adminhtml_sales_order_view>
+        <reference name="order_totals">
+            <block type="globalpay/adminhtml_sales_order_total" name="globalpay.sales.order.total" />
+        </reference>
+    </adminhtml_sales_order_view>
+
     <default>
         <reference name="head">
             <!--

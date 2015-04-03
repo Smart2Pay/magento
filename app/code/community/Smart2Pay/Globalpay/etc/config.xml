@@ -37,7 +37,6 @@
 
     <adminhtml>
 
-        <!--
         <layout>
             <updates>
                 <globalpay>
@@ -45,7 +44,6 @@
                 </globalpay>
             </updates>
         </layout>
-        -->
 
         <translate>
             <modules>
@@ -62,53 +60,75 @@
     <global>
 
         <events>
+
+            <!-- Cart related -->
             <checkout_cart_save_after>
                 <observers>
-                    <sales_observer>
+                    <Smart2Pay_Globalpay_cart_observer>
                         <type>singleton</type>
                         <class>globalpay/sales_observer</class>
                         <method>remove_surcharge_from_cart</method>
-                    </sales_observer>
+                    </Smart2Pay_Globalpay_cart_observer>
                 </observers>
             </checkout_cart_save_after>
 
             <checkout_quote_init>
                 <observers>
-                    <sales_observer>
+                    <Smart2Pay_Globalpay_quote_observer>
                         <type>singleton</type>
                         <class>globalpay/sales_observer</class>
                         <method>remove_surcharge_from_quote</method>
-                    </sales_observer>
+                    </Smart2Pay_Globalpay_quote_observer>
                 </observers>
             </checkout_quote_init>
             <checkout_quote_destroy>
                 <observers>
-                    <sales_observer>
+                    <Smart2Pay_Globalpay_quote_observer>
                         <type>singleton</type>
                         <class>globalpay/sales_observer</class>
                         <method>remove_surcharge_from_quote</method>
-                    </sales_observer>
+                    </Smart2Pay_Globalpay_quote_observer>
                 </observers>
             </checkout_quote_destroy>
 
             <sales_quote_add_item>
                 <observers>
-                    <sales_observer>
+                    <Smart2Pay_Globalpay_quote_observer>
                         <type>singleton</type>
                         <class>globalpay/sales_observer</class>
                         <method>remove_surcharge_from_quote_item</method>
-                    </sales_observer>
+                    </Smart2Pay_Globalpay_quote_observer>
                 </observers>
             </sales_quote_add_item>
             <sales_quote_remove_item>
                 <observers>
-                    <sales_observer>
+                    <Smart2Pay_Globalpay_quote_observer>
                         <type>singleton</type>
                         <class>globalpay/sales_observer</class>
                         <method>remove_surcharge_from_quote_item</method>
-                    </sales_observer>
+                    </Smart2Pay_Globalpay_quote_observer>
                 </observers>
             </sales_quote_remove_item>
+
+            <!-- Order related -->
+            <sales_order_payment_place_start>
+                <observers>
+                    <Smart2Pay_Globalpay_order_observer>
+                        <class>globalpay/sales_observer</class>
+                        <method>order_payment_place</method>
+                    </Smart2Pay_Globalpay_order_observer>
+                </observers>
+            </sales_order_payment_place_start>
+
+            <!-- Invoice related -->
+            <sales_order_invoice_save_after>
+                <observers>
+                    <Smart2Pay_Globalpay_invoice_observer>
+                        <class>globalpay/sales_observer</class>
+                        <method>invoice_save</method>
+                    </Smart2Pay_Globalpay_invoice_observer>
+                </observers>
+            </sales_order_invoice_save_after>
         </events>
 
         <sales>
@@ -116,19 +136,45 @@
                 <totals>
                     <Smart2Pay_Globalpay>
                         <class>globalpay/sales_quote_address_total_surcharge</class>
-                        <!-- <after>shipping</after> -->
-                        <before>shipping</before>
-                        <!--<before>grand_total</before>-->
+                        <after>shipping,tax</after>
+                        <before>grand_total</before>
                     </Smart2Pay_Globalpay>
                 </totals>
             </quote>
+            <order_invoice>
+                <totals>
+                    <Smart2Pay_Globalpay>
+                        <class>globalpay/sales_order_invoice_total_surcharge</class>
+                        <after>shipping,tax</after>
+                        <before>grand_total</before>
+                    </Smart2Pay_Globalpay>
+                </totals>
+            </order_invoice>
         </sales>
+
+        <pdf>
+            <totals>
+                <Smart2Pay_Globalpay translate="title">
+                    <title>Payment Method Fee</title>
+                    <source_field>s2p_surcharge_amount</source_field>
+                    <font_size>7</font_size>
+                    <display_zero>0</display_zero>
+                    <sort_order>699</sort_order>
+                </Smart2Pay_Globalpay>
+            </totals>
+        </pdf>
 
         <fieldsets>
             <sales_convert_quote_payment>
                 <s2p_surcharge_amount><to_order_payment>*</to_order_payment></s2p_surcharge_amount>
+                <s2p_surcharge_base_amount><to_order_payment>*</to_order_payment></s2p_surcharge_base_amount>
                 <s2p_surcharge_percent><to_order_payment>*</to_order_payment></s2p_surcharge_percent>
             </sales_convert_quote_payment>
+            <sales_convert_order_payment>
+                <s2p_surcharge_amount><to_invoice>*</to_invoice></s2p_surcharge_amount>
+                <s2p_surcharge_base_amount><to_invoice>*</to_invoice></s2p_surcharge_base_amount>
+                <s2p_surcharge_percent><to_invoice>*</to_invoice></s2p_surcharge_percent>
+            </sales_convert_order_payment>
         </fieldsets>
 
         <template>
