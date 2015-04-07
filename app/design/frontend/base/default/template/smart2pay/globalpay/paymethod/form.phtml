@@ -97,13 +97,15 @@ if( !$this->method_config['show_methods_in_grid'] )
                                 ?>
                                 <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ); ?>' />
                                 <div style="clear: both;"></div>
-                                <span class="s2p-method-img-name"><?php echo $this->__( $method['display_name'] ); ?><?php
-                                        echo $this->__( $method['display_name'] );
-                                        if( !empty( $method['surcharge'] )
-                                            and (int)$this->method_config['display_surcharge'] )
-                                            echo ' ('.($method['surcharge']>0?'+':'').$method['surcharge'].'%)';
-                                    ?></span>
-                                <?php
+                                <span class="s2p-method-img-name"><?php
+
+                                    echo $this->__( $method['display_name'] );
+
+                                    if( !empty( $method['surcharge'] )
+                                    and (int)$this->method_config['display_surcharge'] )
+                                        echo ' ('.($method['surcharge']>0?'+':'').$method['surcharge'].'%)';
+
+                                ?></span><?php
                             }
 
                             ?></div></label></td><?php

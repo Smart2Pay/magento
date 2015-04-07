@@ -60,6 +60,12 @@
         </reference>
     </sales_email_order_invoice_items>
 
+    <sales_order_creditmemo>
+        <reference name="creditmemo_totals">
+            <block type="globalpay/sales_order_creditmemo_totals" name="globalpay.sales.order.creditmemo.total" />
+        </reference>
+    </sales_order_creditmemo>
+
 
     <default>
         <reference name="head">

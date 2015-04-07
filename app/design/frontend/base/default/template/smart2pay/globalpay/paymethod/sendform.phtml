@@ -13,6 +13,10 @@
     <form action="<?php echo  $this->form_data['post_url'] ?>" id="s2pform" method="post" <?php if($this->form_data['redirect_in_iframe']) echo 'target="merchantIframe"'; ?>>
         <table>
             <tr>
+                <td>Environment</td>
+                <td><strong><?php echo  $this->form_data['environment'] ?></strong></td>
+            </tr>
+            <tr>
                 <td>MerchantID</td>
                 <td><input type="text" name="MerchantID" value="<?php echo  $this->form_data['mid'] ?>" /></td>
             </tr>

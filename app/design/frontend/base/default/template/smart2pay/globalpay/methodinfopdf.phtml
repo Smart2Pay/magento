@@ -1,17 +1,15 @@
-<p><?php echo $this->escapeHtml( $this->getMethod()->getTitle() ) ?></p>
-<?php if ($_specificInfo = $this->getSpecificInformation()):?>
-<table>
-    <tbody>
-    <?php foreach ($_specificInfo as $_label => $_value):?>
-        <tr>
-            <td><?php echo $this->__( $_label )?></td>
-        </tr>
-        <tr>
-            <td><?php echo nl2br(implode($this->getValueAsArray($_value, true), "\n"))?></td>
-        </tr>
-    <?php endforeach; ?>
-    </tbody>
-</table>
-<?php endif;?>
+<?php
 
-<?php echo $this->getChildHtml()?>
+    echo $this->escapeHtml( $this->getMethod()->getTitle() ).'{{pdf_row_separator}}';
+
+    if( ($_specificInfo = $this->getSpecificInformation()) )
+    {
+        foreach ($_specificInfo as $_label => $_value)
+        {
+            echo $this->__( $_label ).'{{pdf_row_separator}}';
+            echo nl2br( implode( $this->getValueAsArray( $_value, true ), "{{pdf_row_separator}}\n" ) ).'{{pdf_row_separator}}';
+        }
+    }
+
+    echo $this->getChildHtml();
+

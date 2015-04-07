@@ -27,17 +27,27 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
 
         $order->load( $order_id );
 
-        $order_id = $order->getRealOrderId();
+        $merchant_transaction_id = $order->getRealOrderId();
+
+        // assume live environment if we don't get something valid from config
+        $environment = (!empty( $paymentModel->method_config['environment'] )?strtolower( trim( $paymentModel->method_config['environment'] ) ):'live');
+
+        if( $environment == 'demo' )
+        {
+            $merchant_transaction_id = base_convert( time(), 10, 36 ).'_'.$merchant_transaction_id;
+        }
 
         // FORM DATA
         $this->form_data = $paymentModel->method_config;
+
+        $this->form_data['environment'] = $environment;
 
         if( !empty( $_SESSION['globalpay_method'] ) )
             $this->form_data['method_id'] = $_SESSION['globalpay_method'];
         else
             $this->form_data['method_id'] = 0;
 
-        $this->form_data['order_id'] = $order_id;
+        $this->form_data['order_id'] = $merchant_transaction_id;
         $this->form_data['currency'] = $order->getOrderCurrency()->getCurrencyCode();
         $this->form_data['amount'] = number_format( $order->getGrandTotal(), 2, '.', '' ) * 100;
 
@@ -109,10 +119,11 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
         $s2p_transaction_arr = array();
         if( !empty( $this->form_data['method_id'] ) )
             $s2p_transaction_arr['method_id'] = $this->form_data['method_id'];
-        if( !empty( $order_id ) )
-            $s2p_transaction_arr['merchant_transaction_id'] = $order_id;
+        if( !empty( $merchant_transaction_id ) )
+            $s2p_transaction_arr['merchant_transaction_id'] = $merchant_transaction_id;
         if( !empty( $this->form_data['site_id'] ) )
             $s2p_transaction_arr['site_id'] = $this->form_data['site_id'];
+        $s2p_transaction_arr['environment'] = $environment;
 
         $s2pTransactionLogger->write( $s2p_transaction_arr );
 

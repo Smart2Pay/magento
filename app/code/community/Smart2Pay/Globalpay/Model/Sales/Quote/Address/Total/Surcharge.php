@@ -26,7 +26,7 @@ class Smart2Pay_Globalpay_Model_Sales_Quote_Address_Total_Surcharge extends Mage
 
         if( $payment_obj->isDeleted() )
         {
-            $logger_obj->write( 'Deleted Payment ['.$payment_amount.'] Base ['.$payment_base_amount.'] Percent ['.$payment_percent.']' );
+            //$logger_obj->write( 'Deleted Payment ['.$payment_amount.'] Base ['.$payment_base_amount.'] Percent ['.$payment_percent.']' );
 
             // clean surcharge as payment was deleted...
             if( $payment_amount != 0 )
@@ -55,7 +55,7 @@ class Smart2Pay_Globalpay_Model_Sales_Quote_Address_Total_Surcharge extends Mage
             return $this;
         }
 
-        $logger_obj->write( 'Surcharge ['.$payment_amount.'] Base ['.$payment_base_amount.'] Percent ['.$payment_percent.']' );
+        //$logger_obj->write( 'Surcharge ['.$payment_amount.'] Base ['.$payment_base_amount.'] Percent ['.$payment_percent.']' );
 
         $address->setS2pSurchargeAmount( $payment_amount );
         //$address->setGrandTotal( $address->getGrandTotal() + $address->getS2pSurchargeAmount() );
@@ -67,7 +67,7 @@ class Smart2Pay_Globalpay_Model_Sales_Quote_Address_Total_Surcharge extends Mage
 
         $this->_addBaseAmount( $address->getS2pSurchargeBaseAmount() );
 
-        $logger_obj->write( 'Total ['.$address->getGrandTotal().'] Base ['.$address->getBaseGrandTotal().']' );
+        //$logger_obj->write( 'Total ['.$address->getGrandTotal().'] Base ['.$address->getBaseGrandTotal().']' );
 
         $address->setS2pSurchargePercent( $payment_percent );
 

@@ -2,6 +2,68 @@
 
 class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
 {
+    public function mage_exception( $code, $messages_arr )
+    {
+        if( is_string( $messages_arr ) )
+            $messages_arr = array( Mage_Core_Model_Message::ERROR => $messages_arr );
+
+        if( empty( $code ) )
+            $code = -1;
+
+        if( empty( $messages_arr ) or !is_array( $messages_arr ) )
+            return Mage::exception( 'Mage_Core', $this->__( 'Unknown error' ), $code );
+
+        $exception_obj = new Mage_Core_Exception();
+
+        $error_types = array( Mage_Core_Model_Message::NOTICE, Mage_Core_Model_Message::WARNING, Mage_Core_Model_Message::ERROR, Mage_Core_Model_Message::SUCCESS );
+        $message_factory_obj = new Mage_Core_Model_Message();
+        foreach( $error_types as $type )
+        {
+            if( empty( $messages_arr[$type] ) or !is_array( $messages_arr[$type] ) )
+                continue;
+
+            foreach( $messages_arr[$type] as $message_arr )
+            {
+                if( is_string( $message_arr ) )
+                    $message_arr = array( 'message' => $message_arr );
+
+                if( !is_array( $message_arr ) )
+                    continue;
+
+                if( empty( $message_arr['class'] ) )
+                    $message_arr['class'] = '';
+                if( empty( $message_arr['method'] ) )
+                    $message_arr['method'] = '';
+
+                $message_obj = false;
+                switch( $type )
+                {
+                    case Mage_Core_Model_Message::NOTICE:
+                        $message_obj = $message_factory_obj->notice( $message_arr['message'], $message_arr['class'], $message_arr['method'] );
+                    break;
+                    case Mage_Core_Model_Message::WARNING:
+                        $message_obj = $message_factory_obj->warning( $message_arr['message'], $message_arr['class'], $message_arr['method'] );
+                    break;
+                    case Mage_Core_Model_Message::ERROR:
+                        $message_obj = $message_factory_obj->error( $message_arr['message'], $message_arr['class'], $message_arr['method'] );
+                        $exception_obj->setMessage( $message_arr['message'].'<br/>', true );
+                    break;
+                    case Mage_Core_Model_Message::SUCCESS:
+                        $message_obj = $message_factory_obj->success( $message_arr['message'], $message_arr['class'], $message_arr['method'] );
+                    break;
+                }
+
+                if( empty( $message_obj ) )
+                    continue;
+
+                $exception_obj->addMessage( $message_obj );
+            }
+        }
+
+
+        return $exception_obj;
+    }
+
     public function isAdmin()
     {
         if( Mage::app()->getStore()->isAdmin()

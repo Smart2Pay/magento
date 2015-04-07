@@ -1,5 +1,5 @@
 <?php
-class Smart2Pay_Globalpay_Block_Sales_Order_Total extends Mage_Core_Block_Template
+class Smart2Pay_Globalpay_Block_Adminhtml_Sales_Order_Creditmemo_Totals extends Mage_Core_Block_Template
 {
     /**
      * Get label cell tag properties
@@ -42,7 +42,7 @@ class Smart2Pay_Globalpay_Block_Sales_Order_Total extends Mage_Core_Block_Templa
     }
 
     /**
-     * Initialize reward points totals
+     * Add totals for surcharge
      *
      * @return Smart2Pay_Globalpay_Block_Sales_Order_Total
      */
@@ -66,7 +66,7 @@ class Smart2Pay_Globalpay_Block_Sales_Order_Total extends Mage_Core_Block_Templa
                 'value'  => $helper_obj->format_surcharge_value( $amount, $percent ),
                 'base_value'  => $helper_obj->format_surcharge_value( $base_amount, $percent ),
                 'area'  => 'footer',
-            )), 'shipping' );
+            )), 'shipping');
         }
 
         return $this;

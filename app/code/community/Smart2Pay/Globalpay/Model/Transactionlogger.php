@@ -63,6 +63,7 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
             'method_id' => 0,
             'payment_id' => 0,
             'merchant_transaction_id' => '',
+            'environment' => '',
             'site_id' => 0,
             'extra_data' => '',
         );
@@ -168,6 +169,14 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
                 $s2pLogger->write( 'Update transaction ['.$existing_id.']', 'trans_logger' );
             } else
             {
+                if( empty( $insert_arr['environment'] ) )
+                {
+                    /** @var Smart2Pay_Globalpay_Model_Pay $s2pPayModel */
+                    $s2pPayModel = Mage::getModel( 'globalpay/pay' );
+
+                    $insert_arr['environment'] = (!empty( $s2pPayModel->method_config['environment'] )?$s2pPayModel->method_config['environment']:'');
+                }
+
                 // we should insert record
                 //$conn_write->query( $sql );
                 $conn_write->insert( 's2p_gp_transactions', $insert_arr );

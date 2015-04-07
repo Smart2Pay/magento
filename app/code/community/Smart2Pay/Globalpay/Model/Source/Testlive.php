@@ -10,6 +10,7 @@ class Smart2Pay_Globalpay_Model_Source_Testlive
     public function toOptionArray()
     {
         return array(
+            array('value' => 'demo', 'label' => 'Demo'),
             array('value' => 'test', 'label' => 'Test'),
             array('value' => 'live', 'label' => 'Live'),
         );
@@ -23,6 +24,7 @@ class Smart2Pay_Globalpay_Model_Source_Testlive
     public function toArray()
     {
         return array(
+            'demo' => 'Demo',
             'test' => 'Test',
             'live' => 'Live',
         );

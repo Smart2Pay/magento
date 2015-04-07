@@ -42,7 +42,7 @@ class Smart2Pay_Globalpay_Block_Adminhtml_Sales_Order_Total extends Mage_Core_Bl
     }
 
     /**
-     * Initialize reward points totals
+     * Add totals for surcharge
      *
      * @return Smart2Pay_Globalpay_Block_Sales_Order_Total
      */
@@ -66,7 +66,7 @@ class Smart2Pay_Globalpay_Block_Adminhtml_Sales_Order_Total extends Mage_Core_Bl
                 'value'  => $helper_obj->format_surcharge_value( $amount, $percent ),
                 'base_value'  => $helper_obj->format_surcharge_value( $base_amount, $percent ),
                 'area'  => 'footer',
-            )));
+            )), 'shipping');
         }
 
         return $this;

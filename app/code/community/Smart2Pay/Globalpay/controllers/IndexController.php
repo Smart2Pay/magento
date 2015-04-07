@@ -261,6 +261,8 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                     $s2p_transaction_arr['payment_id'] = $response['PaymentID'];
                 if( isset( $response['MerchantTransactionID'] ) )
                     $s2p_transaction_arr['merchant_transaction_id'] = $response['MerchantTransactionID'];
+                if( isset( $response['MerchantTransactionID'] ) )
+                    $s2p_transaction_arr['environment'] = $response['MerchantTransactionID'];
                 if( isset( $response['SiteID'] ) )
                     $s2p_transaction_arr['site_id'] = $response['SiteID'];
 

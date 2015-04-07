@@ -107,7 +107,7 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
                                                                 //'include_container' => false,
                                                                 //'format_currency' => $quote->getStore()->getCurrentCurrency(),
                                                                 ) );
-        } elseif( in_array( $controller_name, array( 'sales_order', 'sales_order_invoice', 'order' ) ) )
+        } elseif( in_array( $controller_name, array( 'sales_order', 'sales_order_invoice', 'sales_order_shipment', 'sales_order_creditmemo', 'order' ) ) )
         {
             if( $action_name == 'print' )
                 $this->_display_lines = false;
@@ -178,11 +178,14 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
             if( ($controller_name == 'order'
                     and in_array( $action_name, array( 'view' ) ))
             or ($controller_name == 'sales_order'
-                    and in_array( $action_name, array( 'view' ) ))
+                    and in_array( $action_name, array( 'view', 'email' ) ))
+            or ($controller_name == 'sales_order_creditmemo'
+                    and in_array( $action_name, array( 'new', 'view', 'email' ) ))
               )
             {
                 if( $s2pHelper->isAdmin() )
                 {
+                    $payment_info_arr['Environment'] = ( ! empty( $s2p_transaction_arr['environment'] ) ? ucfirst( $s2p_transaction_arr['environment'] ): 'N/A' );
                     $payment_info_arr['PaymentID'] = ( ! empty( $s2p_transaction_arr['payment_id'] ) ? $s2p_transaction_arr['payment_id'] : 'N/A' );
                     $payment_info_arr['SiteID']    = ( ! empty( $s2p_transaction_arr['site_id'] ) ? $s2p_transaction_arr['site_id'] : 'N/A' );
 

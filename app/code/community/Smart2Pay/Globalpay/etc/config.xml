@@ -35,6 +35,20 @@
         </translate>
     </frontend>
 
+<!--
+    <admin>
+        <routers>
+            <globalpay>
+                <use>admin</use>
+                <args>
+                    <module>
+                        <Smart2pay_Globalpay after="Mage_Adminhtml">Smart2pay_Globalpay</Smart2pay_Globalpay>
+                    </module>
+                </args>
+            </globalpay>
+        </routers>
+    </admin>
+-->
     <adminhtml>
 
         <layout>
@@ -44,6 +58,18 @@
                 </globalpay>
             </updates>
         </layout>
+
+<!--
+        <routers>
+            <globalpay>
+                <use>admin</use>
+                <args>
+                    <module>Smart2Pay_Globalpay</module>
+                    <frontName>globalpay_admin</frontName>
+                </args>
+            </globalpay>
+        </routers>
+-->
 
         <translate>
             <modules>
@@ -129,6 +155,18 @@
                     </Smart2Pay_Globalpay_invoice_observer>
                 </observers>
             </sales_order_invoice_save_after>
+
+            <!-- Admin configuration related -->
+<!--
+            <model_config_data_save_before>
+                <observers>
+                    <Smart2Pay_Globalpay_admin_observer>
+                        <class>globalpay/sales_observer</class>
+                        <method>configuration_save</method>
+                    </Smart2Pay_Globalpay_admin_observer>
+                </observers>
+            </model_config_data_save_before>
+-->
         </events>
 
         <sales>
@@ -265,6 +303,7 @@
             <globalpay>
                 <active>1</active>
                 <model>globalpay/pay</model>
+                <environment>demo</environment>
                 <order_status>holded</order_status>
                 <order_status_on_2>processing</order_status_on_2>
                 <order_status_on_3>canceled</order_status_on_3>
@@ -274,7 +313,7 @@
                 <post_url_live>https://api.smart2pay.com</post_url_live>
                 <post_url_test>https://apitest.smart2pay.com</post_url_test>
                 <methods>1,2,3,4,5,8,9,12,13,14,18,19,20,22,23,24,25,27,28,29,32,33,34,35,36,37,40,42,43,44,46,47,48,49,62,63,64,65,66,67,72,73,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1025,1026,1027,1028,1029,1030,1031,1033,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043</methods>
-                <display_surcharge>1</display_surcharge>
+                <display_surcharge>0</display_surcharge>
                 <product_description_ref>1</product_description_ref>
                 <autoselect_s2p>1</autoselect_s2p>
                 <skip_payment_page>1</skip_payment_page>
@@ -285,6 +324,7 @@
                 <message_data_4><![CDATA[There was a problem processing your payment. Please try again.]]></message_data_4>
                 <message_data_3><![CDATA[You have canceled the payment.]]></message_data_3>
                 <message_data_7><![CDATA[Thank you, the transaction is pending. After we receive the final confirmation, we will release the goods.]]></message_data_7>
+                <selected_methods>0</selected_methods>
             </globalpay>
          </payment>
     </default>

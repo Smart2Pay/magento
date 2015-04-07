@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
    <sections>
-        <payment>
+
+       <payment>
             <groups>
+
                 <globalpay translate="label" module="globalpay">
 
                     <label>Smart2Pay Payment Module</label>
@@ -38,7 +40,8 @@
                             <config_path>payment/globalpay/active</config_path>
                         </active>
                         <environment translate="label">
-                            <label><![CDATA[<b>&raquo; Environment</b>]]> </label>
+                            <label><![CDATA[<b>&raquo; Environment</b>]]></label>
+                            <comment><![CDATA[To obtain your credentials for live and test environments, please contact us at <a href="mailto:support@smart2pay.com">support@smart2pay.com</a>.]]></comment>
                             <frontend_type>select</frontend_type>
                             <source_model>globalpay/source_testlive</source_model>
                             <sort_order>1</sort_order>
@@ -173,8 +176,9 @@
 
                         <fields>
 
+                            <!--
                             <display_surcharge translate="label">
-                                <label>Display surcharge to client</label>
+                                <label><![CDATA[Display surcharge percent to client]]></label>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_yesno</source_model>
                                 <sort_order>10</sort_order>
@@ -183,7 +187,9 @@
                                 <show_in_store>1</show_in_store>
                                 <config_path>payment/globalpay/display_surcharge</config_path>
                             </display_surcharge>
+                            -->
 
+                            <!--
                             <methods translate="label">
                                 <label><![CDATA[Active methods]]></label>
                                 <frontend_type>multiselect</frontend_type>
@@ -194,6 +200,7 @@
                                 <show_in_store>1</show_in_store>
                                 <config_path>payment/globalpay/methods</config_path>
                             </methods>
+                            -->
 
                             <methods_display_mode translate="label">
                                 <label><![CDATA[Methods display mode]]></label>
@@ -517,7 +524,7 @@
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>
                                 <show_in_store>1</show_in_store>
-                                <config_path>payment/globalpay/selected_methods2</config_path>
+                                <config_path>payment/globalpay/selected_methods</config_path>
                             </using_methods>
 
                         </fields>
@@ -529,6 +536,6 @@
                 </globalpay>
 
             </groups>
-        </payment>
+       </payment>
     </sections>
 </config>

@@ -22,11 +22,6 @@ class Smart2Pay_Globalpay_Model_Sales_Observer
          or !($payment_obj = $quote->getPayment()) )
             return $this;
 
-        /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
-        $logger_obj = Mage::getModel( 'globalpay/logger' );
-
-        $logger_obj->write( 'remove_surcharge_from_cart', 'observer' );
-
         $payment_obj->setS2pSurchargeAmount( 0 );
         $payment_obj->setS2pSurchargeBaseAmount( 0 );
         $payment_obj->setS2pSurchargePercent( 0 );
@@ -58,11 +53,6 @@ class Smart2Pay_Globalpay_Model_Sales_Observer
         if( !($quote = $event->getQuote())
          or !($payment_obj = $quote->getPayment()) )
             return $this;
-
-        /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
-        $logger_obj = Mage::getModel( 'globalpay/logger' );
-
-        $logger_obj->write( 'remove_surcharge_from_quote', 'observer' );
 
         $payment_obj->setS2pSurchargeAmount( 0 );
         $payment_obj->setS2pSurchargeBaseAmount( 0 );
@@ -96,11 +86,6 @@ class Smart2Pay_Globalpay_Model_Sales_Observer
          or !($quote = $quote_item->getQuote())
          or !($payment_obj = $quote->getPayment()) )
             return $this;
-
-        /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
-        $logger_obj = Mage::getModel( 'globalpay/logger' );
-
-        $logger_obj->write( 'remove_surcharge_from_quote_item', 'observer' );
 
         $payment_obj->setS2pSurchargeAmount( 0 );
         $payment_obj->setS2pSurchargeBaseAmount( 0 );

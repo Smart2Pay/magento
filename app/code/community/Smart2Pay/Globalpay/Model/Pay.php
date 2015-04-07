@@ -18,13 +18,11 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
         parent::__construct();
 
         // get environment type
-        $environment = $this->getConfigData('environment'); // [test | live]
+        $environment = $this->getConfigData('environment'); // [demo | test | live]
 
         // get config
         $this->method_config = array(
-            'post_url' => $this->getConfigData('post_url_'.$environment),
-            'signature' => $this->getConfigData('signature_'.$environment),
-            'mid' => $this->getConfigData('mid_'.$environment),
+            'environment' => $environment,
             'return_url' => $this->getConfigData('return_url'),
             'methods' => $this->getConfigData('methods'),
             'methods_display_mode' => $this->getConfigData('methods_display_mode'),
@@ -60,6 +58,28 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
             'auto_ship' => $this->getConfigData('auto_ship'),
             'notify_customer' => $this->getConfigData('notify_customer'),
         );
+
+        if( $environment == 'demo' )
+        {
+            // demo environment
+            $this->method_config['post_url'] = 'https://apitest.smart2pay.com';
+            $this->method_config['signature'] = '8bf71f75-68d9';
+            $this->method_config['mid'] = '1045';
+            $this->method_config['site_id'] = '30122';
+        } elseif( in_array( $environment, array( 'test', 'live' ) ) )
+        {
+            $this->method_config['post_url'] = $this->getConfigData( 'post_url_' . $environment );
+            $this->method_config['signature'] = $this->getConfigData( 'signature_' . $environment );
+            $this->method_config['mid'] = $this->getConfigData( 'mid_' . $environment );
+        } else
+        {
+            $this->method_config['post_url'] = 'https://apitest.smart2pay.com';
+            $this->method_config['signature'] = '';
+            $this->method_config['mid'] = 0;
+        }
+
+        // Not enabled yet
+        $this->method_config['display_surcharge'] = 0;
     }
 
     /**
@@ -91,8 +111,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
 
         $info = $this->getInfoInstance();
 
-        //$info->setMethodId( $method_id );
-
         $_SESSION['globalpay_method'] = $method_id;
 
         /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
@@ -114,9 +132,9 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
             if( !empty( $total_base_amount ) )
                 $surcharge_base_amount = ($total_base_amount * $enabled_methods[$method_id]['surcharge']) / 100;
 
-            $logger_obj->write( 'Total ['.$total_amount.'] Base ('.$total_base_amount.'), '.
-                                'Surcharge ['.$surcharge_amount.'] Base ('.$surcharge_base_amount.') '.
-                                ' ['.$enabled_methods[$method_id]['surcharge'].'%]' );
+            //$logger_obj->write( 'Total ['.$total_amount.'] Base ('.$total_base_amount.'), '.
+            //                    'Surcharge ['.$surcharge_amount.'] Base ('.$surcharge_base_amount.') '.
+            //                    ' ['.$enabled_methods[$method_id]['surcharge'].'%]' );
 
             $info->setS2pSurchargeAmount( $surcharge_amount );
             $info->setS2pSurchargeBaseAmount( $surcharge_base_amount );

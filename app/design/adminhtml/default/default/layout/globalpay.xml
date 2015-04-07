@@ -31,6 +31,18 @@
         </reference>
     </adminhtml_sales_order_view>
 
+    <adminhtml_sales_order_creditmemo_new>
+        <reference name="creditmemo_totals">
+            <block type="globalpay/adminhtml_sales_order_creditmemo_totals" name="globalpay.sales.order.creditmemo.total" />
+        </reference>
+    </adminhtml_sales_order_creditmemo_new>
+
+    <adminhtml_sales_order_creditmemo_view>
+        <reference name="creditmemo_totals">
+            <block type="globalpay/adminhtml_sales_order_creditmemo_totals" name="globalpay.sales.order.creditmemo.total" />
+        </reference>
+    </adminhtml_sales_order_creditmemo_view>
+
     <default>
         <reference name="head">
             <!--
