@@ -204,6 +204,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
                 continue;
 
             $methods_arr[$configured_method_arr['method_id']]['surcharge'] = $configured_method_arr['surcharge'];
+            $methods_arr[$configured_method_arr['method_id']]['fixed_amount'] = $configured_method_arr['fixed_amount'];
 
             $enabled_method_ids_arr[$configured_method_arr['method_id']] = 1;
         }
@@ -227,6 +228,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
                 continue;
 
             $methods_arr[$configured_method_arr['method_id']]['surcharge'] = $configured_method_arr['surcharge'];
+            $methods_arr[$configured_method_arr['method_id']]['fixed_amount'] = $configured_method_arr['fixed_amount'];
 
             $enabled_method_ids_arr[$configured_method_arr['method_id']] = 1;
         }
@@ -284,6 +286,8 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
 
                 if( empty( $country_surcharge['surcharge'] ) )
                     $country_surcharge['surcharge'] = 0;
+                if( empty( $country_surcharge['fixed_amount'] ) )
+                    $country_surcharge['fixed_amount'] = 0;
 
                 if( !$my_resource->insert_or_update( $method_id, $country_id, $country_surcharge ) )
                     $errors_arr[] = $helper_obj->__( 'Error saving method ID '.$method_id.', for country '.$country_id.'.' );

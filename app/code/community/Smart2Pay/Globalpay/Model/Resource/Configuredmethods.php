@@ -33,20 +33,6 @@ class Smart2Pay_Globalpay_Model_Resource_Configuredmethods extends Mage_Core_Mod
     }
 
     /**
-     * @param Varien_Db_Select $select
-     *
-     * @return Varien_Db_Select
-     */
-    public function delete_from_select( Varien_Db_Select $select )
-    {
-        if( !($select instanceof Varien_Db_Select) )
-            return $select;
-
-        // return $this->_getWriteAdapter()->query( $this->_getWriteAdapter()->deleteFromSelect( $select, $this->getMainTable() ) );
-        return true;
-    }
-
-    /**
      * @param int $method_id
      * @param int $country_id
      * @param array $params
@@ -67,9 +53,12 @@ class Smart2Pay_Globalpay_Model_Resource_Configuredmethods extends Mage_Core_Mod
 
         if( empty( $params['surcharge'] ) )
             $params['surcharge'] = 0;
+        if( empty( $params['fixed_amount'] ) )
+            $params['fixed_amount'] = 0;
 
         $insert_arr = array();
         $insert_arr['surcharge'] = $params['surcharge'];
+        $insert_arr['fixed_amount'] = $params['fixed_amount'];
 
         try
         {

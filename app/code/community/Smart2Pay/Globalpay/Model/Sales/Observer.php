@@ -25,15 +25,19 @@ class Smart2Pay_Globalpay_Model_Sales_Observer
         $payment_obj->setS2pSurchargeAmount( 0 );
         $payment_obj->setS2pSurchargeBaseAmount( 0 );
         $payment_obj->setS2pSurchargePercent( 0 );
+        $payment_obj->setS2pSurchargeFixedAmount( 0 );
+        $payment_obj->setS2pSurchargeFixedBaseAmount( 0 );
 
         if( ($address_obj = $quote->getBillingAddress()) )
         {
-            $address_obj->setGrandTotal( $address_obj->getGrandTotal() - $address_obj->getS2pSurchargeAmount() );
-            $address_obj->setBaseGrandTotal( $address_obj->getBaseGrandTotal() - $address_obj->getS2pSurchargeBaseAmount() );
+            $address_obj->setGrandTotal( $address_obj->getGrandTotal() - $address_obj->getS2pSurchargeAmount() - $address_obj->getS2pSurchargeFixedAmount() );
+            $address_obj->setBaseGrandTotal( $address_obj->getBaseGrandTotal() - $address_obj->getS2pSurchargeBaseAmount() - $address_obj->getS2pSurchargeFixedBaseAmount() );
 
             $address_obj->setS2pSurchargeAmount( 0 );
             $address_obj->setS2pSurchargeBaseAmount( 0 );
             $address_obj->setS2pSurchargePercent( 0 );
+            $address_obj->setS2pSurchargeFixedAmount( 0 );
+            $address_obj->setS2pSurchargeFixedBaseAmount( 0 );
         }
 
         return $this;
@@ -57,15 +61,19 @@ class Smart2Pay_Globalpay_Model_Sales_Observer
         $payment_obj->setS2pSurchargeAmount( 0 );
         $payment_obj->setS2pSurchargeBaseAmount( 0 );
         $payment_obj->setS2pSurchargePercent( 0 );
+        $payment_obj->setS2pSurchargeFixedAmount( 0 );
+        $payment_obj->setS2pSurchargeFixedBaseAmount( 0 );
 
         if( ($address_obj = $quote->getBillingAddress()) )
         {
-            $address_obj->setGrandTotal( $address_obj->getGrandTotal() - $address_obj->getS2pSurchargeAmount() );
-            $address_obj->setBaseGrandTotal( $address_obj->getBaseGrandTotal() - $address_obj->getS2pSurchargeBaseAmount() );
+            $address_obj->setGrandTotal( $address_obj->getGrandTotal() - $address_obj->getS2pSurchargeAmount() - $address_obj->getS2pSurchargeFixedAmount() );
+            $address_obj->setBaseGrandTotal( $address_obj->getBaseGrandTotal() - $address_obj->getS2pSurchargeBaseAmount() - $address_obj->getS2pSurchargeFixedBaseAmount() );
 
             $address_obj->setS2pSurchargeAmount( 0 );
             $address_obj->setS2pSurchargeBaseAmount( 0 );
             $address_obj->setS2pSurchargePercent( 0 );
+            $address_obj->setS2pSurchargeFixedAmount( 0 );
+            $address_obj->setS2pSurchargeFixedBaseAmount( 0 );
         }
 
         return $this;
@@ -90,15 +98,19 @@ class Smart2Pay_Globalpay_Model_Sales_Observer
         $payment_obj->setS2pSurchargeAmount( 0 );
         $payment_obj->setS2pSurchargeBaseAmount( 0 );
         $payment_obj->setS2pSurchargePercent( 0 );
+        $payment_obj->setS2pSurchargeFixedAmount( 0 );
+        $payment_obj->setS2pSurchargeFixedBaseAmount( 0 );
 
         if( ($address_obj = $quote->getBillingAddress()) )
         {
-            $address_obj->setGrandTotal( $address_obj->getGrandTotal() - $address_obj->getS2pSurchargeAmount() );
-            $address_obj->setBaseGrandTotal( $address_obj->getBaseGrandTotal() - $address_obj->getS2pSurchargeBaseAmount() );
+            $address_obj->setGrandTotal( $address_obj->getGrandTotal() - $address_obj->getS2pSurchargeAmount() - $address_obj->getS2pSurchargeFixedAmount() );
+            $address_obj->setBaseGrandTotal( $address_obj->getBaseGrandTotal() - $address_obj->getS2pSurchargeBaseAmount() - $address_obj->getS2pSurchargeFixedBaseAmount() );
 
             $address_obj->setS2pSurchargeAmount( 0 );
             $address_obj->setS2pSurchargeBaseAmount( 0 );
             $address_obj->setS2pSurchargePercent( 0 );
+            $address_obj->setS2pSurchargeFixedAmount( 0 );
+            $address_obj->setS2pSurchargeFixedBaseAmount( 0 );
         }
 
         return $this;
@@ -110,13 +122,16 @@ class Smart2Pay_Globalpay_Model_Sales_Observer
         /** @var Mage_Sales_Model_Order $order */
         if( !($event = $observer->getEvent())
          or !($invoice = $event->getInvoice())
-         or (!(float)$invoice->getS2pSurchargeAmount() and !(float)$invoice->getS2pSurchargeBaseAmount())
+         or (
+                !(float)$invoice->getS2pSurchargeAmount() and !(float)$invoice->getS2pSurchargeBaseAmount()
+            and !(float)$invoice->getS2pSurchargeFixedAmount() and !(float)$invoice->getS2pSurchargeFixedBaseAmount()
+            )
          or !($order = $invoice->getOrder())
          or !($order_payment = $order->getPayment()) )
             return $this;
 
-        $order_payment->setS2pSurchargeAmountInvoiced( $order_payment->getS2pSurchargeAmountInvoiced() + $invoice->getS2pSurchargeAmount() );
-        $order_payment->setS2pSurchargeBaseAmountInvoiced( $order_payment->getS2pSurchargeBaseAmountInvoiced() + $invoice->getS2pSurchargeBaseAmount() );
+        $order_payment->setS2pSurchargeAmountInvoiced( $order_payment->getS2pSurchargeAmountInvoiced() + $invoice->getS2pSurchargeAmount() + $invoice->getS2pSurchargeFixedAmount() );
+        $order_payment->setS2pSurchargeBaseAmountInvoiced( $order_payment->getS2pSurchargeBaseAmountInvoiced() + $invoice->getS2pSurchargeBaseAmount() + $invoice->getS2pSurchargeFixedBaseAmount() );
 
         return $this;
     }
@@ -128,11 +143,14 @@ class Smart2Pay_Globalpay_Model_Sales_Observer
         if( !($event = $observer->getEvent())
          or !($payment = $event->getPayment())
          or !($order = $payment->getOrder())
-         or (!(float)$payment->getS2pSurchargeAmount() and !(float)$payment->getS2pSurchargeBaseAmount()) )
+         or (
+                !(float)$payment->getS2pSurchargeAmount() and !(float)$payment->getS2pSurchargeBaseAmount()
+            and !(float)$payment->getS2pSurchargeFixedAmount() and !(float)$payment->getS2pSurchargeFixedBaseAmount()
+            ) )
             return $this;
 
-        $order->setGrandTotal( $order->getGrandTotal() + $payment->getS2pSurchargeAmount() );
-        $order->setBaseGrandTotal( $order->getBaseGrandTotal() + $payment->getS2pSurchargeBaseAmount() );
+        $order->setGrandTotal( $order->getGrandTotal() + $payment->getS2pSurchargeAmount() + $payment->getS2pSurchargeFixedAmount() );
+        $order->setBaseGrandTotal( $order->getBaseGrandTotal() + $payment->getS2pSurchargeBaseAmount() + $payment->getS2pSurchargeFixedBaseAmount() );
 
         return $this;
     }

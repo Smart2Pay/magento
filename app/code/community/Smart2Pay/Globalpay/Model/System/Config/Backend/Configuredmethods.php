@@ -5,7 +5,7 @@ class Smart2Pay_Globalpay_Model_System_Config_Backend_Configuredmethods extends 
     const ERR_SURCHARGE_PERCENT = 1, ERR_SURCHARGE_SAVE = 2;
 
     // Array created in _beforeSave() and commited to database in _afterSave()
-    // $_methods_to_save[{method_ids}][{country_ids}]['surcharge'], $_methods_to_save[{method_ids}][{country_ids}]['base_amount'], ...
+    // $_methods_to_save[{method_ids}][{country_ids}]['surcharge'], $_methods_to_save[{method_ids}][{country_ids}]['fixed_amount'], ...
     protected $_methods_to_save = array();
 
     /**
@@ -35,6 +35,9 @@ class Smart2Pay_Globalpay_Model_System_Config_Backend_Configuredmethods extends 
         if( !($form_s2p_surcharge = Mage::app()->getRequest()->getParam( 's2p_surcharge', array() ))
          or !is_array( $form_s2p_surcharge ) )
             $form_s2p_surcharge = array();
+        if( !($form_s2p_fixed_amount = Mage::app()->getRequest()->getParam( 's2p_fixed_amount', array() ))
+         or !is_array( $form_s2p_fixed_amount ) )
+            $form_s2p_fixed_amount = array();
 
         $existing_methods_params_arr = array();
         $existing_methods_params_arr['method_ids'] = $form_s2p_enabled_methods;
@@ -51,6 +54,8 @@ class Smart2Pay_Globalpay_Model_System_Config_Backend_Configuredmethods extends 
         {
             if( empty( $form_s2p_surcharge[$method_id] ) )
                 $form_s2p_surcharge[$method_id] = 0;
+            if( empty( $form_s2p_fixed_amount[$method_id] ) )
+                $form_s2p_fixed_amount[$method_id] = 0;
 
             if( !is_numeric( $form_s2p_surcharge[$method_id] ) )
             {
@@ -63,11 +68,23 @@ class Smart2Pay_Globalpay_Model_System_Config_Backend_Configuredmethods extends 
                 continue;
             }
 
+            if( !is_numeric( $form_s2p_fixed_amount[$method_id] ) )
+            {
+                $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
+                                            'message' => $helper_obj->__( 'Please provide a valid fixed amount for method ' . $method_details['display_name'] . '.' ),
+                                            'class' => __CLASS__,
+                                            'method' => __METHOD__,
+                                            );
+                $last_code = self::ERR_SURCHARGE_PERCENT;
+                continue;
+            }
+
             if( empty( $this->_methods_to_save[$method_id] ) )
                 $this->_methods_to_save[$method_id] = array();
 
             // TODO: add country ids instead of only 0 (all countries)
             $this->_methods_to_save[$method_id][0]['surcharge'] = $form_s2p_surcharge[$method_id];
+            $this->_methods_to_save[$method_id][0]['fixed_amount'] = $form_s2p_fixed_amount[$method_id];
         }
 
         if( !empty( $messages_arr ) )

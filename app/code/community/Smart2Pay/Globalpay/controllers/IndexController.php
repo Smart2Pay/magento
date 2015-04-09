@@ -261,8 +261,6 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                     $s2p_transaction_arr['payment_id'] = $response['PaymentID'];
                 if( isset( $response['MerchantTransactionID'] ) )
                     $s2p_transaction_arr['merchant_transaction_id'] = $response['MerchantTransactionID'];
-                if( isset( $response['MerchantTransactionID'] ) )
-                    $s2p_transaction_arr['environment'] = $response['MerchantTransactionID'];
                 if( isset( $response['SiteID'] ) )
                     $s2p_transaction_arr['site_id'] = $response['SiteID'];
 
@@ -510,11 +508,9 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
             if( ($s2p_transaction_arr = $s2pTransactionLogger->getTransactionDetailsAsArray( $order_increment_id ))
             and $s2p_transaction_arr['method_id'] == $payMethod::PAYMENT_METHOD_SIBS )
             {
-                $s2pLogger->write( '['.self::XML_PATH_EMAIL_PAYMENT_INSTRUCTIONS_SIBS.']', 'email_template' );
                 $templateId = Mage::getStoreConfig( self::XML_PATH_EMAIL_PAYMENT_INSTRUCTIONS_SIBS );
             } else
             {
-                $s2pLogger->write( '['.self::XML_PATH_EMAIL_PAYMENT_INSTRUCTIONS.']', 'email_template' );
                 $templateId = Mage::getStoreConfig( self::XML_PATH_EMAIL_PAYMENT_INSTRUCTIONS );
             }
 

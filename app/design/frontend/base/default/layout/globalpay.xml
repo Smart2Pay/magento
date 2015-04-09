@@ -38,6 +38,11 @@
             <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
         </reference>
     </sales_order_print>
+    <sales_guest_print>
+        <reference name="order_totals">
+            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+        </reference>
+    </sales_guest_print>
     <sales_email_order_items>
         <reference name="order_totals">
             <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
@@ -46,26 +51,32 @@
 
     <sales_order_invoice>
         <reference name="invoice_totals">
-            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+            <block type="globalpay/sales_order_invoice_total" name="globalpay.sales.order.total" />
         </reference>
     </sales_order_invoice>
     <sales_order_printinvoice>
         <reference name="invoice_totals">
-            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+            <block type="globalpay/sales_order_invoice_total" name="globalpay.sales.order.total" />
         </reference>
     </sales_order_printinvoice>
+    <sales_guest_printinvoice>
+        <reference name="invoice_totals">
+            <block type="globalpay/sales_order_invoice_total" name="globalpay.sales.order.total" />
+        </reference>
+    </sales_guest_printinvoice>
     <sales_email_order_invoice_items>
         <reference name="invoice_totals">
-            <block type="globalpay/sales_order_total" name="globalpay.sales.order.total" />
+            <block type="globalpay/sales_order_invoice_total" name="globalpay.sales.order.total" />
         </reference>
     </sales_email_order_invoice_items>
 
+    <!--
     <sales_order_creditmemo>
         <reference name="creditmemo_totals">
             <block type="globalpay/sales_order_creditmemo_totals" name="globalpay.sales.order.creditmemo.total" />
         </reference>
     </sales_order_creditmemo>
-
+    -->
 
     <default>
         <reference name="head">

@@ -195,6 +195,7 @@
                 <Smart2Pay_Globalpay translate="title">
                     <title>Payment Method Fee</title>
                     <source_field>s2p_surcharge_amount</source_field>
+                    <model>globalpay/sales_pdf_surcharge</model>
                     <font_size>7</font_size>
                     <display_zero>0</display_zero>
                     <sort_order>699</sort_order>
@@ -204,14 +205,43 @@
 
         <fieldsets>
             <sales_convert_quote_payment>
-                <s2p_surcharge_amount><to_order_payment>*</to_order_payment></s2p_surcharge_amount>
-                <s2p_surcharge_base_amount><to_order_payment>*</to_order_payment></s2p_surcharge_base_amount>
-                <s2p_surcharge_percent><to_order_payment>*</to_order_payment></s2p_surcharge_percent>
+                <s2p_surcharge_amount>
+                    <to_order_payment>*</to_order_payment>
+                </s2p_surcharge_amount>
+                <s2p_surcharge_base_amount>
+                    <to_order_payment>*</to_order_payment>
+                </s2p_surcharge_base_amount>
+                <s2p_surcharge_percent>
+                    <to_order_payment>*</to_order_payment>
+                </s2p_surcharge_percent>
+                <s2p_surcharge_fixed_amount>
+                    <to_order_payment>*</to_order_payment>
+                </s2p_surcharge_fixed_amount>
+                <s2p_surcharge_fixed_base_amount>
+                    <to_order_payment>*</to_order_payment>
+                </s2p_surcharge_fixed_base_amount>
             </sales_convert_quote_payment>
+
             <sales_convert_order_payment>
-                <s2p_surcharge_amount><to_invoice>*</to_invoice></s2p_surcharge_amount>
-                <s2p_surcharge_base_amount><to_invoice>*</to_invoice></s2p_surcharge_base_amount>
-                <s2p_surcharge_percent><to_invoice>*</to_invoice></s2p_surcharge_percent>
+                <s2p_surcharge_amount>
+                    <to_quote_payment>*</to_quote_payment>
+                    <to_invoice>*</to_invoice>
+                </s2p_surcharge_amount>
+                <s2p_surcharge_base_amount>
+                    <to_quote_payment>*</to_quote_payment>
+                    <to_invoice>*</to_invoice>
+                </s2p_surcharge_base_amount>
+                <s2p_surcharge_fixed_amount>
+                    <to_quote_payment>*</to_quote_payment>
+                    <to_invoice>*</to_invoice>
+                </s2p_surcharge_fixed_amount>
+                <s2p_surcharge_fixed_base_amount>
+                    <to_quote_payment>*</to_quote_payment>
+                    <to_invoice>*</to_invoice>
+                </s2p_surcharge_fixed_base_amount>
+                <s2p_surcharge_percent>
+                    <to_quote_payment>*</to_quote_payment>
+                </s2p_surcharge_percent>
             </sales_convert_order_payment>
         </fieldsets>
 

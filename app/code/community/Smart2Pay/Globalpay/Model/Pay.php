@@ -79,7 +79,7 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
         }
 
         // Not enabled yet
-        $this->method_config['display_surcharge'] = 0;
+        //$this->method_config['display_surcharge'] = 0;
     }
 
     /**
@@ -116,28 +116,41 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
         /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
         $logger_obj = Mage::getModel( 'globalpay/logger' );
 
-        if( !empty( $enabled_methods[$method_id]['surcharge'] ) )
+        if( !empty( $enabled_methods[$method_id]['surcharge'] )
+         or !empty( $enabled_methods[$method_id]['fixed_amount'] ) )
         {
             $info->setS2pSurchargePercent( $enabled_methods[$method_id]['surcharge'] );
 
             if( ($total_amount = $quote->getGrandTotal()) )
-                $total_amount -= $info->getS2pSurchargeAmount();
+                $total_amount -= ($info->getS2pSurchargeAmount() + $info->getS2pSurchargeFixedAmount());
             if( ($total_base_amount = $quote->getBaseGrandTotal()) )
-                $total_base_amount -= $info->getS2pSurchargeBaseAmount();
+                $total_base_amount -= ($info->getS2pSurchargeBaseAmount() + $info->getS2pSurchargeFixedBaseAmount());
 
             $surcharge_amount = 0;
-            if( !empty( $total_amount ) )
+            if( !empty( $total_amount )
+            and (float)$enabled_methods[ $method_id ]['surcharge'] != 0 )
                 $surcharge_amount = ( $total_amount * $enabled_methods[ $method_id ]['surcharge'] ) / 100;
             $surcharge_base_amount = 0;
-            if( !empty( $total_base_amount ) )
+            if( !empty( $total_base_amount )
+            and (float)$enabled_methods[ $method_id ]['surcharge'] != 0 )
                 $surcharge_base_amount = ($total_base_amount * $enabled_methods[$method_id]['surcharge']) / 100;
 
-            //$logger_obj->write( 'Total ['.$total_amount.'] Base ('.$total_base_amount.'), '.
-            //                    'Surcharge ['.$surcharge_amount.'] Base ('.$surcharge_base_amount.') '.
-            //                    ' ['.$enabled_methods[$method_id]['surcharge'].'%]' );
+            $surcharge_fixed_amount = 0;
+            $surcharge_fixed_base_amount = 0;
+            if( (float)$enabled_methods[$method_id]['fixed_amount'] != 0 )
+                $surcharge_fixed_amount = $enabled_methods[$method_id]['fixed_amount'];
+            if( $surcharge_fixed_amount != 0 )
+                $surcharge_fixed_base_amount = $quote->getStore()->getBaseCurrency()->convert( $surcharge_fixed_amount, $quote->getQuoteCurrencyCode() );
+
+            $logger_obj->write( 'Total ['.$total_amount.'] Base ('.$total_base_amount.'), '.
+                                'SurchargeFixed ['.$surcharge_fixed_amount.'] BaseFixed ('.$surcharge_fixed_base_amount.'), '.
+                                'Surcharge ['.$surcharge_amount.'] Base ('.$surcharge_base_amount.') '.
+                                ' ['.$enabled_methods[$method_id]['surcharge'].'%]' );
 
             $info->setS2pSurchargeAmount( $surcharge_amount );
             $info->setS2pSurchargeBaseAmount( $surcharge_base_amount );
+            $info->setS2pSurchargeFixedAmount( $surcharge_fixed_amount );
+            $info->setS2pSurchargeFixedBaseAmount( $surcharge_fixed_base_amount );
 
             // Recollect totals for surcharge amount
             $quote->setTotalsCollectedFlag( false );

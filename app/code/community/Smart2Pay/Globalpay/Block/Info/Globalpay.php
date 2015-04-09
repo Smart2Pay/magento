@@ -89,25 +89,39 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
 
             $surcharge_amount = $info->getS2pSurchargeAmount();
             $surcharge_percent = $info->getS2pSurchargePercent();
+            $surcharge_fixed_amount = $info->getS2pSurchargeFixedAmount();
 
-            $surcharge_amount_label = $s2pHelper->format_surcharge_label( $surcharge_amount, $surcharge_percent, array( 'include_percent' => false, 'use_translate' => false ) );
-
-            if( !empty( $method_arr['surcharge'] )
-                and (int)$s2pPayModel->method_config['display_surcharge'] )
+            if( !empty( $method_arr['surcharge'] ) )
             {
-                $surcharge_percent_label = $s2pHelper->format_surcharge_percent_label( $surcharge_amount, $surcharge_percent, array( 'use_translate' => false ) );
-                $payment_info_arr[$surcharge_percent_label] = $s2pHelper->format_surcharge_percent_value( $surcharge_amount, $surcharge_percent );
+                if( (int)$s2pPayModel->method_config['display_surcharge'] )
+                {
+                    if( ($surcharge_percent_label = $s2pHelper->format_surcharge_percent_label( $surcharge_amount, $surcharge_percent, array( 'use_translate' => false ) )) )
+                        $payment_info_arr[$surcharge_percent_label] = $s2pHelper->format_surcharge_percent_value( $surcharge_amount, $surcharge_percent );
+
+                    $surcharge_fixed_amount_str = $quote->getStore()->getCurrentCurrency()->format( $surcharge_fixed_amount, array(), false );
+
+                    if( ($surcharge_percent_label = $s2pHelper->format_surcharge_fixed_amount_label( $surcharge_fixed_amount, array( 'use_translate' => false ) )) )
+                        $payment_info_arr[$surcharge_percent_label] = $s2pHelper->format_surcharge_fixed_amount_value( $surcharge_fixed_amount_str,
+                                                                            array(
+                                                                                'format_price' => false,
+                                                                                //'include_container' => false,
+                                                                                //'format_currency' => $quote->getStore()->getCurrentCurrency(),
+                                                                            ) );
+                }
+
+                $surcharge_total_amount = $surcharge_amount + $surcharge_fixed_amount;
+                $surcharge_amount_str = $quote->getStore()->getCurrentCurrency()->format( $surcharge_total_amount, array(), false );
+
+                if( ($surcharge_amount_label = $s2pHelper->format_surcharge_label( $surcharge_total_amount, $surcharge_percent, array( 'include_percent' => false, 'use_translate' => false ) )) )
+                    $payment_info_arr[$surcharge_amount_label] = $s2pHelper->format_surcharge_value( $surcharge_amount_str, $surcharge_percent,
+                                                                    array(
+                                                                        'format_price' => false,
+                                                                        //'include_container' => false,
+                                                                        //'format_currency' => $quote->getStore()->getCurrentCurrency(),
+                                                                        ) );
             }
-
-            $surcharge_amount_str = $quote->getStore()->getCurrentCurrency()->format( $surcharge_amount, array(), false );
-
-            $payment_info_arr[$surcharge_amount_label] = $s2pHelper->format_surcharge_value( $surcharge_amount_str, $surcharge_percent,
-                                                            array(
-                                                                'format_price' => false,
-                                                                //'include_container' => false,
-                                                                //'format_currency' => $quote->getStore()->getCurrentCurrency(),
-                                                                ) );
-        } elseif( in_array( $controller_name, array( 'sales_order', 'sales_order_invoice', 'sales_order_shipment', 'sales_order_creditmemo', 'order' ) ) )
+        } else /*if( in_array( $controller_name, array( 'sales_order', 'sales_order_invoice', 'sales_order_shipment', 'sales_order_creditmemo', 'order' ) )
+            or $controller_module_name == 'Smart2Pay_Globalpay' ) */
         {
             if( $action_name == 'print' )
                 $this->_display_lines = false;
@@ -151,28 +165,39 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
             }
 
             if( ($payment = $order->getPayment())
-            and $payment->getS2pSurchargeAmount() )
+            and ($payment->getS2pSurchargeAmount() or $payment->getS2pSurchargeFixedAmount()) )
             {
                 $surcharge_amount = $payment->getS2pSurchargeAmount();
                 $surcharge_percent = $payment->getS2pSurchargePercent();
-
-                $surcharge_amount_label = $s2pHelper->format_surcharge_label( $surcharge_amount, $surcharge_percent, array( 'include_percent' => false, 'use_translate' => false ) );
+                $surcharge_fixed_amount = $payment->getS2pSurchargeFixedAmount();
 
                 if( $s2pHelper->isAdmin()
                  or (int)$s2pPayModel->method_config['display_surcharge'] )
                 {
-                    $surcharge_percent_label = $s2pHelper->format_surcharge_percent_label( $surcharge_amount, $surcharge_percent, array( 'use_translate' => false ) );
-                    $payment_info_arr[$surcharge_percent_label] = $s2pHelper->format_surcharge_percent_value( $surcharge_amount, $surcharge_percent );
+                    if( ($surcharge_percent_label = $s2pHelper->format_surcharge_percent_label( $surcharge_amount, $surcharge_percent, array( 'use_translate' => false ) )) )
+                        $payment_info_arr[$surcharge_percent_label] = $s2pHelper->format_surcharge_percent_value( $surcharge_amount, $surcharge_percent );
+
+                    $surcharge_fixed_amount_str = $order->getOrderCurrency()->format( $surcharge_fixed_amount, array(), false );
+
+                    if( ($surcharge_percent_label = $s2pHelper->format_surcharge_fixed_amount_label( $surcharge_fixed_amount, array( 'use_translate' => false ) )) )
+                        $payment_info_arr[$surcharge_percent_label] = $s2pHelper->format_surcharge_fixed_amount_value( $surcharge_fixed_amount_str,
+                                                                            array(
+                                                                                'format_price' => false,
+                                                                                //'include_container' => false,
+                                                                                //'format_currency' => $quote->getStore()->getCurrentCurrency(),
+                                                                            ) );
                 }
 
-                $surcharge_amount_str = $order->getOrderCurrency()->format( $surcharge_amount, array(), false );
+                $surcharge_total_amount = $surcharge_amount + $surcharge_fixed_amount;
+                $surcharge_amount_str = $order->getOrderCurrency()->format( $surcharge_total_amount, array(), false );
 
-                $payment_info_arr[$surcharge_amount_label] = $s2pHelper->format_surcharge_value( $surcharge_amount_str, $surcharge_percent,
-                                                                array(
-                                                                    'format_price' => false,
-                                                                    //'include_container' => false,
-                                                                    //'format_currency' => $quote->getStore()->getCurrentCurrency(),
-                                                                ) );
+                if( ($surcharge_amount_label = $s2pHelper->format_surcharge_label( $surcharge_total_amount, $surcharge_percent, array( 'include_percent' => false, 'use_translate' => false ) )) )
+                    $payment_info_arr[$surcharge_amount_label] = $s2pHelper->format_surcharge_value( $surcharge_amount_str, $surcharge_percent,
+                                                                    array(
+                                                                        'format_price' => false,
+                                                                        //'include_container' => false,
+                                                                        //'format_currency' => $quote->getStore()->getCurrentCurrency(),
+                                                                    ) );
             }
 
             if( ($controller_name == 'order'

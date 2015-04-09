@@ -1,5 +1,5 @@
 <?php
-class Smart2Pay_Globalpay_Block_Adminhtml_Sales_Order_Creditmemo_Totals extends Mage_Core_Block_Template
+class Smart2Pay_Globalpay_Block_Adminhtml_Sales_Order_Invoice_Total extends Mage_Core_Block_Template
 {
     /**
      * Get label cell tag properties
@@ -44,22 +44,26 @@ class Smart2Pay_Globalpay_Block_Adminhtml_Sales_Order_Creditmemo_Totals extends 
     /**
      * Add totals for surcharge
      *
-     * @return Smart2Pay_Globalpay_Block_Sales_Order_Total
+     * @return Smart2Pay_Globalpay_Block_Adminhtml_Sales_Order_Invoice_Total
      */
     public function initTotals()
     {
-        if( ($payment_obj = $this->getOrder()->getPayment())
-        and ((float)$payment_obj->getS2pSurchargeAmount() != 0 or (float)$payment_obj->getS2pSurchargeFixedAmount() != 0) )
+        /** @var Mage_Adminhtml_Block_Sales_Order_Invoice_View_Form $parent_block */
+        $parent_block = $this->getParentBlock();
+
+        if( ($invoice_obj = $parent_block->getInvoice())
+        and ($order_payment_obj = $parent_block->getOrder()->getPayment())
+        and ((float)$invoice_obj->getS2pSurchargeAmount() != 0 or (float)$invoice_obj->getS2pSurchargeFixedAmount() != 0) )
         {
             /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
             $helper_obj = Mage::helper('globalpay/helper');
 
             //$source = $this->getSource();
-            $amount = $payment_obj->getS2pSurchargeAmount();
-            $fixed_amount = $payment_obj->getS2pSurchargeFixedAmount();
-            $base_amount = $payment_obj->getS2pSurchargeBaseAmount();
-            $base_fixed_amount = $payment_obj->getS2pSurchargeFixedBaseAmount();
-            $percent = $payment_obj->getS2pSurchargePercent();
+            $amount = $invoice_obj->getS2pSurchargeAmount();
+            $fixed_amount = $invoice_obj->getS2pSurchargeFixedAmount();
+            $base_amount = $invoice_obj->getS2pSurchargeBaseAmount();
+            $base_fixed_amount = $invoice_obj->getS2pSurchargeFixedBaseAmount();
+            $percent = $order_payment_obj->getS2pSurchargePercent();
 
             $this->getParentBlock()->addTotal(new Varien_Object(array(
                 'code'   => 'globalpay',

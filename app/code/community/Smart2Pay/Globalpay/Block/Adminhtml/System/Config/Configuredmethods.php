@@ -8,18 +8,25 @@ class Smart2Pay_Globalpay_Block_Adminhtml_System_Config_Configuredmethods extend
     protected $_wizardTemplate = 'smart2pay/globalpay/system/config/configuredmethods.phtml';
     protected $_code = 'globalpay';
 
+    public $base_currency;
+
+    function __construct( array $args = array() )
+    {
+        parent::__construct( $args );
+
+        $this->base_currency = Mage::app()->getBaseCurrencyCode();
+    }
+
     /**
      * Set template to itself
      */
     protected function _prepareLayout()
     {
         parent::_prepareLayout();
+
         if (!$this->getTemplate()) {
             $this->setTemplate($this->_wizardTemplate);
         }
-
-        //$head = $this->getLayout()->getBlock('head');
-        //$head->addJs( 'https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js' );
 
         return $this;
     }

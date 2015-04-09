@@ -81,6 +81,51 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
             return substr( $message, $start, $length );
     }
 
+    public function format_surcharge_fixed_amount_label( $fixed_amount, $params = false )
+    {
+        if( empty( $params ) or !is_array( $params ) )
+            $params = array();
+
+        if( !isset( $params['use_translate'] ) )
+            $params['use_translate'] = true;
+
+        $label = 'Payment Method Fixed Fee';
+
+        return (!empty( $params['use_translate'] )?$this->__( $label ):$label);
+    }
+
+    public function format_surcharge_fixed_amount_value( $fixed_amount, $params = false )
+    {
+        if( empty( $params ) or !is_array( $params ) )
+            $params = array();
+
+        if( empty( $params['format_price'] ) )
+            $params['format_price'] = false;
+
+        if( !empty( $params['format_price'] )
+            and (!isset( $params['format_currency'] ) or !($params['format_currency'] instanceof Mage_Directory_Model_Currency)) )
+            $params['format_currency'] = Mage::app()->getStore()->getDefaultCurrency();
+        else
+            $params['format_currency'] = false;
+
+        if( !isset( $params['include_container'] ) )
+            $params['include_container'] = true;
+
+        if( empty( $params['format_options'] ) or !is_array( $params['format_options'] ) )
+            $params['format_options'] = array();
+        if( !isset( $params['format_options']['precision'] ) )
+            $params['format_options']['precision'] = 2;
+
+        if( empty( $params['format_price'] )
+            or empty( $params['format_currency'] ) )
+            $amount_str = $fixed_amount;
+
+        else
+            $amount_str = $params['format_currency']->format( $fixed_amount, $params['format_options'], $params['include_container'] );
+
+        return $amount_str;
+    }
+
     public function format_surcharge_percent_label( $amount, $percent, $params = false )
     {
         if( empty( $params ) or !is_array( $params ) )

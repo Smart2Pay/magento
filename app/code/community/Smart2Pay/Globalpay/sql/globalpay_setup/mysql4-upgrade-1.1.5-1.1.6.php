@@ -9,26 +9,34 @@
     // Adding fields in quote address for our surcharge fee
     $installer->run( "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
                      "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
-                     "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_percent` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';"
+                     "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_percent` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_fixed_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_fixed_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';"
     );
 
     // Adding fields in quote payment for our surcharge fee
     $installer->run( "ALTER TABLE  `".$this->getTable('sales/quote_payment')."` ADD  `s2p_surcharge_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
                      "ALTER TABLE  `".$this->getTable('sales/quote_payment')."` ADD  `s2p_surcharge_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
-                     "ALTER TABLE  `".$this->getTable('sales/quote_payment')."` ADD  `s2p_surcharge_percent` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';"
+                     "ALTER TABLE  `".$this->getTable('sales/quote_payment')."` ADD  `s2p_surcharge_percent` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/quote_payment')."` ADD  `s2p_surcharge_fixed_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/quote_payment')."` ADD  `s2p_surcharge_fixed_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';"
     );
 
     // Adding fields in order for our surcharge fee
     $installer->run( "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
                      "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
                      "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_percent` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_fixed_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_fixed_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
                      "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_amount_invoiced` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
                      "ALTER TABLE  `".$this->getTable('sales/order_payment')."` ADD `s2p_surcharge_base_amount_invoiced` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';"
     );
 
     // Adding fields in invoice for our surcharge fee
     $installer->run( "ALTER TABLE  `".$this->getTable('sales/invoice')."` ADD  `s2p_surcharge_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
-                     "ALTER TABLE  `".$this->getTable('sales/invoice')."` ADD  `s2p_surcharge_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';"
+                     "ALTER TABLE  `".$this->getTable('sales/invoice')."` ADD  `s2p_surcharge_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/invoice')."` ADD  `s2p_surcharge_fixed_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
+                     "ALTER TABLE  `".$this->getTable('sales/invoice')."` ADD  `s2p_surcharge_fixed_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';"
     );
 
     // Adding field that tells transaction environment
@@ -39,7 +47,8 @@
           `id` int(11) NOT NULL auto_increment,
           `method_id` int(11) NOT NULL DEFAULT '0',
           `country_id` int(11) NOT NULL DEFAULT '0' COMMENT '0 for all countries',
-          `surcharge` DECIMAL(6, 2) NOT NULL DEFAULT '0' COMMENT 'How much as percent to add to final order amount for current method',
+          `surcharge` DECIMAL(6, 2) NOT NULL DEFAULT '0' COMMENT 'Surcharge percent from total order amount to be used as payment fee',
+          `fixed_amount` DECIMAL(6, 2) NOT NULL DEFAULT '0' COMMENT 'Surcharge fixed amount to be used as payment fee',
           PRIMARY KEY (`id`),
           KEY `method_id` (`method_id`),
           KEY `country_id` (`country_id`)

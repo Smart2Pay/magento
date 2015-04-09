@@ -84,30 +84,37 @@ if( !$this->method_config['show_methods_in_grid'] )
                             <div class="s2p-method-img-wrapper">
                             <?php
 
+                            $surcharge_explained_str = '';
+                            if( (int)$this->method_config['display_surcharge']
+                            and (!empty( $method['surcharge'] ) or !empty( $method['fixed_price'] )) )
+                            {
+                                $surcharge_explained_str = '<div style="clear: both;"></div>(';
+
+                                if( !empty( $method['surcharge'] ) )
+                                    $surcharge_explained_str .= ( $method['surcharge'] > 0 ? '+' : '' ) . $method['surcharge'] . '%';
+                                if( !empty( $method['fixed_amount'] ) and (float)$method['fixed_amount'] != 0 )
+                                    $surcharge_explained_str .= (!empty( $method['surcharge'] )?' + ':'').
+                                                Mage::getSingleton('checkout/session')->getQuote()->getStore()->getCurrentCurrency()->format( $method['fixed_amount'], array(), false );
+
+                                $surcharge_explained_str .= ')';
+                            }
+
                             if( $this->method_config['methods_display_mode'] == 'text' )
                             {
-                                ?><span class="s2p-method-img-name"><?php echo $this->__( $method['display_name'] )?></span><?php
+                                ?><span class="s2p-method-img-name"><?php echo $this->__( $method['display_name'] ).$surcharge_explained_str?></span><?php
                             } elseif( $this->method_config['methods_display_mode'] == 'logo' )
                             {
                                 ?>
                                 <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ); ?>' />
                                 <?php
+                                echo $surcharge_explained_str;
                             } else
                             {
                                 ?>
                                 <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ); ?>' />
                                 <div style="clear: both;"></div>
-                                <span class="s2p-method-img-name"><?php
-
-                                    echo $this->__( $method['display_name'] );
-
-                                    if( !empty( $method['surcharge'] )
-                                    and (int)$this->method_config['display_surcharge'] )
-                                        echo ' ('.($method['surcharge']>0?'+':'').$method['surcharge'].'%)';
-
-                                ?></span><?php
+                                <span class="s2p-method-img-name"><?php echo $this->__( $method['display_name'] ).$surcharge_explained_str; ?></span><?php
                             }
-
                             ?></div></label></td><?php
                     } else
                     {
@@ -133,25 +140,42 @@ if( !$this->method_config['show_methods_in_grid'] )
                         <input type="radio" class="s2p-method-ck" data-method-id="<?php echo $method['method_id'] ?>" <?php echo (($k == 0)?'id="s2p-first-method-ck"':'')?> />
                         <div class="s2p-method-img-wrapper">
                         <?php
+
+                        $surcharge_explained_str = '';
+                        if( (int)$this->method_config['display_surcharge']
+                            and (!empty( $method['surcharge'] ) or !empty( $method['fixed_price'] )) )
+                        {
+                            $surcharge_explained_str = ' (';
+
+                            if( !empty( $method['surcharge'] ) )
+                                $surcharge_explained_str .= ( $method['surcharge'] > 0 ? '+' : '' ) . $method['surcharge'] . '%';
+                            if( !empty( $method['fixed_amount'] ) and (float)$method['fixed_amount'] != 0 )
+                                $surcharge_explained_str .= (!empty( $method['surcharge'] )?' + ':'').
+                                                            Mage::getSingleton('checkout/session')->getQuote()->getStore()->getCurrentCurrency()->format( $method['fixed_amount'], array(), false );
+
+                            $surcharge_explained_str .= ')';
+                        }
+
                         if( $this->method_config['methods_display_mode'] == 'text' )
                         {
                             ?><span class="s2p-method-name">&raquo <?php echo $this->__( $method['display_name'] ); ?></span><?php
                         } elseif( $this->method_config['methods_display_mode'] == 'logo' )
                         {
-                            ?><img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ) ?>' /><?php
+                            ?>
+                            <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ) ?>' />
+                            <?php
                         } else
                         {
-                            ?><img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ) ?>' /><?php
+                            ?>
+                            <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ) ?>' />
+                            <?php
                         }
                         ?>
                     </div></label></td>
                     <td style='padding-bottom: 10px; padding-left: 10px;'>
                         <div class="s2p-method-img-name no-grid-w-description-title">
                         <?php
-                            echo $this->__( $method['display_name'] );
-                            if( !empty( $method['surcharge'] )
-                            and (int)$this->method_config['display_surcharge'] )
-                                echo ' ('.($method['surcharge']>0?'+':'').$method['surcharge'].'%)';
+                            echo $this->__( $method['display_name'] ) . $surcharge_explained_str;
                         ?>
                         </div>
                         <div class="s2p-method-img-name no-grid-w-description-content"><?php echo $this->__( $method['description'] ); ?></div>

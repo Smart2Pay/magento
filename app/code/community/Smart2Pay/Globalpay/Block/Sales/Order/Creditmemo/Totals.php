@@ -1,5 +1,5 @@
 <?php
-class Smart2Pay_Globalpay_Block_Adminhtml_Sales_Order_Creditmemo_Totals extends Mage_Core_Block_Template
+class Smart2Pay_Globalpay_Block_Sales_Order_Creditmemo_Totals extends Mage_Core_Block_Template
 {
     /**
      * Get label cell tag properties
