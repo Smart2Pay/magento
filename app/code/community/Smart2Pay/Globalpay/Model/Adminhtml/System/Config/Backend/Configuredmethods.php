@@ -1,6 +1,6 @@
 <?php
 
-class Smart2Pay_Globalpay_Model_System_Config_Backend_Configuredmethods extends Mage_Core_Model_Config_Data
+class Smart2Pay_Globalpay_Model_Adminhtml_System_Config_Backend_Configuredmethods extends Mage_Core_Model_Config_Data
 {
     const ERR_SURCHARGE_PERCENT = 1, ERR_SURCHARGE_SAVE = 2;
 

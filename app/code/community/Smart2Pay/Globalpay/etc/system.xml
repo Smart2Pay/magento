@@ -520,7 +520,7 @@
                                 <label>Methods</label>
                                 <frontend_type>text</frontend_type>
                                 <frontend_model>globalpay/adminhtml_system_config_configuredmethods</frontend_model>
-                                <backend_model>globalpay/system_config_backend_configuredmethods</backend_model>
+                                <backend_model>globalpay/adminhtml_system_config_backend_configuredmethods</backend_model>
                                 <sort_order>1</sort_order>
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>

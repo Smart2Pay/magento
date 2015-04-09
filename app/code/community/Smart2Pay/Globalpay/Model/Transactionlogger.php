@@ -69,10 +69,15 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
         );
     }
 
-    static function validateTransactionLoggerParams( $params_arr )
+    static function validateTransactionLoggerParams( $params_arr, $extra_arr = false )
     {
         if( empty( $params_arr ) or !is_array( $params_arr ) )
             $params_arr = array();
+
+        if( empty( $extra_arr ) or !is_array( $extra_arr ) )
+            $extra_arr = array();
+        if( !isset( $extra_arr['populate_missing_fields'] ) )
+            $extra_arr['populate_missing_fields'] = true;
 
         $default_values = self::defaultTransactionLoggerParams();
         $new_params_arr = array();
@@ -80,7 +85,8 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
         {
             if( !array_key_exists( $key, $params_arr ) )
             {
-                $new_params_arr[$key] = $val;
+                if( !empty( $extra_arr['populate_missing_fields'] ) )
+                    $new_params_arr[$key] = $val;
                 continue;
             }
 
@@ -147,11 +153,6 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
 
         $transaction_arr['extra_data'] = $transaction_extra_str;
 
-        if( !($insert_arr = self::validateTransactionLoggerParams( $transaction_arr )) )
-            return false;
-
-        $insert_arr['updated'] = new Zend_Db_Expr('NOW()');
-
         try
         {
             /** @var Magento_Db_Adapter_Pdo_Mysql $conn_write */
@@ -163,12 +164,22 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
             if( !empty( $transaction_arr['merchant_transaction_id'] )
             and ($existing_id = $conn_read->fetchOne( 'SELECT id FROM s2p_gp_transactions WHERE merchant_transaction_id = \''.$s2pHelper->prepare_data( $transaction_arr['merchant_transaction_id'] ).'\' LIMIT 0, 1' )) )
             {
+                if( !($insert_arr = self::validateTransactionLoggerParams( $transaction_arr, array( 'populate_missing_fields' => false ) )) )
+                    return false;
+
+                $insert_arr['updated'] = new Zend_Db_Expr('NOW()');
+
                 // we should update record
                 $conn_write->update( 's2p_gp_transactions', $insert_arr, 'id = \''.$existing_id.'\'' );
 
                 $s2pLogger->write( 'Update transaction ['.$existing_id.']', 'trans_logger' );
             } else
             {
+                if( !($insert_arr = self::validateTransactionLoggerParams( $transaction_arr, array( 'populate_missing_fields' => true ) )) )
+                    return false;
+
+                $insert_arr['updated'] = new Zend_Db_Expr('NOW()');
+
                 if( empty( $insert_arr['environment'] ) )
                 {
                     /** @var Smart2Pay_Globalpay_Model_Pay $s2pPayModel */

@@ -6,6 +6,14 @@
     $installer = $this;
     $installer->startSetup();
 
+    //$this->getConnection()->addColumn( $this->getTable('sales/quote_address'), 's2p_surcharge_amount', array(
+    //        'type' => Varien_Db_Ddl_Table::TYPE_DECIMAL,
+    //        'length' => '10,2',
+    //        'nullable' => false,
+    //        'default' => 0,
+    //        'comment' => 'Surcharge percent amount',
+    //    ) );
+
     // Adding fields in quote address for our surcharge fee
     $installer->run( "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
                      "ALTER TABLE  `".$this->getTable('sales/quote_address')."` ADD  `s2p_surcharge_base_amount` DECIMAL( 10, 2 ) NOT NULL DEFAULT '0';".
