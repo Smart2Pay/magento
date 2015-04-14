@@ -138,9 +138,9 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
             $surcharge_fixed_amount = 0;
             $surcharge_fixed_base_amount = 0;
             if( (float)$enabled_methods[$method_id]['fixed_amount'] != 0 )
-                $surcharge_fixed_amount = $enabled_methods[$method_id]['fixed_amount'];
-            if( $surcharge_fixed_amount != 0 )
-                $surcharge_fixed_base_amount = $quote->getStore()->getBaseCurrency()->convert( $surcharge_fixed_amount, $quote->getQuoteCurrencyCode() );
+                $surcharge_fixed_base_amount = $enabled_methods[$method_id]['fixed_amount'];
+            if( $surcharge_fixed_base_amount != 0 )
+                $surcharge_fixed_amount = $quote->getStore()->getBaseCurrency()->convert( $surcharge_fixed_base_amount, $quote->getQuoteCurrencyCode() );
 
             $logger_obj->write( 'Total ['.$total_amount.'] Base ('.$total_base_amount.'), '.
                                 'SurchargeFixed ['.$surcharge_fixed_amount.'] BaseFixed ('.$surcharge_fixed_base_amount.'), '.

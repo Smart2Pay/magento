@@ -94,7 +94,7 @@ if( !$this->method_config['show_methods_in_grid'] )
                                     $surcharge_explained_str .= ( $method['surcharge'] > 0 ? '+' : '' ) . $method['surcharge'] . '%';
                                 if( !empty( $method['fixed_amount'] ) and (float)$method['fixed_amount'] != 0 )
                                     $surcharge_explained_str .= (!empty( $method['surcharge'] )?' + ':'').
-                                                Mage::getSingleton('checkout/session')->getQuote()->getStore()->getCurrentCurrency()->format( $method['fixed_amount'], array(), false );
+                                                Mage::getSingleton('checkout/session')->getQuote()->getStore()->getBaseCurrency()->format( $method['fixed_amount'], array(), false );
 
                                 $surcharge_explained_str .= ')';
                             }
@@ -151,7 +151,7 @@ if( !$this->method_config['show_methods_in_grid'] )
                                 $surcharge_explained_str .= ( $method['surcharge'] > 0 ? '+' : '' ) . $method['surcharge'] . '%';
                             if( !empty( $method['fixed_amount'] ) and (float)$method['fixed_amount'] != 0 )
                                 $surcharge_explained_str .= (!empty( $method['surcharge'] )?' + ':'').
-                                                            Mage::getSingleton('checkout/session')->getQuote()->getStore()->getCurrentCurrency()->format( $method['fixed_amount'], array(), false );
+                                                            Mage::getSingleton('checkout/session')->getQuote()->getStore()->getBaseCurrency()->format( $method['fixed_amount'], array(), false );
 
                             $surcharge_explained_str .= ')';
                         }
