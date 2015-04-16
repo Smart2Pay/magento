@@ -5,7 +5,7 @@ class Smart2Pay_Globalpay_Block_Adminhtml_System_Config_Configuredmethods extend
     /**
      * @var string
      */
-    protected $_wizardTemplate = 'smart2pay/globalpay/system/config/configuredmethods.phtml';
+    protected $_wizardTemplate = 'smart2pay/globalpay/system/config/methods.phtml';
     protected $_code = 'globalpay';
 
     public $base_currency;
