@@ -52,8 +52,8 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
         $route_name = $this->getRequest()->getRouteName();
         $module_name = $this->getRequest()->getModuleName();
 
-        $s2pLogger->write( 'Called from ['.$controller_module_name.']['.$controller_name.']'.
-                           '['.$action_name.']['.$route_name.']['.$module_name.']', 'payment_info' );
+        //$s2pLogger->write( 'Called from ['.$controller_module_name.']['.$controller_name.']'.
+        //                   '['.$action_name.']['.$route_name.']['.$module_name.']', 'payment_info' );
 
         $payment_info_arr = array();
         if( 'onepage' == $controller_name

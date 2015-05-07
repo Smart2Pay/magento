@@ -86,14 +86,14 @@ if( !$this->method_config['show_methods_in_grid'] )
 
                             $surcharge_explained_str = '';
                             if( (int)$this->method_config['display_surcharge']
-                            and (!empty( $method['surcharge'] ) or !empty( $method['fixed_price'] )) )
+                            and ((float)$method['surcharge'] != 0 or (float)$method['fixed_amount'] != 0) )
                             {
                                 $surcharge_explained_str = '<div style="clear: both;"></div>(';
 
-                                if( !empty( $method['surcharge'] ) )
+                                if( (float)$method['surcharge'] != 0 )
                                     $surcharge_explained_str .= ( $method['surcharge'] > 0 ? '+' : '' ) . $method['surcharge'] . '%';
-                                if( !empty( $method['fixed_amount'] ) and (float)$method['fixed_amount'] != 0 )
-                                    $surcharge_explained_str .= (!empty( $method['surcharge'] )?' + ':'').
+                                if( (float)$method['fixed_amount'] != 0 )
+                                    $surcharge_explained_str .= ((float)$method['surcharge'] != 0?' + ':'').
                                                 Mage::getSingleton('checkout/session')->getQuote()->getStore()->getBaseCurrency()->format( $method['fixed_amount'], array(), false );
 
                                 $surcharge_explained_str .= ')';
@@ -143,14 +143,14 @@ if( !$this->method_config['show_methods_in_grid'] )
 
                         $surcharge_explained_str = '';
                         if( (int)$this->method_config['display_surcharge']
-                            and (!empty( $method['surcharge'] ) or !empty( $method['fixed_price'] )) )
+                        and ((float)$method['surcharge'] != 0 or (float)$method['fixed_amount'] != 0) )
                         {
                             $surcharge_explained_str = ' (';
 
-                            if( !empty( $method['surcharge'] ) )
+                            if( (float)$method['surcharge'] != 0 )
                                 $surcharge_explained_str .= ( $method['surcharge'] > 0 ? '+' : '' ) . $method['surcharge'] . '%';
-                            if( !empty( $method['fixed_amount'] ) and (float)$method['fixed_amount'] != 0 )
-                                $surcharge_explained_str .= (!empty( $method['surcharge'] )?' + ':'').
+                            if( (float)$method['fixed_amount'] != 0 )
+                                $surcharge_explained_str .= ((float)$method['surcharge'] != 0?' + ':'').
                                                             Mage::getSingleton('checkout/session')->getQuote()->getStore()->getBaseCurrency()->format( $method['fixed_amount'], array(), false );
 
                             $surcharge_explained_str .= ')';

@@ -96,7 +96,7 @@ class Smart2Pay_Globalpay_Model_Adminhtml_System_Config_Backend_Configuredmethod
             throw $helper_obj->mage_exception( $last_code, $messages_arr );
         }
 
-        $logger_obj->write( 'Saving ['.print_r( $this->_methods_to_save, true ).']', 'config_save' );
+        // $logger_obj->write( 'Saving ['.print_r( $this->_methods_to_save, true ).']', 'config_save' );
 
         return $this;
     }
