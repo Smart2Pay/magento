@@ -173,7 +173,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                         $orderCurrency = $order->getOrderCurrency()->getCurrencyCode();
 
                         if( strcmp( $orderAmount, $response['Amount'] ) != 0
-                        and $orderCurrency != $response['Currency'] )
+                         or $orderCurrency != $response['Currency'] )
                             $order->addStatusHistoryComment( 'Smart2Pay :: notification has different amount ['.$orderAmount.'/'.$response['Amount'] . '] and/or currency ['.$orderCurrency.'/' . $response['Currency'] . ']!. Please contact support@smart2pay.com', $payMethod->method_config['order_status_on_4'] );
 
                         else
