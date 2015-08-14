@@ -19,11 +19,13 @@ class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form
     {
         /** @var Mage_Checkout_Model_Session $chkout */
         if( !($chkout = Mage::getSingleton('checkout/session'))
-         or !($quote = $chkout->getQuote())
-         or !($billingAddress = $quote->getBillingAddress())
+         or !($quote = $chkout->getQuote()) )
+            return array();
+
+        if( !($billingAddress = $quote->getBillingAddress())
          or !($countryCode = $billingAddress->getCountryId())
          or !($countryId = Mage::getModel('globalpay/country')->load($countryCode, 'code')->getId()) )
-            return array();
+            return $this->__( 'Couldn\'t obtain country from billing address.' );
 
 
         /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */

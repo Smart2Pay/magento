@@ -54,7 +54,17 @@ if( !$this->method_config['show_methods_in_grid'] )
     /*
      * Send payment method
      */
-    if( !empty( $s2pMethods ) and is_array( $s2pMethods ) )
+    if( empty( $s2pMethods ) or !is_array( $s2pMethods ) )
+    {
+        ?><p style="text-align: center; padding: 5px;"><?php
+
+        echo $this->__( 'No methods found for current settings.' );
+
+        if( is_string( $s2pMethods ) )
+            echo '<br/>'.$s2pMethods;
+
+        ?></p><?php
+    } elseif( !empty( $s2pMethods ) and is_array( $s2pMethods ) )
     {
         $s2pMethods_count = count( $s2pMethods );
         ?>
@@ -80,7 +90,7 @@ if( !$this->method_config['show_methods_in_grid'] )
 
                         ?>
                         <td class="grid one-column"><label class="s2p-method-wrapper" style="width: 100%;">
-                            <input type="radio" class="s2p-method-ck" data-method-id="<?php echo $method['method_id'] ?>" <?php echo (($printed_grid_cols == 0)?'id="s2p-first-method-ck"':'')?> />
+                            <input type="radio" class="s2p-method-ck <?php echo (($printed_grid_cols == 0)?'s2p-first-method-ck':'')?>" id="s2p-method-chck-<?php echo $method['method_id'] ?>" value="<?php echo $method['method_id']?>" />
                             <div class="s2p-method-img-wrapper">
                             <?php
 
@@ -136,8 +146,8 @@ if( !$this->method_config['show_methods_in_grid'] )
             {
                 ?>
                 <tr>
-                    <td style='vertical-align: middle;'><label class="s2p-method-wrapper" style="width: 100%;">
-                        <input type="radio" class="s2p-method-ck" data-method-id="<?php echo $method['method_id'] ?>" <?php echo (($k == 0)?'id="s2p-first-method-ck"':'')?> />
+                    <td style='vertical-align: middle;'><label class="s2p-method-wrapper" style="width: 100%;" for="s2p-method-chck-<?php echo $method['method_id']?>">
+                        <input type="radio" class="s2p-method-ck <?php echo (($k == 0)?'s2p-first-method-ck':'')?>" id="s2p-method-chck-<?php echo $method['method_id']?>" value="<?php echo $method['method_id']?>" />
                         <div class="s2p-method-img-wrapper">
                         <?php
 
@@ -186,9 +196,9 @@ if( !$this->method_config['show_methods_in_grid'] )
                 $k++;
             }
         }
+        ?></table><?php
     }
     ?>
-    </table>
 </div>
 
 <script type="text/javascript">
@@ -196,10 +206,19 @@ if( !$this->method_config['show_methods_in_grid'] )
 
     function s2pChooseMethod( methodId )
     {
-        jQuery('#s2p-payment-method').removeAttr('disabled');
-        jQuery('#s2p-payment-method').val( methodId );
+        var method_id_obj = jQuery('#s2p-payment-method');
 
-        checkS2PMethod( methodId );
+        if( !method_id_obj )
+            return;
+
+        var old_method_id = method_id_obj.val();
+
+        method_id_obj.removeAttr('disabled');
+        method_id_obj.val( methodId );
+
+        if( old_method_id )
+            checkS2PMethod( old_method_id, false );
+        checkS2PMethod( methodId, true );
 
         if( typeof payment.save == "function" )
         {
@@ -208,10 +227,14 @@ if( !$this->method_config['show_methods_in_grid'] )
         }
     }
 
-    function checkS2PMethod( methodId )
+    function checkS2PMethod( methodId, checked )
     {
-        jQuery('.s2p-method-ck').prop('checked', false);
-        jQuery('.s2p-method-ck[data-method-id=' + methodId + ']').prop('checked', true );
+        var chck_obj = jQuery('#s2p-method-chck-' + methodId );
+
+        if( !chck_obj )
+            return;
+
+        chck_obj.prop( 'checked', (checked ? true : false ) );
     }
 
     function enableHiddenS2PField()
@@ -221,9 +244,16 @@ if( !$this->method_config['show_methods_in_grid'] )
 
     jQuery(document).ready(function()
     {
-        jQuery('.s2p-method-ck').on('click', function(e) {
-            s2pChooseMethod( jQuery(this).data('methodId') );
-        });
+        if( jQuery().on ) {
+            jQuery('.s2p-method-ck').on('click', function (e) {
+                s2pChooseMethod(jQuery(this).val());
+            });
+        } else
+        {
+            jQuery('.s2p-method-ck').live( 'click', function (e) {
+                s2pChooseMethod(jQuery(this).val());
+            });
+        }
 
         <?php
         if( empty( $s2pMethods ) )
@@ -242,11 +272,11 @@ if( !$this->method_config['show_methods_in_grid'] )
                 <?php
             }
             ?>
-            jQuery('#s2p-first-method-ck').click();
+            jQuery('.s2p-first-method-ck').click();
             <?php
         }
         ?>
-    })
+    });
 
     setTimeout( enableHiddenS2PField, 100 );
 </script>

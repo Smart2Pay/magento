@@ -203,19 +203,16 @@
         <?php endif; ?>
         // get/parse smart2pay message
         var onmessage = function(e) {
-            console.log(e);
             if(e.data == 'close_HPP') {
                 setTimeout(function() {jQuery('iframe#merchantIframe').remove()}, 300);
             }
             else if (e.data.substring(0, 7) == "height=") {
                 var iframe_height = e.data.substring(7);
                 jQuery('iframe#merchantIframe').attr('height', parseInt(iframe_height)+300);
-                console.log("jQuery('iframe#merchantIframe').attr('height'," + (parseInt(iframe_height)+300) + ");");
             }
             else if (e.data.substring(0, 6) == "width=") {
                 var iframe_width = e.data.substring(6);
                 jQuery('iframe#merchantIframe').attr('width', parseInt(iframe_width)+100);
-                console.log("jQuery('iframe#merchantIframe').attr('width'," + (parseInt(iframe_width)+100) + ");");
             }
 
             else if  (e.data.substring(0, 12) == "redirectURL="){

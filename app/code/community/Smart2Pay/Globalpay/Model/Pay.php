@@ -1,6 +1,6 @@
 <?php
 
-class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
+class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract // implements Mage_Payment_Model_Recurring_Profile_MethodInterface
 {
     const S2P_STATUS_OPEN = 1, S2P_STATUS_SUCCESS = 2, S2P_STATUS_CANCELLED = 3, S2P_STATUS_FAILED = 4, S2P_STATUS_EXPIRED = 5, S2P_STATUS_PROCESSING = 7;
 
@@ -12,6 +12,143 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
 
     // method config
     public $method_config = array();
+
+    /**
+     * Validate RP data
+     *
+     * @param Mage_Payment_Model_Recurring_Profile $profile
+     */
+    public function validateRecurringProfile(Mage_Payment_Model_Recurring_Profile $profile)
+    {
+        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
+        $helper_obj = Mage::helper( 'globalpay/helper' );
+
+        ob_start();
+        echo "\n\n".'Profile';
+        var_dump( $profile->getData() );
+        $buf = ob_get_clean();
+
+        $helper_obj->logf( 'validateRecurringProfile: ['.$buf.']' );
+    }
+
+    /**
+     * Submit RP to the gateway
+     *
+     * @param Mage_Payment_Model_Recurring_Profile $profile
+     * @param Mage_Payment_Model_Info $paymentInfo
+     */
+    public function submitRecurringProfile(Mage_Payment_Model_Recurring_Profile $profile,
+        Mage_Payment_Model_Info $paymentInfo
+    ) {
+        //$token = $paymentInfo->
+        //getAdditionalInformation(Mage_Paypal_Model_Express_Checkout::PAYMENT_INFO_TRANSPORT_TOKEN);
+        //$profile->setToken($token);
+        //$this->_pro->submitRecurringProfile($profile, $paymentInfo);
+
+        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
+        $helper_obj = Mage::helper( 'globalpay/helper' );
+
+        ob_start();
+        echo "\n\n".'Profile';
+        var_dump( $profile->getData() );
+        echo "\n\n".'Payment Info';
+        var_dump( $paymentInfo->getData() );
+        $buf = ob_get_clean();
+
+        $helper_obj->logf( 'submitRecurringProfile: ['.$buf.']' );
+
+        /** @var Mage_Sales_Model_Quote $oQuote */
+        $quote = $paymentInfo->getQuote();
+
+        /** @var Mage_Customer_Model_Customer $oCustomer */
+        $customer = $quote->getCustomer();
+        //$customer->save();
+
+        $profile->setCustomerId($customer->getId());
+        $profile->setReferenceId($quote->getId());
+        $profile->setAdditionalInfo($paymentInfo->getAdditionalInformation());
+        $profile->setState(Mage_Sales_Model_Recurring_Profile::STATE_ACTIVE);
+        $profile->save();
+        return $this;
+    }
+
+    /**
+     * Fetch RP details
+     *
+     * @param string $referenceId
+     * @param Varien_Object $result
+     */
+    public function getRecurringProfileDetails( $referenceId, Varien_Object $result )
+    {
+
+        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
+        $helper_obj = Mage::helper( 'globalpay/helper' );
+
+        ob_start();
+        echo "\n\n".'referenceId';
+        var_dump( $referenceId );
+        echo "\n\n".'result';
+        var_dump( $result->getData() );
+        $buf = ob_get_clean();
+
+        $helper_obj->logf( 'getRecurringProfileDetails: ['.$buf.']' );
+
+        return true;
+    }
+
+    /**
+     * Whether can get recurring profile details
+     */
+    public function canGetRecurringProfileDetails()
+    {
+
+        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
+        $helper_obj = Mage::helper( 'globalpay/helper' );
+
+        ob_start();
+        echo "\n\n".'canGetRecurringProfileDetails';
+        $buf = ob_get_clean();
+
+        $helper_obj->logf( 'canGetRecurringProfileDetails: ['.$buf.']' );
+
+        return true;
+    }
+
+    /**
+     * Update RP data
+     *
+     * @param Mage_Payment_Model_Recurring_Profile $profile
+     */
+    public function updateRecurringProfile(Mage_Payment_Model_Recurring_Profile $profile)
+    {
+        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
+        $helper_obj = Mage::helper( 'globalpay/helper' );
+
+        ob_start();
+        echo "\n\n".'Profile';
+        var_dump( $profile->getData() );
+        $buf = ob_get_clean();
+
+        $helper_obj->logf( 'updateRecurringProfile: ['.$buf.']' );
+    }
+
+    /**
+     * Manage status
+     *
+     * @param Mage_Payment_Model_Recurring_Profile $profile
+     */
+    public function updateRecurringProfileStatus(Mage_Payment_Model_Recurring_Profile $profile)
+    {
+        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
+        $helper_obj = Mage::helper( 'globalpay/helper' );
+
+        ob_start();
+        echo "\n\n".'Profile';
+        var_dump( $profile->getData() );
+        $buf = ob_get_clean();
+
+        $helper_obj->logf( 'updateRecurringProfileStatus: ['.$buf.']' );
+    }
 
     public function __construct()
     {
@@ -97,15 +234,25 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
         /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
         if( !($method_id = $data->getMethodId())
          or !($chkout = Mage::getSingleton('checkout/session'))
-         or !($quote = $chkout->getQuote())
-         or !($billingAddress = $quote->getBillingAddress())
+         or !($quote = $chkout->getQuote()) )
+        {
+            //Mage::throwException( Mage::helper('payment')->__( 'Cannot get payment method details. Please try again.' ) );
+            return $this;
+        }
+
+        if( !($billingAddress = $quote->getBillingAddress())
          or !($countryCode = $billingAddress->getCountryId())
-         or !($countryId = Mage::getModel('globalpay/country')->load($countryCode, 'code')->getId())
-         or !($configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' ))
+         or !($countryId = Mage::getModel('globalpay/country')->load($countryCode, 'code')->getId()) )
+        {
+            Mage::throwException( Mage::helper('payment')->__( 'Cannot get country from billing address.' ) );
+            return $this;
+        }
+
+        if( !($configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' ))
          or !($enabled_methods = $configured_methods_obj->get_configured_methods( $countryId, array( 'id_in_index' => true ) ))
          or empty( $enabled_methods[$method_id] ) )
         {
-            Mage::throwException( Mage::helper('payment')->__( 'Couldn\'t get payment method details. Please try again.' ) );
+            Mage::throwException( Mage::helper('payment')->__( 'Cannot get any payment method for selected country.' ) );
             return $this;
         }
 

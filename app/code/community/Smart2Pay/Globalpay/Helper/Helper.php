@@ -2,6 +2,12 @@
 
 class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
 {
+    public static function logf( $data )
+    {
+        Mage::getModel('core/log_adapter', 'payment_smart2pay.log')
+            ->log( $data );
+    }
+
     public function mage_exception( $code, $messages_arr )
     {
         if( is_string( $messages_arr ) )
@@ -59,7 +65,6 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
                 $exception_obj->addMessage( $message_obj );
             }
         }
-
 
         return $exception_obj;
     }
