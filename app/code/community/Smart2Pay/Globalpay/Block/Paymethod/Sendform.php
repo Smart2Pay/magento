@@ -24,6 +24,10 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
         /** @var Mage_Sales_Model_Order $order */
         $order = Mage::getModel('sales/order');
 
+        if( !empty( $_SESSION['globalpay_method'] ) )
+            $method_id = $_SESSION['globalpay_method'];
+        else
+            $method_id = 0;
 
         $order->load( $order_id );
 
@@ -37,19 +41,60 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
             $merchant_transaction_id = base_convert( time(), 10, 36 ).'_'.$merchant_transaction_id;
         }
 
+        if( !($surcharge_amount = $order->getPayment()->getS2pSurchargeAmount()) )
+            $surcharge_amount = 0;
+        if( !($surcharge_fixed_amount = $order->getPayment()->getS2pSurchargeFixedAmount()) )
+            $surcharge_fixed_amount = 0;
+
+        $total_surcharge_amount = $surcharge_amount + $surcharge_fixed_amount;
+
+        $order_original_amount = $amount_to_pay = $order->getGrandTotal();
+
+        $articles_params = array();
+        $articles_params['transport_amount'] = $order->getShippingAmount();
+        $articles_params['total_surcharge'] = $total_surcharge_amount;
+        $articles_params['amount_to_pay'] = $amount_to_pay;
+
+        $order_products_arr = array();
+        if( ($order_products = $order->getAllItems())
+        and is_array( $order_products ) )
+        {
+            /** @var Mage_Sales_Model_Order_Item $product_obj */
+            foreach( $order_products as $product_obj )
+            {
+                $order_products_arr[] = $product_obj->getData();
+            }
+        }
+
+        $original_amount = $articles_params['amount_to_pay'] - $articles_params['total_surcharge'];
+
+        $articles_str = '';
+        $articles_diff = 0;
+        if( ($articles_check = $helper_obj->cart_products_to_string( $order_products_arr, $original_amount, $articles_params )) )
+        {
+            $articles_str = $articles_check['buffer'];
+
+            if( !empty( $articles_check['total_difference_amount'] )
+                and $articles_check['total_difference_amount'] >= -0.01 and $articles_check['total_difference_amount'] <= 0.01 )
+            {
+                $articles_diff = $articles_check['total_difference_amount'];
+
+                //if( $method_id == $paymentModel::PAYMENT_METHOD_KLARNA_CHECKOUT
+                // or $method_id == $paymentModel::PAYMENT_METHOD_KLARNA_INVOICE )
+                //    $amount_to_pay += $articles_diff;
+            }
+        }
+
         // FORM DATA
         $this->form_data = $paymentModel->method_config;
 
         $this->form_data['environment'] = $environment;
 
-        if( !empty( $_SESSION['globalpay_method'] ) )
-            $this->form_data['method_id'] = $_SESSION['globalpay_method'];
-        else
-            $this->form_data['method_id'] = 0;
+        $this->form_data['method_id'] = $method_id;
 
         $this->form_data['order_id'] = $merchant_transaction_id;
         $this->form_data['currency'] = $order->getOrderCurrency()->getCurrencyCode();
-        $this->form_data['amount'] = number_format( $order->getGrandTotal(), 2, '.', '' ) * 100;
+        $this->form_data['amount'] = number_format( $amount_to_pay, 2, '.', '' ) * 100; // number_format( $order->getGrandTotal(), 2, '.', '' ) * 100;
 
         //anonymous user, get the info from billing details
         if( $order->getCustomerId() === NULL )
@@ -106,6 +151,10 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
 
         if( $this->form_data['skin_id'] )
             $messageToHash .= 'SkinID'.$this->form_data['skin_id'];
+
+        $this->form_data['articles'] = $articles_str;
+        if( !empty( $articles_str ) )
+            $messageToHash .= 'Articles'.$this->form_data['articles'];
 
         $messageToHash .= $this->form_data['signature'];
 

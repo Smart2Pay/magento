@@ -55,6 +55,24 @@ function s2p_config_js_invert()
         }
     }
 }
+function show_all_countries_for_method( method_id, action )
+{
+    if( typeof action == 'undefined' )
+        action = 'noforce';
+
+    var div_obj = document.getElementById( 's2p_meth_countries_' + method_id );
+
+    if( (action == 'show' || div_obj.style.height == '40px')
+        && action != 'hide' )
+    {
+        div_obj.style.overflow = 'visible';
+        div_obj.style.height = 'auto';
+    } else if( action == 'hide' || action == 'noforce' )
+    {
+        div_obj.style.overflow = 'hidden';
+        div_obj.style.height = '40px';
+    }
+}
 </script>
 <?php
     if( !($all_methods = $this->get_all_methods()) )
@@ -100,9 +118,10 @@ foreach( $all_methods as $method_arr )
         <td>
             <label for="s2p_enabled_method<?php echo $method_arr['method_id']?>"><strong><?php echo $this->__( $method_arr['display_name'] ); ?></strong></label>
             <br/>
-            <?php echo $this->__( $method_arr['description'] ); ?>
-            <br/>
+            <?php echo $this->__( $method_arr['description'] ); ?><br/>
+            <div id="s2p_meth_countries_<?php echo $method_arr['method_id']?>" style="height: 40px; overflow: hidden; text-overflow: ellipsis; display:block;">
             <strong>Available in following countries</strong>:
+                (<a href="javascript:void(0);" style="text-decoration: underline;" onclick="show_all_countries_for_method( '<?php echo $method_arr['method_id']?>' )">toggle</a>)
             <?php
             if( empty( $method_arr['countries_list'] )
                 or !is_array( $method_arr['countries_list'] ) )
@@ -123,7 +142,7 @@ foreach( $all_methods as $method_arr )
                 echo '.';
             }
             ?>
-
+            </div>
         </td>
     </tr>
     <?php

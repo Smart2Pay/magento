@@ -150,6 +150,16 @@
                     </tr>
                     <?php
                 }
+
+                if( $this->form_data['articles'] )
+                {
+                    ?>
+                    <tr>
+                        <td>Articles</td>
+                        <td><input type="text" name="Articles" value="<?php echo $this->form_data['articles']?>" /></td>
+                    </tr>
+                    <?php
+                }
             ?>
 
             <tr>

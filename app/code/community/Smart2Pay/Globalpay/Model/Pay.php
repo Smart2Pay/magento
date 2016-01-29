@@ -4,7 +4,8 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
 {
     const S2P_STATUS_OPEN = 1, S2P_STATUS_SUCCESS = 2, S2P_STATUS_CANCELLED = 3, S2P_STATUS_FAILED = 4, S2P_STATUS_EXPIRED = 5, S2P_STATUS_PROCESSING = 7;
 
-    const PAYMENT_METHOD_BT = 1, PAYMENT_METHOD_SIBS = 20;
+    const PAYMENT_METHOD_BT = 1, PAYMENT_METHOD_SIBS = 20,
+          PAYMENT_METHOD_KLARNA_CHECKOUT = 1052, PAYMENT_METHOD_KLARNA_INVOICE = 75;
 
     protected $_code = 'globalpay';
     protected $_formBlockType = 'globalpay/paymethod_form';

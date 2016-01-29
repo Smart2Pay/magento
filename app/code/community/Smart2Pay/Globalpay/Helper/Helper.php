@@ -2,6 +2,229 @@
 
 class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
 {
+    public static function klarna_price( $amount )
+    {
+        return (float)number_format( $amount, 2, '.', '' );
+    }
+
+    public static function cart_products_to_string( $products_arr, $cart_original_amount, $params = false )
+    {
+        $return_arr = array();
+        $return_arr['total_check'] = 0;
+        $return_arr['total_to_pay'] = 0;
+        $return_arr['total_before_difference_amount'] = 0;
+        $return_arr['total_difference_amount'] = 0;
+        $return_arr['surcharge_difference_amount'] = 0;
+        $return_arr['surcharge_difference_index'] = 0;
+        $return_arr['buffer'] = '';
+        $return_arr['articles_arr'] = array();
+        $return_arr['articles_meta_arr'] = array();
+        $return_arr['transport_index'] = array();
+
+        $cart_original_amount = floatval( $cart_original_amount );
+
+        if( $cart_original_amount == 0
+         or empty( $products_arr ) or !is_array( $products_arr ) )
+            return $return_arr;
+
+        if( empty( $params ) or !is_array( $params ) )
+            $params = array();
+
+        if( empty( $params['transport_amount'] ) )
+            $params['transport_amount'] = 0;
+        if( empty( $params['total_surcharge'] ) )
+            $params['total_surcharge'] = 0;
+        if( empty( $params['amount_to_pay'] ) )
+            $params['amount_to_pay'] = $cart_original_amount;
+
+        $amount_to_pay = floatval( $params['amount_to_pay'] );
+
+        $return_arr['total_to_pay'] = $amount_to_pay;
+
+        $return_str = '';
+        $articles_arr = array();
+        $articles_meta_arr = array();
+        $articles_knti = 0;
+        $items_total_amount = 0;
+        $biggest_price = 0;
+        $biggest_price_knti = 0;
+        foreach( $products_arr as $product_arr )
+        {
+            if( empty( $product_arr ) or !is_array( $product_arr ) )
+                continue;
+
+            // 1 => 'Product', 2 => 'Shipping', 3 => 'Handling',
+            $article_arr = array();
+            $article_arr['ID'] = $product_arr['product_id'];
+            $article_arr['Name'] = $product_arr['name'];
+            $article_arr['Quantity'] = intval( $product_arr['qty_ordered'] );
+            $article_arr['Price'] = self::klarna_price( $product_arr['price_incl_tax'] );
+            // VAT Percent
+            $article_arr['VAT'] = self::klarna_price( $product_arr['tax_percent'] );
+            // $article_arr['Discount'] = 0;
+            $article_arr['Type'] = 1;
+
+            if( $article_arr['Price'] > $biggest_price )
+                $biggest_price_knti = $articles_knti;
+
+            $articles_arr[$articles_knti] = $article_arr;
+
+            $article_meta_arr = array();
+            $article_meta_arr['total_price'] = (float)($article_arr['Price'] * $article_arr['Quantity']);
+            $article_meta_arr['price_perc'] = ($article_meta_arr['total_price'] * 100) / $cart_original_amount;
+            $article_meta_arr['surcharge_amount'] = 0;
+
+            $articles_meta_arr[$articles_knti] = $article_meta_arr;
+
+            $items_total_amount += $article_meta_arr['total_price'];
+
+            $articles_knti++;
+        }
+
+        if( empty( $articles_arr ) )
+            return $return_arr;
+
+        $transport_index = 0;
+        if( $params['transport_amount'] != 0 )
+        {
+            // 1 => 'Product', 2 => 'Shipping', 3 => 'Handling',
+            $article_arr = array();
+            $article_arr['ID'] = 0;
+            $article_arr['Name'] = 'Transport';
+            $article_arr['Quantity'] = 1;
+            $article_arr['Price'] = self::klarna_price( $params['transport_amount'] );
+            $article_arr['VAT'] = 0;
+            //$article_arr['Discount'] = 0;
+            $article_arr['Type'] = 2;
+
+            $articles_arr[$articles_knti] = $article_arr;
+
+            $transport_index = $articles_knti;
+
+            $article_meta_arr = array();
+            $article_meta_arr['total_price'] = (float)($article_arr['Price'] * $article_arr['Quantity']);
+            $article_meta_arr['price_perc'] = 0;
+            $article_meta_arr['surcharge_amount'] = 0;
+
+            $articles_meta_arr[$articles_knti] = $article_meta_arr;
+
+            $items_total_amount += $article_meta_arr['total_price'];
+
+            $articles_knti++;
+        }
+
+        // Apply surcharge (if required) depending on product price percentage of full amount
+        $total_surcharge = 0;
+        if( $params['total_surcharge'] != 0 )
+        {
+            $total_surcharge = $params['total_surcharge'];
+            foreach( $articles_arr as $knti => $article_arr )
+            {
+                if( $articles_arr[$knti]['Type'] != 1 )
+                    continue;
+
+                $total_article_surcharge = (($articles_meta_arr[$knti]['price_perc'] * $params['total_surcharge'])/100);
+
+                $article_unit_surcharge = self::klarna_price( $total_article_surcharge/$articles_arr[$knti]['Quantity'] );
+
+                $articles_arr[$knti]['Price'] += $article_unit_surcharge;
+                $articles_meta_arr[$knti]['surcharge_amount'] = $article_unit_surcharge;
+
+                $items_total_amount += ($article_unit_surcharge * $articles_arr[$knti]['Quantity']);
+                $total_surcharge -= ($article_unit_surcharge * $articles_arr[$knti]['Quantity']);
+            }
+
+            // If after applying all surcharge amounts as percentage of each product price we still have a difference, apply difference on product with biggest price
+            if( $total_surcharge != 0 )
+            {
+                $article_unit_surcharge = self::klarna_price( $total_surcharge/$articles_arr[$biggest_price_knti]['Quantity'] );
+
+                $articles_arr[$biggest_price_knti]['Price'] += $article_unit_surcharge;
+                $articles_meta_arr[$biggest_price_knti]['surcharge_amount'] += $article_unit_surcharge;
+                $items_total_amount += ($article_unit_surcharge * $articles_arr[$biggest_price_knti]['Quantity']);
+
+                $return_arr['surcharge_difference_amount'] = $total_surcharge;
+                $return_arr['surcharge_difference_index'] = $biggest_price_knti;
+            }
+        }
+
+        $return_arr['total_before_difference_amount'] = $items_total_amount;
+
+        if( self::klarna_price( $items_total_amount ) != self::klarna_price( $amount_to_pay ) )
+        {
+            // v1. If we still have a difference apply it on biggest price product
+            //$amount_diff = self::klarna_price( ($amount_to_pay - $items_total_amount)/$articles_arr[$biggest_price_knti]['Quantity'] );
+            //$articles_arr[$biggest_price_knti]['Price'] += $amount_diff;
+
+            // v2. If we still have a difference apply it on transport as it has quantity of 1 and we can apply a difference of 1 cent
+            $amount_diff = self::klarna_price( $amount_to_pay - $items_total_amount );
+            if( $transport_index )
+            {
+                // we have transport in articles...
+                $articles_arr[$transport_index]['Price'] += $amount_diff;
+                $articles_meta_arr[$transport_index]['total_price'] += $amount_diff;
+            } else
+            {
+                // we DON'T have transport in articles...
+                // 1 => 'Product', 2 => 'Shipping', 3 => 'Handling',
+                $article_arr = array();
+                $article_arr['ID'] = 0;
+                $article_arr['Name'] = 'Transport';
+                $article_arr['Quantity'] = 1;
+                $article_arr['Price'] = $amount_diff;
+                $article_arr['VAT'] = 0;
+                //$article_arr['Discount'] = 0;
+                $article_arr['Type'] = 2;
+
+                $articles_arr[$articles_knti] = $article_arr;
+
+                $transport_index = $articles_knti;
+
+                $article_meta_arr = array();
+                $article_meta_arr['total_price'] = $article_arr['Price'];
+                $article_meta_arr['price_perc'] = 0;
+                $article_meta_arr['surcharge_amount'] = 0;
+
+                $articles_meta_arr[$articles_knti] = $article_meta_arr;
+
+                $articles_knti++;
+            }
+
+
+            $return_arr['total_difference_amount'] = self::klarna_price( $amount_to_pay - $items_total_amount );
+        }
+
+        $return_arr['transport_index'] = $transport_index;
+
+        $total_check = 0;
+        foreach( $articles_arr as $knti => $article_arr )
+        {
+            $total_check += (float)($article_arr['Price'] * $article_arr['Quantity']);
+
+            $article_arr['Price'] = $article_arr['Price'] * 100;
+            $article_arr['VAT'] = $article_arr['VAT'] * 100;
+            //$article_arr['Discount'] = $article_arr['Discount'] * 100;
+
+            $article_buf = '';
+            foreach( $article_arr as $key => $val )
+            {
+                $article_buf .= ($article_buf!=''?'&':'').$key.'='.str_replace( array( '&', ';', '=' ), ' ', $val );
+            }
+
+            $return_arr['buffer'] .= $article_buf.';';
+        }
+
+        $return_arr['buffer'] = substr( $return_arr['buffer'], 0, -1 );
+
+        // $return_arr['buffer'] = rawurlencode( $return_arr['buffer'] );
+
+        $return_arr['total_check'] = $total_check;
+        $return_arr['articles_arr'] = $articles_arr;
+        $return_arr['articles_meta_arr'] = $articles_meta_arr;
+
+        return $return_arr;
+    }
+
     public static function logf( $data )
     {
         Mage::getModel('core/log_adapter', 'payment_smart2pay.log')
