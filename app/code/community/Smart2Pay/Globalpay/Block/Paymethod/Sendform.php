@@ -112,6 +112,10 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
             $this->form_data['customer_first_name'] = $helper_obj->s2p_mb_substr( $customer->getDefaultBillingAddress()->getFirstname(), 0, 30 );
         }
 
+        $this->form_data['customer_name'] = trim( $this->form_data['customer_name'] );
+        $this->form_data['customer_last_name'] = trim( $this->form_data['customer_last_name'] );
+        $this->form_data['customer_first_name'] = trim( $this->form_data['customer_first_name'] );
+
         $this->form_data['customer_email'] = trim($order->getCustomerEmail());
         $this->form_data['country'] = $order->getBillingAddress()->getCountry();
 

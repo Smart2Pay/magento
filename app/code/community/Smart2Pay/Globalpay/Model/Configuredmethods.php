@@ -87,11 +87,12 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
 
         $methodcountries_collection->addFieldToFilter( 'method_id', $method_id );
 
-        $methodcountries_collection->getSelect()->join(
-            's2p_gp_countries',
-            's2p_gp_countries.country_id = main_table.country_id' );
+        $methodcountries_collection->getSelect()->joinLeft(
+            array( 's2p_c' => $methodcountries_collection->getTable( 'globalpay/country' ) ),
+            's2p_c.country_id = main_table.country_id'
+        );
 
-        $methodcountries_collection->setOrder( 's2p_gp_countries_methods.priority', 'ASC' );
+        $methodcountries_collection->setOrder( 'main_table.priority', 'ASC' );
 
         $return_arr = array();
 
@@ -162,12 +163,12 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         $cm_collection->addFieldToSelect( '*' );
         $cm_collection->addFieldToFilter( 'country_id', $country_id );
 
-        $cm_collection->getSelect()->join(
-            's2p_gp_methods',
-            's2p_gp_methods.method_id = main_table.method_id'
+        $cm_collection->getSelect()->joinInner(
+            array( 's2p_m' => $cm_collection->getTable( 'globalpay/method' ) ),
+            's2p_m.method_id = main_table.method_id'
         );
 
-        $cm_collection->setOrder( 'priority', 'ASC' );
+        $cm_collection->setOrder( 'main_table.priority', 'ASC' );
 
         $methods_arr = array();
         $method_ids_arr = array();
