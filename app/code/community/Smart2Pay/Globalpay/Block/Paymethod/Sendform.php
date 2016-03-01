@@ -85,6 +85,19 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
             }
         }
 
+        /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
+        $include_metod_ids = '';
+        if( empty( $method_id )
+        and ($country_code = $order->getOrderCurrency()->getCurrencyCode())
+        and ($countryId = Mage::getModel('globalpay/country')->load( $country_code, 'code')->getId())
+        and ($configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' ))
+        and ($enabled_methods = $configured_methods_obj->get_configured_methods( $countryId, array( 'id_in_index' => true ) ))
+        and is_array( $enabled_methods ) )
+        {
+            // MethodID is empty... take all payment methods configured from admin
+            $include_metod_ids = implode( ',', array_keys( $enabled_methods ) );
+        }
+
         // FORM DATA
         $this->form_data = $paymentModel->method_config;
 
@@ -126,7 +139,7 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
                          'ReturnURL'.$this->form_data['return_url'];
 
         if( !$this->form_data['method_id'] )
-            $messageToHash .= 'IncludeMethodIDs'.$this->form_data['methods'];
+            $messageToHash .= 'IncludeMethodIDs'.$include_metod_ids;
 
         if( $this->form_data['site_id'] )
             $messageToHash .= 'SiteID'.$this->form_data['site_id'];
