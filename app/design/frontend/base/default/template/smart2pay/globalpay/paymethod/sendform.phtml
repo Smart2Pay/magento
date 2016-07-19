@@ -41,12 +41,8 @@
                 {
                     ?>
                     <tr>
-                        <td>
-                            IncludeMethodIDs
-                        </td>
-                        <td>
-                            <input type="text" name="IncludeMethodIDs" value="<?php echo $this->form_data['methods'] ?>"/>
-                        </td>
+                        <td>IncludeMethodIDs</td>
+                        <td><input type="text" name="IncludeMethodIDs" value="<?php echo $this->form_data['methods'] ?>"/></td>
                     </tr>
                     <?php
                 }
@@ -55,12 +51,8 @@
                 {
                     ?>
                     <tr>
-                        <td>
-                            SiteID
-                        </td>
-                        <td>
-                            <input type="text" name="SiteID" value="<?php echo  $this->form_data['site_id'] ?>"/>
-                        </td>
+                        <td>SiteID</td>
+                        <td><input type="text" name="SiteID" value="<?php echo  $this->form_data['site_id'] ?>"/></td>
                     </tr>
                     <?php
                 }
@@ -141,7 +133,7 @@
                     <?php
                 }
 
-                if( $this->form_data['skin_id'] )
+                if( !empty( $this->form_data['skin_id'] ) )
                 {
                     ?>
                     <tr>
@@ -151,7 +143,7 @@
                     <?php
                 }
 
-                if( $this->form_data['articles'] )
+                if( isset( $this->form_data['articles'] ) )
                 {
                     ?>
                     <tr>

@@ -139,7 +139,10 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
                          'ReturnURL'.$this->form_data['return_url'];
 
         if( !$this->form_data['method_id'] )
-            $messageToHash .= 'IncludeMethodIDs'.$include_metod_ids;
+        {
+            $messageToHash .= 'IncludeMethodIDs' . $include_metod_ids;
+            $this->form_data['methods'] = $include_metod_ids;
+        }
 
         if( $this->form_data['site_id'] )
             $messageToHash .= 'SiteID'.$this->form_data['site_id'];
@@ -166,12 +169,15 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
         if( $this->form_data['redirect_in_iframe'] )
             $messageToHash .= 'RedirectInIframe1';
 
-        if( $this->form_data['skin_id'] )
+        if( !empty( $this->form_data['skin_id'] ) )
             $messageToHash .= 'SkinID'.$this->form_data['skin_id'];
 
-        $this->form_data['articles'] = $articles_str;
+        $this->form_data['articles'] = '';
         if( !empty( $articles_str ) )
-            $messageToHash .= 'Articles'.$this->form_data['articles'];
+        {
+            $this->form_data['articles'] = $articles_str;
+            $messageToHash .= 'Articles' . $this->form_data['articles'];
+        }
 
         $messageToHash .= $this->form_data['signature'];
 
