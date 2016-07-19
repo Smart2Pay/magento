@@ -36,7 +36,7 @@ class Smart2Pay_Globalpay_Model_Logger extends Mage_Core_Model_Abstract
             $insert_arr['log_source_file'] = $file;
             $insert_arr['log_source_file_line'] = $line;
 
-            $conn->insert( 's2p_gp_logs', $insert_arr );
+            $conn->insert( $this->getResource()->getTable( 'globalpay/logger' ), $insert_arr );
 
         } catch( Exception $e )
         {

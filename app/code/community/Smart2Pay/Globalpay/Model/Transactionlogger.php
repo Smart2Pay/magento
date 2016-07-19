@@ -124,7 +124,7 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
             /** @var Magento_Db_Adapter_Pdo_Mysql $conn_read */
             if( !($conn_read = Mage::getSingleton( 'core/resource' )->getConnection( 'core_read' ))
                 or !($s2p_transaction_list_arr = $conn_read->fetchAssoc( $conn_read->select()
-                    ->from( 's2p_gp_transactions' )
+                    ->from( $this->getResource()->getTable( 'globalpay/transactionlogger' ) )
                     ->where( 'merchant_transaction_id = \''.$s2pHelper->prepare_data( $merchant_transaction_id ).'\'' )
                     ->limit( 1, 0 ) ))
                 or !is_array( $s2p_transaction_list_arr )
@@ -170,7 +170,7 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
                 $insert_arr['updated'] = new Zend_Db_Expr('NOW()');
 
                 // we should update record
-                $conn_write->update( 's2p_gp_transactions', $insert_arr, 'id = \''.$existing_id.'\'' );
+                $conn_write->update( $this->getResource()->getTable( 'globalpay/transactionlogger' ), $insert_arr, 'id = \''.$existing_id.'\'' );
 
                 $s2pLogger->write( 'Update transaction ['.$existing_id.']', 'trans_logger' );
             } else
@@ -190,7 +190,7 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
 
                 // we should insert record
                 //$conn_write->query( $sql );
-                $conn_write->insert( 's2p_gp_transactions', $insert_arr );
+                $conn_write->insert( $this->getResource()->getTable( 'globalpay/transactionlogger' ), $insert_arr );
 
                 $s2pLogger->write( 'Insert transaction', 'trans_logger' );
             }
