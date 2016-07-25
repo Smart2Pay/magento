@@ -88,7 +88,7 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
         /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
         $include_metod_ids = '';
         if( empty( $method_id )
-        and ($country_code = $order->getOrderCurrency()->getCurrencyCode())
+        and ($country_code = $order->getBillingAddress()->getCountry())
         and ($countryId = Mage::getModel('globalpay/country')->load( $country_code, 'code')->getId())
         and ($configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' ))
         and ($enabled_methods = $configured_methods_obj->get_configured_methods( $countryId, array( 'id_in_index' => true ) ))
