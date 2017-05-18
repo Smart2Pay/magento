@@ -220,7 +220,9 @@ if( !$this->method_config['show_methods_in_grid'] )
             checkS2PMethod( old_method_id, false );
         checkS2PMethod( methodId, true );
 
-        if( typeof payment.save == "function" )
+        if( typeof payment != "undefined"
+         && payment
+         && typeof payment.save == "function" )
         {
             // uncomment if you want to submit payment choice on radiobox checking event
             //payment.save();
