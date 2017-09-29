@@ -10,11 +10,15 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
 
     public function get_all_methods( $params = false )
     {
-        static $return_arr = false;
+        static $cached_return_arr = false;
 
         // Cache result for default parameters
-        if( empty( $params ) and !empty( $return_arr ) )
-            return $return_arr;
+        if( empty( $params ) and !empty( $cached_return_arr ) )
+            return $cached_return_arr;
+
+        $cache_result = false;
+        if( empty( $params ) )
+            $cache_result = true;
 
         if( empty( $params ) or !is_array( $params ) )
             $params = array();
@@ -24,6 +28,14 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
             $params['include_countries'] = true;
         if( empty( $params['order_by'] ) or !in_array( $params['order_by'], array( 'display_name', 'method_id' ) ) )
             $params['order_by'] = 'display_name';
+
+        if( !isset( $params['environment'] ) or empty( $params['environment'] ) )
+        {
+            /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+            $paymentModel = Mage::getModel('globalpay/pay');
+
+            $params['environment'] = $paymentModel->getEnvironment();
+        }
 
         // we received an empty array of ids, so we should return empty result...
         if( is_array( $params['method_ids'] ) and empty( $params['method_ids'] ) )
@@ -49,16 +61,18 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         $methods_collection->addFieldToSelect( array( 'method_id', 'display_name', 'description', 'logo_url' ) );
 
         $methods_collection->addFieldToFilter( 'active', 1 );
+        $methods_collection->addFieldToFilter( 'environment', $params['environment'] );
 
         if( !empty( $method_ids_arr ) )
             $methods_collection->addFieldToFilter( 'method_id', array( 'in' => $method_ids_arr ) );
 
-        $methods_collection->setOrder( $params['order_by'], 'ASC' );
+        $methods_collection->setOrder( $params['order_by'], $methods_collection::SORT_ORDER_ASC );
+        $methods_collection->getSelect()->order( $params['order_by'].' '.$methods_collection::SORT_ORDER_ASC );
 
         $return_arr = array();
 
         while( ($method_obj = $methods_collection->fetchItem())
-               and ($method_arr = $method_obj->getData()) )
+           and ($method_arr = $method_obj->getData()) )
         {
             if( empty( $method_arr['method_id'] ) )
                 continue;
@@ -71,11 +85,22 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
                 $return_arr[$method_arr['method_id']]['countries_list'] = array();
         }
 
+        if( $cache_result )
+            $cached_return_arr = $return_arr;
+
         return $return_arr;
     }
 
-    public function get_countries_for_method( $method_id )
+    public function get_countries_for_method( $method_id, $environment = false )
     {
+        if( empty( $environment ) )
+        {
+            /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+            $paymentModel = Mage::getModel('globalpay/pay');
+
+            $environment = $paymentModel->getEnvironment();
+        }
+
         $method_id = intval( $method_id );
         if( empty( $method_id ) )
             return array();
@@ -86,6 +111,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         $methodcountries_collection->addFieldToSelect( '*' );
 
         $methodcountries_collection->addFieldToFilter( 'method_id', $method_id );
+        $methodcountries_collection->addFieldToFilter( 'environment', $environment );
 
         $methodcountries_collection->getSelect()->joinLeft(
             array( 's2p_c' => $methodcountries_collection->getTable( 'globalpay/country' ) ),
@@ -93,6 +119,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         );
 
         $methodcountries_collection->setOrder( 'main_table.priority', 'ASC' );
+        $methodcountries_collection->getSelect()->order( 'main_table.priority '.$methodcountries_collection::SORT_ORDER_ASC );
 
         $return_arr = array();
 
@@ -119,12 +146,21 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         if( empty( $params ) or !is_array( $params ) )
             $params = array();
 
+        if( !isset( $params['environment'] ) or empty( $params['environment'] ) )
+        {
+            /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+            $paymentModel = Mage::getModel('globalpay/pay');
+
+            $params['environment'] = $paymentModel->getEnvironment();
+        }
+
         // $return_arr[{method_ids}][{country_ids}]['surcharge'], $return_arr[{method_ids}][{country_ids}]['base_amount'], ...
         $return_arr = array();
 
         /** @var Smart2Pay_Globalpay_Model_Resource_Configuredmethods_Collection $my_collection */
         $my_collection = $this->getCollection();
         $my_collection->addFieldToSelect( '*' );
+        $my_collection->addFieldToFilter( 'environment', $params['environment'] );
 
         while( ($configured_method_obj = $my_collection->fetchItem())
                and ($configured_method_arr = $configured_method_obj->getData()) )
@@ -150,6 +186,14 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         if( empty( $params['id_in_index'] ) )
             $params['id_in_index'] = false;
 
+        if( !isset( $params['environment'] ) or empty( $params['environment'] ) )
+        {
+            /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+            $paymentModel = Mage::getModel('globalpay/pay');
+
+            $params['environment'] = $paymentModel->getEnvironment();
+        }
+
         // 1. get a list of methods available for provided country
         // 2. get default surcharge (s2p_gp_methods_configured.country_id = 0)
         // 3. overwrite default surcharges for particular cases (if available) (s2p_gp_methods_configured.country_id = $country_id)
@@ -161,22 +205,25 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         /** @var Smart2Pay_Globalpay_Model_Resource_Countrymethod_Collection $cm_collection */
         $cm_collection = Mage::getModel( 'globalpay/countrymethod' )->getCollection();
         $cm_collection->addFieldToSelect( '*' );
-        $cm_collection->addFieldToFilter( 'country_id', $country_id );
+        $cm_collection->addFieldToFilter( 'main_table.country_id', $country_id );
+        $cm_collection->addFieldToFilter( 'main_table.environment', $params['environment'] );
 
         $cm_collection->getSelect()->joinInner(
             array( 's2p_m' => $cm_collection->getTable( 'globalpay/method' ) ),
-            's2p_m.method_id = main_table.method_id'
+            's2p_m.method_id = main_table.method_id AND s2p_m.environment = \''.$params['environment'].'\''
         );
 
-        $cm_collection->setOrder( 'main_table.priority', 'ASC' );
+        $cm_collection->setOrder( 'main_table.priority', $cm_collection::SORT_ORDER_ASC );
+        $cm_collection->getSelect()->order( 'main_table.priority '.$cm_collection::SORT_ORDER_ASC );
+        $cm_collection->setOrder( 's2p_m.display_name', $cm_collection::SORT_ORDER_ASC );
+        $cm_collection->getSelect()->order( 's2p_m.display_name '.$cm_collection::SORT_ORDER_ASC );
 
         $methods_arr = array();
         $method_ids_arr = array();
         $enabled_method_ids_arr = array();
 
-
         while( ($method_obj = $cm_collection->fetchItem())
-               and ($method_arr = $method_obj->getData()) )
+           and ($method_arr = $method_obj->getData()) )
         {
             if( empty( $method_arr['method_id'] ) )
                 continue;
@@ -184,7 +231,6 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
             $method_ids_arr[] = $method_arr['method_id'];
             $methods_arr[$method_arr['method_id']] = $method_arr;
         }
-
         //
         // END 1. get a list of methods available for provided country
         //
@@ -196,10 +242,11 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         $my_collection = $this->getCollection();
         $my_collection->addFieldToSelect( '*' );
         $my_collection->addFieldToFilter( 'country_id', 0 );
+        $my_collection->addFieldToFilter( 'environment', $params['environment'] );
         $my_collection->addFieldToFilter( 'method_id', array( 'in' => $method_ids_arr ) );
 
         while( ($configured_method_obj = $my_collection->fetchItem())
-               and ($configured_method_arr = $configured_method_obj->getData()) )
+           and ($configured_method_arr = $configured_method_obj->getData()) )
         {
             if( empty( $configured_method_arr['method_id'] ) )
                 continue;
@@ -220,10 +267,11 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         $my_collection = $this->getCollection();
         $my_collection->addFieldToSelect( '*' );
         $my_collection->addFieldToFilter( 'country_id', $country_id );
+        $my_collection->addFieldToFilter( 'environment', $params['environment'] );
         $my_collection->addFieldToFilter( 'method_id', array( 'in' => $method_ids_arr ) );
 
         while( ($configured_method_obj = $my_collection->fetchItem())
-               and ($configured_method_arr = $configured_method_obj->getData()) )
+           and ($configured_method_arr = $configured_method_obj->getData()) )
         {
             if( empty( $configured_method_arr['method_id'] ) )
                 continue;
@@ -265,8 +313,12 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
 
         /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
         $helper_obj = Mage::helper( 'globalpay/helper' );
+        /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+        $paymentModel = Mage::getModel('globalpay/pay');
         /** @var Smart2Pay_Globalpay_Model_Resource_Configuredmethods $my_resource */
         $my_resource = $this->getResource();
+
+        $environment = $paymentModel->getEnvironment();
 
         $saved_method_ids = array();
         $errors_arr = array();
@@ -289,6 +341,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
                     $country_surcharge['surcharge'] = 0;
                 if( empty( $country_surcharge['fixed_amount'] ) )
                     $country_surcharge['fixed_amount'] = 0;
+                $country_surcharge['environment'] = $environment;
 
                 if( !$my_resource->insert_or_update( $method_id, $country_id, $country_surcharge ) )
                     $errors_arr[] = $helper_obj->__( 'Error saving method ID '.$method_id.', for country '.$country_id.'.' );
@@ -300,6 +353,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
             /** @var Smart2Pay_Globalpay_Model_Resource_Configuredmethods_Collection $my_collection */
             $my_collection = $this->getCollection();
             $my_collection->addFieldToFilter( 'method_id', $method_id );
+            $my_collection->addFieldToFilter( 'environment', $environment );
             if( !empty( $provided_countries ) )
                 $my_collection->addFieldToFilter( 'country_id', array( 'nin' => $provided_countries ) );
 
@@ -311,6 +365,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         // delete rest of methods not in $saved_method_ids array...
         /** @var Smart2Pay_Globalpay_Model_Resource_Configuredmethods_Collection $my_collection */
         $my_collection = $this->getCollection();
+        $my_collection->addFieldToFilter( 'environment', $environment );
         if( !empty( $saved_method_ids ) )
             $my_collection->addFieldToFilter( 'method_id', array( 'nin' => $saved_method_ids ) );
 

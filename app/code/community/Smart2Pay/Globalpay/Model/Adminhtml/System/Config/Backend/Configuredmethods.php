@@ -2,7 +2,7 @@
 
 class Smart2Pay_Globalpay_Model_Adminhtml_System_Config_Backend_Configuredmethods extends Mage_Core_Model_Config_Data
 {
-    const ERR_SURCHARGE_PERCENT = 1, ERR_SURCHARGE_SAVE = 2;
+    const ERR_SURCHARGE_PERCENT = 1, ERR_SURCHARGE_SAVE = 2, ERR_METHODS_REFRESH = 3;
 
     // Array created in _beforeSave() and commited to database in _afterSave()
     // $_methods_to_save[{method_ids}][{country_ids}]['surcharge'], $_methods_to_save[{method_ids}][{country_ids}]['fixed_amount'], ...
@@ -23,80 +23,113 @@ class Smart2Pay_Globalpay_Model_Adminhtml_System_Config_Backend_Configuredmethod
     protected function _beforeSave()
     {
         /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
-        $logger_obj = Mage::getModel( 'globalpay/logger' );
-        /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
-        $configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' );
+        // $logger_obj = Mage::getModel( 'globalpay/logger' );
         /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
         $helper_obj = Mage::helper( 'globalpay/helper' );
 
-        if( !($form_s2p_enabled_methods = Mage::app()->getRequest()->getParam( 's2p_enabled_methods', array() ))
-         or !is_array( $form_s2p_enabled_methods ) )
-            $form_s2p_enabled_methods = array();
-        if( !($form_s2p_surcharge = Mage::app()->getRequest()->getParam( 's2p_surcharge', array() ))
-         or !is_array( $form_s2p_surcharge ) )
-            $form_s2p_surcharge = array();
-        if( !($form_s2p_fixed_amount = Mage::app()->getRequest()->getParam( 's2p_fixed_amount', array() ))
-         or !is_array( $form_s2p_fixed_amount ) )
-            $form_s2p_fixed_amount = array();
-
-        $existing_methods_params_arr = array();
-        $existing_methods_params_arr['method_ids'] = $form_s2p_enabled_methods;
-        $existing_methods_params_arr['include_countries'] = false;
-
-        if( !($db_existing_methods = $configured_methods_obj->get_all_methods( $existing_methods_params_arr )) )
-            $db_existing_methods = array();
-
-        $messages_arr = array();
-        $last_code = 0;
-
-        $this->_methods_to_save = array();
-        foreach( $db_existing_methods as $method_id => $method_details )
+        if( ($s2p_submit_syncronize_methods = Mage::app()->getRequest()->getParam( 's2p_submit_syncronize_methods', false )) )
         {
-            if( empty( $form_s2p_surcharge[$method_id] ) )
-                $form_s2p_surcharge[$method_id] = 0;
-            if( empty( $form_s2p_fixed_amount[$method_id] ) )
-                $form_s2p_fixed_amount[$method_id] = 0;
+            /** @var Smart2Pay_Globalpay_Helper_Sdk $sdk_obj */
+            $sdk_obj = Mage::helper( 'globalpay/sdk' );
 
-            if( !is_numeric( $form_s2p_surcharge[$method_id] ) )
-            {
-                $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
-                                            'message' => $helper_obj->__( 'Please provide a valid percent for method ' . $method_details['display_name'] . '.' ),
-                                            'class' => __CLASS__,
-                                            'method' => __METHOD__,
-                                            );
-                $last_code = self::ERR_SURCHARGE_PERCENT;
-                continue;
-            }
-
-            if( !is_numeric( $form_s2p_fixed_amount[$method_id] ) )
-            {
-                $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
-                                            'message' => $helper_obj->__( 'Please provide a valid fixed amount for method ' . $method_details['display_name'] . '.' ),
-                                            'class' => __CLASS__,
-                                            'method' => __METHOD__,
-                                            );
-                $last_code = self::ERR_SURCHARGE_PERCENT;
-                continue;
-            }
-
-            if( empty( $this->_methods_to_save[$method_id] ) )
-                $this->_methods_to_save[$method_id] = array();
-
-            // TODO: add country ids instead of only 0 (all countries)
-            $this->_methods_to_save[$method_id][0]['surcharge'] = $form_s2p_surcharge[$method_id];
-            $this->_methods_to_save[$method_id][0]['fixed_amount'] = $form_s2p_fixed_amount[$method_id];
-        }
-
-        if( !empty( $messages_arr ) )
-        {
-            // Don't let system write in db if we have an error
-            $this->_methods_to_save = array();
+            // Don't let system write in db when we sync methods
+            $this->_methods_to_save = false;
             $this->_dataSaveAllowed = false;
 
-            throw $helper_obj->mage_exception( $last_code, $messages_arr );
+            if( !$sdk_obj->refresh_available_methods() )
+            {
+                if( $sdk_obj->has_error() )
+                    $error_msg = $sdk_obj->get_error();
+                else
+                    $error_msg = $helper_obj->__( 'Error refreshing Smart2Pay payment methods.' );
+
+                $messages_arr = array();
+                $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
+                    'message' => $error_msg,
+                    'class' => __CLASS__,
+                    'method' => __METHOD__,
+                );
+
+                throw $helper_obj->mage_exception( self::ERR_METHODS_REFRESH, $messages_arr );
+            }
+
+            return $this;
         }
 
-        // $logger_obj->write( 'Saving ['.print_r( $this->_methods_to_save, true ).']', 'config_save' );
+        if( null !== ($form_s2p_enabled_methods = Mage::app()->getRequest()->getParam( 's2p_enabled_methods', null )) )
+        {
+            /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
+            $configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' );
+
+            if( empty( $form_s2p_enabled_methods )
+             or !is_array( $form_s2p_enabled_methods ) )
+                $form_s2p_enabled_methods = array();
+            if( !($form_s2p_surcharge = Mage::app()->getRequest()->getParam( 's2p_surcharge', array() ))
+             or !is_array( $form_s2p_surcharge ) )
+                $form_s2p_surcharge = array();
+            if( !($form_s2p_fixed_amount = Mage::app()->getRequest()->getParam( 's2p_fixed_amount', array() ))
+             or !is_array( $form_s2p_fixed_amount ) )
+                $form_s2p_fixed_amount = array();
+
+            $existing_methods_params_arr = array();
+            $existing_methods_params_arr['method_ids'] = $form_s2p_enabled_methods;
+            $existing_methods_params_arr['include_countries'] = false;
+
+            if( !($db_existing_methods = $configured_methods_obj->get_all_methods( $existing_methods_params_arr )) )
+                $db_existing_methods = array();
+
+            $messages_arr = array();
+            $last_code = 0;
+
+            $this->_methods_to_save = array();
+            foreach( $db_existing_methods as $method_id => $method_details )
+            {
+                if( empty( $form_s2p_surcharge[$method_id] ) )
+                    $form_s2p_surcharge[$method_id] = 0;
+                if( empty( $form_s2p_fixed_amount[$method_id] ) )
+                    $form_s2p_fixed_amount[$method_id] = 0;
+
+                if( !is_numeric( $form_s2p_surcharge[$method_id] ) )
+                {
+                    $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
+                                                'message' => $helper_obj->__( 'Please provide a valid percent for method ' . $method_details['display_name'] . '.' ),
+                                                'class' => __CLASS__,
+                                                'method' => __METHOD__,
+                                                );
+                    $last_code = self::ERR_SURCHARGE_PERCENT;
+                    continue;
+                }
+
+                if( !is_numeric( $form_s2p_fixed_amount[$method_id] ) )
+                {
+                    $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
+                                                'message' => $helper_obj->__( 'Please provide a valid fixed amount for method ' . $method_details['display_name'] . '.' ),
+                                                'class' => __CLASS__,
+                                                'method' => __METHOD__,
+                                                );
+                    $last_code = self::ERR_SURCHARGE_PERCENT;
+                    continue;
+                }
+
+                if( empty( $this->_methods_to_save[$method_id] ) )
+                    $this->_methods_to_save[$method_id] = array();
+
+                // TODO: add country ids instead of only 0 (all countries) in case we want to customize methods per countries
+                $this->_methods_to_save[$method_id][0]['surcharge'] = $form_s2p_surcharge[$method_id];
+                $this->_methods_to_save[$method_id][0]['fixed_amount'] = $form_s2p_fixed_amount[$method_id];
+            }
+
+            if( !empty( $messages_arr ) )
+            {
+                // Don't let system write in db if we have an error
+                $this->_methods_to_save = array();
+                $this->_dataSaveAllowed = false;
+
+                throw $helper_obj->mage_exception( $last_code, $messages_arr );
+            }
+
+            // $logger_obj->write( 'Saving ['.print_r( $this->_methods_to_save, true ).']', 'config_save' );
+        }
 
         return $this;
     }

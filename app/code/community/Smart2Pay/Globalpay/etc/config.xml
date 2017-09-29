@@ -3,7 +3,7 @@
 
     <modules>
         <Smart2Pay_Globalpay>
-            <version>1.1.17</version>
+            <version>2.0.0</version>
         </Smart2Pay_Globalpay>
     </modules>
 
@@ -334,15 +334,15 @@
                 <active>1</active>
                 <model>globalpay/pay</model>
                 <environment>demo</environment>
+                <last_sync_demo><![CDATA[]]></last_sync_demo>
+                <last_sync_test><![CDATA[]]></last_sync_test>
+                <last_sync_live><![CDATA[]]></last_sync_live>
                 <order_status>holded</order_status>
                 <order_status_on_2>processing</order_status_on_2>
                 <order_status_on_3>canceled</order_status_on_3>
                 <order_status_on_4>canceled</order_status_on_4>
                 <order_status_on_5>canceled</order_status_on_5>
                 <title><![CDATA[Alternative payment methods]]></title>
-                <post_url_live>https://api.smart2pay.com</post_url_live>
-                <post_url_test>https://apitest.smart2pay.com</post_url_test>
-                <methods>1,2,3,4,5,8,9,12,13,14,18,19,20,22,23,24,25,27,28,29,32,33,34,35,36,37,40,42,43,44,46,47,48,49,62,63,64,65,66,67,72,73,1000,1001,1002,1003,1004,1005,1006,1007,1008,1009,1010,1011,1012,1013,1014,1015,1016,1017,1018,1019,1020,1021,1022,1023,1024,1025,1026,1027,1028,1029,1030,1031,1033,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043</methods>
                 <display_surcharge>0</display_surcharge>
                 <product_description_ref>1</product_description_ref>
                 <autoselect_s2p>1</autoselect_s2p>

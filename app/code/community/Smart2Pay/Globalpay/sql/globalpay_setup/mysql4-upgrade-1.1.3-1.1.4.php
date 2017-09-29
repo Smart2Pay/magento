@@ -851,4 +851,3 @@
 
     ");
     $installer->endSetup();
-?>

@@ -56,6 +56,30 @@ class Smart2Pay_Globalpay_Block_Adminhtml_System_Config_Configuredmethods extend
         return $this->_toHtml();
     }
 
+    public function get_environment()
+    {
+        /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+        $paymentModel = Mage::getModel('globalpay/pay');
+
+        return $paymentModel->getEnvironment();
+    }
+
+    public function get_last_sync_date()
+    {
+        /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+        $paymentModel = Mage::getModel('globalpay/pay');
+
+        return $paymentModel->method_config['last_sync'];
+    }
+
+    public function seconds_to_launch_sync_str()
+    {
+        /** @var Smart2Pay_Globalpay_Helper_Sdk $sdk_obj */
+        $sdk_obj = Mage::helper( 'globalpay/sdk' );
+
+        return $sdk_obj->seconds_to_launch_sync_str();
+    }
+
     public function get_all_methods()
     {
         /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */

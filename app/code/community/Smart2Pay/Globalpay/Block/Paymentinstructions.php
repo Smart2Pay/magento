@@ -2,58 +2,25 @@
 
 class Smart2Pay_Globalpay_Block_Paymentinstructions extends Mage_Checkout_Block_Onepage_Success
 {
-    public $referenceNumber;
-    public $amountToPay;
-    public $accountHolder;
-    public $merchantTransactionID;
-    public $bankName;
-    public $accountNumber;
-    public $SWIFT_BIC;
-    public $IBAN;
-    public $accountCurrency;
-    public $entityNumber;
-    public $displayPaymentInstructions = false;
+    public $display_params = array();
 
-    public function __construct()
+    protected function _construct()
     {
-        parent::__construct();
+        parent::_construct();
 
-        if( !($query = $this->getRequest()->getParams()) )
+        /** @var Smart2Pay_Globalpay_Model_Transactionlogger $transactions_logger_obj */
+        $transactions_logger_obj = Mage::getModel( 'globalpay/transactionlogger' );
+
+        $this->display_params = array();
+        if( ($params_arr = $transactions_logger_obj::defaultTransactionLoggerExtraParams()) )
         {
-            $this->displayPaymentInstructions = false;
-            return;
+            foreach( $params_arr as $key => $def_val )
+            {
+                if( ($req_val = $this->getRequest()->getParam( $key, $def_val )) === $def_val )
+                    continue;
+
+                $this->display_params[$key] = $req_val;
+            }
         }
-
-        if( empty( $query['ReferenceNumber'] ) )
-            $this->displayPaymentInstructions = false;
-        else
-            $this->displayPaymentInstructions = true;
-
-        if( isset( $query['ReferenceNumber'] ) )
-            $this->referenceNumber = $query['ReferenceNumber'];
-
-        if( isset( $query['AmountToPay'] ) )
-            $this->amountToPay = $query['AmountToPay'];
-
-        if( isset( $query['AccountHolder'] ) )
-            $this->accountHolder = $query['AccountHolder'];
-
-        if( isset( $query['BankName'] ) )
-            $this->bankName = $query['BankName'];
-
-        if( isset( $query['AccountNumber'] ) )
-            $this->accountNumber = $query['AccountNumber'];
-
-        if( isset( $query['SWIFT_BIC'] ) )
-            $this->SWIFT_BIC = $query['SWIFT_BIC'];
-
-        if( isset( $query['IBAN'] ) )
-            $this->IBAN = $query['IBAN'];
-
-        if( isset( $query['AccountCurrency'] ) )
-            $this->accountCurrency = $query['AccountCurrency'];
-
-        if( isset( $query['EntityNumber'] ) )
-            $this->entityNumber = $query['EntityNumber'];
     }
 }

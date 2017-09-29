@@ -10,4 +10,3 @@ class Smart2Pay_Globalpay_TestsController extends Mage_Core_Controller_Front_Act
         die;
     }
 }
-?>

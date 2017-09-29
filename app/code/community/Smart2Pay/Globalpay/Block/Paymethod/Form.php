@@ -7,7 +7,7 @@ class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form
     
     protected function _construct()
     {
-        parent::_construct();        
+        parent::_construct();
         // set template
         $this->setTemplate('smart2pay/globalpay/paymethod/form.phtml');
 
@@ -31,7 +31,9 @@ class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form
         /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
         $configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' );
 
-        return $configured_methods_obj->get_configured_methods( $countryId );
+        $return_arr = $configured_methods_obj->get_configured_methods( $countryId );
+
+        return $return_arr;
         /**
          *
          * OLD way...

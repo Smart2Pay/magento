@@ -115,13 +115,13 @@ if( !$this->method_config['show_methods_in_grid'] )
                             } elseif( $this->method_config['methods_display_mode'] == 'logo' )
                             {
                                 ?>
-                                <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ); ?>' />
+                                <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $method['logo_url']?>' />
                                 <?php
                                 echo $surcharge_explained_str;
                             } else
                             {
                                 ?>
-                                <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ); ?>' />
+                                <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $method['logo_url']?>' />
                                 <div style="clear: both;"></div>
                                 <span class="s2p-method-img-name"><?php echo $this->__( $method['display_name'] ).$surcharge_explained_str; ?></span><?php
                             }
@@ -172,12 +172,12 @@ if( !$this->method_config['show_methods_in_grid'] )
                         } elseif( $this->method_config['methods_display_mode'] == 'logo' )
                         {
                             ?>
-                            <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ) ?>' />
+                            <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $method['logo_url']?>' />
                             <?php
                         } else
                         {
                             ?>
-                            <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $this->getSkinUrl( 'images/smart2pay/methods/'.$method['logo_url'] ) ?>' />
+                            <img class="s2p-method-img" alt="<?php echo $this->__( $method['display_name'] ); ?>" src='<?php echo $method['logo_url']?>' />
                             <?php
                         }
                         ?>

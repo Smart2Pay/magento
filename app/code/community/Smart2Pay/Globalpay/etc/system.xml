@@ -50,75 +50,46 @@
                             <show_in_store>1</show_in_store>
                             <config_path>payment/globalpay/environment</config_path>
                         </environment>
-                        <post_url_live translate="label">
-                            <label><![CDATA[<b>&raquo; Post URL Live</b>]]></label>
-                            <comment></comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>2</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                            <config_path>payment/globalpay/post_url_live</config_path>
-                        </post_url_live>
-                        <post_url_test translate="label">
-                            <label><![CDATA[<b>&raquo; Post URL Test</b>]]></label>
-                            <comment></comment>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>3</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
-                            <config_path>payment/globalpay/post_url_test</config_path>
-                        </post_url_test>
-                        <mid_live translate="label">
-                            <label><![CDATA[<b>&raquo; MID Live</b>]]></label>
+                        <site_id_live translate="label">
+                            <label><![CDATA[<b>&raquo; Site ID Live</b>]]></label>
                             <comment></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>6</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
-                            <config_path>payment/globalpay/mid_live</config_path>
-                        </mid_live>
-                        <mid_test translate="label">
-                            <label><![CDATA[<b>&raquo; MID Test</b>]]></label>
+                            <config_path>payment/globalpay/site_id_live</config_path>
+                        </site_id_live>
+                        <site_id_test translate="label">
+                            <label><![CDATA[<b>&raquo; Site ID Test</b>]]></label>
                             <comment></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>7</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>0</show_in_store>
-                            <config_path>payment/globalpay/mid_test</config_path>
-                        </mid_test>
-                        <site_id translate="label">
-                            <label><![CDATA[Site ID]]></label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>8</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <config_path>payment/globalpay/site_id</config_path>
-                        </site_id>
-                        <signature_live translate="label">
-                            <label><![CDATA[<b>&raquo; Signature Live</b>]]></label>
+                            <config_path>payment/globalpay/site_id_test</config_path>
+                        </site_id_test>
+                        <apikey_live translate="label">
+                            <label><![CDATA[<b>&raquo; API Key Live</b>]]></label>
                             <comment></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>9</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <config_path>payment/globalpay/signature_live</config_path>
-                        </signature_live>
-                        <signature_test translate="label">
-                            <label><![CDATA[<b>&raquo; Signature Test</b>]]></label>
+                            <config_path>payment/globalpay/apikey_live</config_path>
+                        </apikey_live>
+                        <apikey_test translate="label">
+                            <label><![CDATA[<b>&raquo; API Key Test</b>]]></label>
                             <comment></comment>
                             <frontend_type>text</frontend_type>
                             <sort_order>10</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                            <config_path>payment/globalpay/signature_test</config_path>
-                        </signature_test>
+                            <config_path>payment/globalpay/apikey_test</config_path>
+                        </apikey_test>
                         <return_url translate="label">
                             <label><![CDATA[<b>&raquo; Return URL</b>]]></label>
                             <comment></comment>
@@ -186,19 +157,6 @@
                                 <show_in_store>1</show_in_store>
                                 <config_path>payment/globalpay/display_surcharge</config_path>
                             </display_surcharge>
-
-                            <!--
-                            <methods translate="label">
-                                <label><![CDATA[Active methods]]></label>
-                                <frontend_type>multiselect</frontend_type>
-                                <sort_order>13</sort_order>
-                                <source_model>globalpay/source_methods</source_model>
-                                <show_in_default>1</show_in_default>
-                                <show_in_website>1</show_in_website>
-                                <show_in_store>1</show_in_store>
-                                <config_path>payment/globalpay/methods</config_path>
-                            </methods>
-                            -->
 
                             <methods_display_mode translate="label">
                                 <label><![CDATA[Methods display mode]]></label>

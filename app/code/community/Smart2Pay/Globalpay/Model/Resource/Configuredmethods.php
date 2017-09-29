@@ -56,23 +56,33 @@ class Smart2Pay_Globalpay_Model_Resource_Configuredmethods extends Mage_Core_Mod
         if( empty( $params['fixed_amount'] ) )
             $params['fixed_amount'] = 0;
 
+        if( !isset( $params['environment'] ) or empty( $params['environment'] ) )
+        {
+            /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+            $paymentModel = Mage::getModel('globalpay/pay');
+
+            $params['environment'] = $paymentModel->getEnvironment();
+        }
+
         $insert_arr = array();
         $insert_arr['surcharge'] = $params['surcharge'];
         $insert_arr['fixed_amount'] = $params['fixed_amount'];
 
         try
         {
-            if( ( $existing_id = $conn_read->fetchOne( 'SELECT id FROM ' . $this->getMainTable() . ' WHERE method_id = \'' . $method_id . '\' AND country_id = \'' . $country_id . '\' LIMIT 0, 1' ) ) )
+            if( ( $existing_id = $conn_read->fetchOne( 'SELECT id FROM ' . $this->getMainTable() . ' '.
+                                                       ' WHERE method_id = \''.$method_id.'\' AND country_id = \''.$country_id.'\' AND environment = \''.$params['environment'].'\''.
+                                                       ' LIMIT 0, 1' ) ) )
             {
                 // we should update record
                 $conn_write->update( $this->getMainTable(), $insert_arr, 'id = \'' . $existing_id . '\'' );
             } else
             {
+                $insert_arr['environment']  = $params['environment'];
                 $insert_arr['method_id']  = $method_id;
                 $insert_arr['country_id'] = $country_id;
 
                 $conn_write->insert( $this->getMainTable(), $insert_arr );
-
             }
         } catch( Zend_Db_Adapter_Exception $e )
         {

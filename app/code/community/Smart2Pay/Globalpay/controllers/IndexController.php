@@ -12,80 +12,361 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
      */
     public function indexAction()
     {
-        // check if there is an submited order and a 
-        if( isset( $_SESSION['s2p_handle_payment'] ) )
-        {
-            unset( $_SESSION['s2p_handle_payment'] );
-            $this->loadLayout();
-            $this->renderLayout();
+        // not used anymore...
+        $this->_redirectUrl(Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK) . 'checkout/cart/');
+        return;
 
-	        Mage::getModel('globalpay/logger')->write('>>> Redirect OK :::', 'info');
-        } else
-        {
- 	        Mage::getModel('globalpay/logger')->write('>>> Redirect NOT OK, session empty. :::', 'info');
-
-            $this->_redirectUrl(Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK) . 'checkout/cart/');
-        }
+        /** @var Smart2Pay_Globalpay_Model_Logger $s2pLogger */
+        // $s2pLogger = Mage::getModel( 'globalpay/logger' );
+        //
+        // // check if there is an submited order
+        // if( isset( $_SESSION['s2p_handle_payment'] ) )
+        // {
+        //     unset( $_SESSION['s2p_handle_payment'] );
+        //     $this->loadLayout();
+        //     $this->renderLayout();
+        //
+        //     $s2pLogger->write('>>> Redirect OK :::', 'info');
+        // } else
+        // {
+        //     $s2pLogger->write('>>> Redirect NOT OK, session empty. :::', 'info');
+        //
+        //     $this->_redirectUrl(Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_LINK) . 'checkout/cart/');
+        // }
     }    
 
-    /** 
-     * Process s2p response
-     * Expected response content: {
-     * "NotificationType":"payment",
-     * "MethodID":"27",
-     * "PaymentID":"18899",
-     * "MerchantTransactionID":"926927",
-     * "StatusID":"2",
-     * "Amount":"100",
-     * "Currency":"EUR",
-     * "Hash":"fb9810cb1ac334092aa1f3033be20127676244b343f1ef2ffb447b9a8ced04ba"}
-     */
-    // MethodID: 20:
-    // NotificationType=Payment&
-    // MethodID=20&
-    // PaymentID=1528069&
-    // MerchantTransactionID=100000017&
-    // StatusID=1&
-    // Amount=2500&
-    // Currency=USD&
-    // SiteID=30112&
-    // ReferenceNumber=000 887 453&
-    // EntityNumber=11302&
-    // AmountToPay=22.03 EUR
-
-    // MethodID: 1:
-    // NotificationType=Payment&
-    // MethodID=1&
-    // PaymentID=1528073&
-    // MerchantTransactionID=100000018&
-    // StatusID=1&
-    // Amount=2500&
-    // Currency=USD&
-    // SiteID=30112&
-    // ReferenceNumber=HPP1528073&
-    // AmountToPay=88.76RON&
-    // AccountHolder=SC SMART2PAY SRL&
-    // BankName=BRD Groupe Societe Generale&
-    // AccountNumber=SV67447622400&
-    // IBAN=RO16BRDE240SV67447622400&
-    // SWIFT_BIC=BRDEROBUXXX&
-    // AccountCurrency=RON&
-    // Hash=07d258fcce37e3be92b251cd4fe047ae6e6e6388a6d565e70d0b42d17851bb6f
     public function handleResponseAction()
     {
         /** @var Smart2Pay_Globalpay_Model_Logger $s2pLogger */
         $s2pLogger = Mage::getModel( 'globalpay/logger' );
 
-        $s2pLogger->write( '>>> START HANDLE RESPONSE :::', 'info' );
+        $s2pLogger->write( '--- Notification START --------------------', 'info' );
 
+        /** @var Smart2Pay_Globalpay_Helper_Sdk $sdk_obj */
+        $sdk_obj = Mage::helper('globalpay/sdk');
+        /** @var Mage_Sales_Model_Order $order */
+        $order = Mage::getModel( 'sales/order' );
         /** @var Smart2Pay_Globalpay_Helper_Helper $s2pHelper */
         $s2pHelper = Mage::helper( 'globalpay/helper' );
         /** @var Smart2Pay_Globalpay_Model_Transactionlogger $s2pTransactionLogger */
         $s2pTransactionLogger = Mage::getModel( 'globalpay/transactionlogger' );
         /** @var Smart2Pay_Globalpay_Model_Pay $payMethod */
         $payMethod = Mage::getModel( 'globalpay/pay' );
-        /** @var Mage_Sales_Model_Order $order */
-        $order = Mage::getModel( 'sales/order' );
+
+        if( !($sdk_version = $sdk_obj::get_sdk_version())
+         or !defined( 'S2P_SDK_DIR_CLASSES' )
+         or !defined( 'S2P_SDK_DIR_METHODS' ) )
+        {
+            $s2pLogger->write( 'Unknown SDK version', 'error' );
+            return;
+        }
+
+        $api_credentials = $sdk_obj->get_api_credentials();
+
+        $s2pLogger->write( 'SDK version: '.$sdk_version, 'info' );
+
+        include_once( S2P_SDK_DIR_CLASSES . 's2p_sdk_notification.inc.php' );
+        include_once( S2P_SDK_DIR_CLASSES . 's2p_sdk_helper.inc.php' );
+        include_once( S2P_SDK_DIR_METHODS . 's2p_sdk_meth_payments.inc.php' );
+
+        if( !defined( 'S2P_SDK_NOTIFICATION_IDENTIFIER' ) )
+            define( 'S2P_SDK_NOTIFICATION_IDENTIFIER', microtime( true ) );
+
+        S2P_SDK\S2P_SDK_Notification::logging_enabled( false );
+
+        $notification_params = array();
+        $notification_params['auto_extract_parameters'] = true;
+
+        /** @var S2P_SDK\S2P_SDK_Notification $notification_obj */
+        if( !($notification_obj = S2P_SDK\S2P_SDK_Module::get_instance( 'S2P_SDK_Notification', $notification_params ))
+         or $notification_obj->has_error() )
+        {
+            if( (S2P_SDK\S2P_SDK_Module::st_has_error() and $error_arr = S2P_SDK\S2P_SDK_Module::st_get_error())
+             or (!empty( $notification_obj ) and $notification_obj->has_error() and ($error_arr = $notification_obj->get_error())) )
+                $error_msg = 'Error ['.$error_arr['error_no'].']: '.$error_arr['display_error'];
+            else
+                $error_msg = 'Error initiating notification object.';
+
+            $s2pLogger->write( $error_msg, 'error' );
+            echo $error_msg;
+            return;
+        }
+
+        $s2pHelper::foobar( 'Notification: '.$notification_obj->get_input_buffer() );
+
+        if( !($notification_type = $notification_obj->get_type())
+         or !($notification_title = $notification_obj::get_type_title( $notification_type )) )
+        {
+            $error_msg = 'Unknown notification type.';
+            $error_msg .= 'Input buffer: '.$notification_obj->get_input_buffer();
+
+            $s2pLogger->write( $error_msg, 'error' );
+            echo $error_msg;
+            return;
+        }
+
+        if( !($result_arr = $notification_obj->get_array()) )
+        {
+            $error_msg = 'Couldn\'t extract notification object.';
+            $error_msg .= 'Input buffer: '.$notification_obj->get_input_buffer();
+
+            $s2pLogger->write( $error_msg, 'error' );
+            echo $error_msg;
+            return;
+        }
+
+        ob_start();
+        var_dump( $result_arr );
+        $buf = ob_get_clean();
+
+        $s2pHelper::foobar( 'Notification array: '.$buf );
+
+        if( $notification_type != $notification_obj::TYPE_PAYMENT )
+        {
+            $error_msg = 'Plugin currently supports only payment notifications.';
+
+            $s2pLogger->write( $error_msg, 'error' );
+            echo $error_msg;
+            return;
+        }
+
+        if( empty( $result_arr['payment'] ) or !is_array( $result_arr['payment'] )
+         or empty( $result_arr['payment']['merchanttransactionid'] )
+         or !($order->loadByIncrementId( $result_arr['payment']['merchanttransactionid'] ))
+         or !($s2p_transaction_arr = $s2pTransactionLogger->getTransactionDetailsAsArray( $result_arr['payment']['merchanttransactionid'] ))
+          )
+        {
+            $error_msg = 'Couldn\'t load order or transaction as provided in notification.';
+            $error_msg .= 'Input buffer: '.$notification_obj->get_input_buffer();
+
+            $s2pLogger->write( $error_msg, 'error' );
+            echo $error_msg;
+            return;
+        }
+
+        $merchanttransactionid = $result_arr['payment']['merchanttransactionid'];
+        $payment_arr = $result_arr['payment'];
+
+        if( empty( $s2p_transaction_arr['environment'] )
+         or !($api_credentials = $payMethod->getApiSettingsByEnvironment( $s2p_transaction_arr['environment'] ))
+         or empty( $api_credentials['site_id'] ) or empty( $api_credentials['apikey'] ) )
+        {
+            $error_msg = 'Couldn\'t load Smart2Pay API credentials for environment ['.$s2p_transaction_arr['environment'].'].';
+
+            $s2pLogger->write( $error_msg, 'error', $merchanttransactionid );
+            echo $error_msg;
+            return;
+        }
+
+        \S2P_SDK\S2P_SDK_Module::one_call_settings(
+            array(
+                'api_key' => $api_credentials['apikey'],
+                'site_id' => $api_credentials['site_id'],
+                'environment' => $api_credentials['api_environment'],
+            ) );
+
+        if( !$notification_obj->check_authentication() )
+        {
+            if( $notification_obj->has_error()
+                and ($error_arr = $notification_obj->get_error()) )
+                $error_msg = 'Error: '.$error_arr['display_error'];
+            else
+                $error_msg = 'Authentication failed.';
+
+            $s2pLogger->write( $error_msg, 'error', $merchanttransactionid );
+            echo $error_msg;
+            return;
+        }
+
+        $s2pLogger->write( 'Received notification type ['.$notification_title.'].', 'info', $merchanttransactionid  );
+
+        switch( $notification_type )
+        {
+            case $notification_obj::TYPE_PAYMENT:
+
+                if( empty( $payment_arr['status'] ) or empty( $payment_arr['status']['id'] ) )
+                {
+                    $error_msg = 'Status not provided.';
+                    $error_msg .= 'Input buffer: '.$notification_obj->get_input_buffer();
+
+                    $s2pLogger->write( $error_msg, 'error', $merchanttransactionid );
+                    echo $error_msg;
+                    return;
+                }
+
+                if( !isset( $payment_arr['amount'] ) or !isset( $payment_arr['currency'] ) )
+                {
+                    $error_msg = 'Amount or Currency not provided.';
+                    $error_msg .= 'Input buffer: '.$notification_obj->get_input_buffer();
+
+                    $s2pLogger->write( $error_msg, 'error', $merchanttransactionid );
+                    echo $error_msg;
+                    return;
+                }
+
+                $order->addStatusHistoryComment( 'Smart2Pay :: payment notification received (Status: '.$payment_arr['status']['id'].'.' );
+
+                if( !($status_title = S2P_SDK\S2P_SDK_Meth_Payments::valid_status( $payment_arr['status']['id'] )) )
+                    $status_title = '(unknown)';
+
+                $edit_arr = array();
+                $edit_arr['merchant_transaction_id'] = $merchanttransactionid;
+                if( !empty( $payment_arr['methodid'] ) )
+                    $edit_arr['method_id'] = $payment_arr['methodid'];
+                $edit_arr['payment_status'] = $payment_arr['status']['id'];
+
+                if( empty( $s2p_transaction_arr['extra_data'] ) )
+                    $transaction_extra_data_arr = array();
+                else
+                    $transaction_extra_data_arr = $s2pHelper->parse_string( $s2p_transaction_arr['extra_data'] );
+
+                if( !empty( $payment_request['referencedetails'] ) and is_array( $payment_request['referencedetails'] ) )
+                {
+                    foreach( $payment_request['referencedetails'] as $key => $val )
+                    {
+                        if( is_null( $val ) )
+                            continue;
+
+                        $transaction_extra_data_arr[$key] = $val;
+                    }
+                }
+
+                if( !($new_transaction_arr = $s2pTransactionLogger->write( $edit_arr, $transaction_extra_data_arr )) )
+                {
+                    $error_msg = 'Couldn\'t save transaction details to database [#'.$s2p_transaction_arr['id'].', Order: '.$s2p_transaction_arr['merchant_transaction_id'].'].';
+
+                    $s2pLogger->write( $error_msg, 'error', $merchanttransactionid );
+                    echo $error_msg;
+                    return;
+                }
+
+                // Send order confirmation email (if not already sent)
+                if( !$order->getEmailSent() )
+                    $order->sendNewOrderEmail();
+
+                $s2pLogger->write( 'Received '.$status_title.' notification for order '.$payment_arr['merchanttransactionid'].'.', 'info', $merchanttransactionid );
+
+                // Update database according to payment status
+                switch( $payment_arr['status']['id'] )
+                {
+                    default:
+                        $order->addStatusHistoryComment( 'Smart2Pay status ID "'.$payment_arr['status']['id'].'" occurred.' );
+                    break;
+
+                    case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_OPEN:
+
+                        $order->addStatusHistoryComment( 'Smart2Pay status ID "'.$payment_arr['status']['id'].'" occurred.', $payMethod->method_config['order_status'] );
+
+                        if( !empty( $payment_arr['methodid'] )
+                        and $payMethod->method_config['notify_payment_instructions']
+                        and in_array( $payment_arr['methodid'], array( $payMethod::PAYMENT_METHOD_BT, $payMethod::PAYMENT_METHOD_SIBS ) ) )
+                        {
+                            // Inform customer
+                            $this->sendPaymentDetails( $order, $transaction_extra_data_arr );
+                        }
+                    break;
+
+                    case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_SUCCESS:
+                        $orderAmount =  number_format( $order->getGrandTotal(), 2, '.', '' ) * 100;
+                        $orderCurrency = $order->getOrderCurrency()->getCurrencyCode();
+
+                        if( strcmp( $orderAmount, $payment_arr['amount'] ) != 0
+                         or $orderCurrency != $payment_arr['currency'] )
+                            $order->addStatusHistoryComment( 'Smart2Pay :: notification has different amount ['.$orderAmount.'/'.$payment_arr['amount'] . '] and/or currency ['.$orderCurrency.'/' . $payment_arr['currency'] . ']!. Please contact support@smart2pay.com', $payMethod->method_config['order_status_on_4'] );
+
+                        else
+                        {
+                            $order->addStatusHistoryComment( 'Smart2Pay :: order has been paid. [MethodID: '. $payment_arr['methodid'] .']', $payMethod->method_config['order_status_on_2'] );
+
+                            // Generate invoice
+                            if( $payMethod->method_config['auto_invoice'] )
+                            {
+                                // Create and pay Order Invoice
+                                if( !$order->canInvoice() )
+                                    $s2pLogger->write( 'Order can not be invoiced', 'warning', $merchanttransactionid );
+
+                                else
+                                {
+                                    /** @var Mage_Sales_Model_Order_Invoice $invoice */
+                                    $invoice = Mage::getModel('sales/service_order', $order)->prepareInvoice();
+                                    $invoice->setRequestedCaptureCase( Mage_Sales_Model_Order_Invoice::CAPTURE_OFFLINE );
+                                    $invoice->register();
+                                    $transactionSave = Mage::getModel('core/resource_transaction')
+                                        ->addObject( $invoice )
+                                        ->addObject( $invoice->getOrder() );
+                                    $transactionSave->save();
+
+                                    $order->addStatusHistoryComment( 'Smart2Pay :: order has been automatically invoiced.', $payMethod->method_config['order_status_on_2'] );
+                                }
+                            }
+
+                            // Check shipment
+                            if( $payMethod->method_config['auto_ship'] )
+                            {
+                                if( !$order->canShip() )
+                                    $s2pLogger->write( 'Order can not be shipped', 'warning' );
+
+                                else
+                                {
+                                    $itemQty =  $order->getItemsCollection()->count();
+                                    $shipment = Mage::getModel( 'sales/service_order', $order )->prepareShipment( $itemQty );
+                                    $shipment = new Mage_Sales_Model_Order_Shipment_Api();
+                                    $shipmentId = $shipment->create( $order->getIncrementId() );
+                                    $order->addStatusHistoryComment( 'Smart2Pay :: order has been automatically shipped.', $payMethod->method_config['order_status_on_2'] );
+                                }
+                            }
+
+                            // Inform customer
+                            if( $payMethod->method_config['notify_customer'] )
+                            {
+                                $this->informCustomer( $order, $payment_arr['amount'], $payment_arr['currency'] );
+                            }
+                        }
+                    break;
+
+                    case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_CANCELLED:
+                        $order->addStatusHistoryComment( 'Smart2Pay :: payment has been canceled.', $payMethod->method_config['order_status_on_3'] );
+
+                        if( !$order->canCancel() )
+                            $s2pLogger->write( 'Cannot cancel the order', 'warning', $merchanttransactionid );
+                        else
+                            $order->cancel();
+                    break;
+
+                    case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_FAILED:
+                        $order->addStatusHistoryComment( 'Smart2Pay :: payment has failed.', $payMethod->method_config['order_status_on_4'] );
+                    break;
+
+                    case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_EXPIRED:
+                        $order->addStatusHistoryComment( 'Smart2Pay :: payment has expired.', $payMethod->method_config['order_status_on_5'] );
+                    break;
+                }
+
+            break;
+
+            case $notification_obj::TYPE_PREAPPROVAL:
+                $s2pLogger->write( 'Preapprovals not implemented.', 'error', $merchanttransactionid );
+            break;
+        }
+
+        $order->save();
+
+        if( $notification_obj->respond_ok() )
+            $s2pLogger->write( '--- Sent OK -------------------------------', 'info', $merchanttransactionid );
+
+        else
+        {
+            if( $notification_obj->has_error()
+                and ($error_arr = $notification_obj->get_error()) )
+                $error_msg = 'Error: '.$error_arr['display_error'];
+            else
+                $error_msg = 'Couldn\'t send ok response.';
+
+            $s2pLogger->write( $error_msg, 'error', $merchanttransactionid );
+            echo $error_msg;
+        }
+
+        exit;
 
         try
         {
@@ -457,46 +738,16 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
         }
     }
 
-    static function defaultPaymentDetailsParams()
-    {
-        return array(
-            'reference_number' => 0,
-            'amount_to_pay' => 0,
-            'account_holder' => '',
-            'bank_name' => '',
-            'account_number' => '',
-            'account_currency' => '',
-            'swift_bic' => '',
-            'iban' => '',
-            'entity_number' => '',
-        );
-    }
-
-    static function validatePaymentDetailsParams( $query_arr )
-    {
-        if( empty( $query_arr ) or !is_array( $query_arr ) )
-            $query_arr = array();
-
-        $default_values = self::defaultPaymentDetailsParams();
-        foreach( $default_values as $key => $val )
-        {
-            if( !array_key_exists( $key, $query_arr ) )
-                $query_arr[$key] = $val;
-        }
-
-        return $query_arr;
-    }
-
     public function sendPaymentDetails( Mage_Sales_Model_Order $order, $payment_details_arr )
     {
-        $payment_details_arr = self::validatePaymentDetailsParams( $payment_details_arr );
-
         /** @var Smart2Pay_Globalpay_Model_Transactionlogger $s2pTransactionLogger */
         $s2pTransactionLogger = Mage::getModel( 'globalpay/transactionlogger' );
         /** @var Smart2Pay_Globalpay_Model_Pay $payMethod */
         $payMethod = Mage::getModel('globalpay/pay');
         /** @var Smart2Pay_Globalpay_Model_Logger $s2pLogger */
         $s2pLogger = Mage::getModel( 'globalpay/logger' );
+
+        $payment_details_arr = $s2pTransactionLogger::validateTransactionLoggerExtraParams( $payment_details_arr, array( 'keep_default_values' => true ) );
 
         try
         {
@@ -557,7 +808,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
             $payment_details_arr['support_email'] = $supportEmail;
 
             if( !$mailTemplate->send( $order->getCustomerEmail(), $order->getCustomerName(), $payment_details_arr ) )
-                $s2pLogger->write( 'Error sending payment instructions email to ['.$order->getCustomerEmail().']', 'email_template' );
+                $s2pLogger->write( 'Error sending payment instructions email to ['.$order->getCustomerEmail().']', 'email_template', $order_increment_id );
 
         } catch( Exception $e )
         {

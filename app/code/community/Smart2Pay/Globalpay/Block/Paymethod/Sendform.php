@@ -34,7 +34,7 @@ class Smart2Pay_Globalpay_Block_Paymethod_Sendform extends Mage_Core_Block_Templ
         $merchant_transaction_id = $order->getRealOrderId();
 
         // assume live environment if we don't get something valid from config
-        $environment = (!empty( $paymentModel->method_config['environment'] )?strtolower( trim( $paymentModel->method_config['environment'] ) ):'live');
+        $environment = $paymentModel->method_config['environment'];
 
         if( $environment == 'demo' )
         {

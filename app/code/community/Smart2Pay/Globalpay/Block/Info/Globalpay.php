@@ -153,7 +153,8 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
             {
                 $method_arr = false;
                 $s2pMethodCollection->addFieldToSelect( '*' )
-                                    ->addFieldToFilter( 'method_id', $s2p_transaction_arr['method_id'] );
+                                    ->addFieldToFilter( 'method_id', $s2p_transaction_arr['method_id'] )
+                                    ->addFieldToFilter( 'environment', $s2p_transaction_arr['environment'] );
                 if( ($methods_list_arr = $s2pMethodCollection->getData())
                 and is_array( $methods_list_arr ) )
                     $method_arr = array_pop( $methods_list_arr );

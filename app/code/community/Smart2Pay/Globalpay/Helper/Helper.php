@@ -2,9 +2,33 @@
 
 class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
 {
+    const SQL_DATETIME = 'Y-m-d H:i:s', EMPTY_DATETIME = '0000-00-00 00:00:00';
+    const SQL_DATE = 'Y-m-d', EMPTY_DATE = '0000-00-00';
+
     public static function klarna_price( $amount )
     {
         return (float)number_format( $amount, 2, '.', '' );
+    }
+
+    public static function foobar( $str )
+    {
+        if( !($fil = @fopen( '/home/andy/magento.log', 'a' )) )
+            return false;
+
+        $file = 'N/A';
+        $line = 0;
+        $backtrace = debug_backtrace();
+        if( !empty( $backtrace[0] ) )
+        {
+            $file = $backtrace[0]['file'];
+            $line = $backtrace[0]['line'];
+        }
+
+        @fputs( $fil, date( 'Y-m-d H:i:s' ).' - '.$file.':'.$line.' - '.$str."\n" );
+        @fflush( $fil );
+        @fclose( $fil );
+
+        return true;
     }
 
     public static function cart_products_to_string( $products_arr, $cart_original_amount, $params = false )
@@ -623,6 +647,53 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
         $data = str_replace( '\'', '\\\'', str_replace( '\\\'', '\'', $data ) );
 
         return $data;
+    }
+
+    public static function validate_db_date( $str )
+    {
+        return date( self::SQL_DATE, self::parse_db_date( $str ) );
+    }
+
+    public static function validate_db_datetime( $str )
+    {
+        return date( self::SQL_DATETIME, self::parse_db_date( $str ) );
+    }
+
+    static function parse_db_date( $str )
+    {
+        $str = trim( $str );
+        if( strstr( $str, ' ' ) )
+        {
+            $d = explode( ' ', $str );
+            $date_ = explode( '-', $d[0] );
+            $time_ = explode( ':', $d[1] );
+        } else
+            $date_ = explode( '-', $str );
+
+        for( $i = 0; $i < 3; $i++ )
+        {
+            if( !isset( $date_[$i] ) )
+                $date_[$i] = 0;
+            if( isset( $time_ ) and !isset( $time_[$i] ) )
+                $time_[$i] = 0;
+        }
+
+        if( !empty( $date_ ) and is_array( $date_ ) )
+            foreach( $date_ as $key => $val )
+                $date_[$key] = intval( $val );
+        if( !empty( $time_ ) and is_array( $time_ ) )
+            foreach( $time_ as $key => $val )
+                $time_[$key] = intval( $val );
+
+        if( isset( $time_ ) )
+            return mktime( $time_[0], $time_[1], $time_[2], $date_[1], $date_[2], $date_[0] );
+        else
+            return mktime( 0, 0, 0, $date_[1], $date_[2], $date_[0] );
+    }
+
+    static function seconds_passed( $str )
+    {
+        return time() - self::parse_db_date( $str );
     }
 
 }

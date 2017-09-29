@@ -15,36 +15,13 @@ class Smart2Pay_Globalpay_Model_Logger extends Mage_Core_Model_Abstract
         $this->_init('globalpay/logger');
     }
 
-    public function write( $message = '', $type = 'info', $file = '', $line = '' )
+    public function write( $message, $type = 'info', $transaction_id = 0, $file = '', $line = '' )
     {
-        try
-        {
-            /** @var Magento_Db_Adapter_Pdo_Mysql $conn */
-            if( !($conn = Mage::getSingleton('core/resource')->getConnection('core_write')) )
-                return false;
+        /** @var Smart2Pay_Globalpay_Model_Resource_Logger $my_resource */
+        if( !($my_resource = $this->getResource()) )
+            return false;
 
-            if( empty( $file ) or empty( $line ) )
-            {
-                $backtrace = debug_backtrace();
-                $file = $backtrace[0]['file'];
-                $line = $backtrace[0]['line'];
-            }
-
-            $insert_arr = array();
-            $insert_arr['log_message'] = $message;
-            $insert_arr['log_type'] = $type;
-            $insert_arr['log_source_file'] = $file;
-            $insert_arr['log_source_file_line'] = $line;
-
-            $conn->insert( $this->getResource()->getTable( 'globalpay/logger' ), $insert_arr );
-
-        } catch( Exception $e )
-        {
-            Zend_Debug::dump($e->getMessage());
-            die;
-        }
-
-        return true;
+        return $my_resource->write( $message, $type, $transaction_id, $file, $line );
     }
 
 }

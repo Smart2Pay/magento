@@ -1,10 +1,11 @@
 <?php
-
 class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract // implements Mage_Payment_Model_Recurring_Profile_MethodInterface
 {
+    const ERR_SDK_PAYMENT_INIT = 1000;
+
     const S2P_STATUS_OPEN = 1, S2P_STATUS_SUCCESS = 2, S2P_STATUS_CANCELLED = 3, S2P_STATUS_FAILED = 4, S2P_STATUS_EXPIRED = 5, S2P_STATUS_PROCESSING = 7;
 
-    const PAYMENT_METHOD_BT = 1, PAYMENT_METHOD_SIBS = 20,
+    const PAYMENT_METHOD_BT = 1, PAYMENT_METHOD_SIBS = 20, PAYMENT_METHOD_SMARTCARDS = 6,
           PAYMENT_METHOD_KLARNA_CHECKOUT = 1052, PAYMENT_METHOD_KLARNA_INVOICE = 75;
 
     protected $_code = 'globalpay';
@@ -37,6 +38,8 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
      *
      * @param Mage_Payment_Model_Recurring_Profile $profile
      * @param Mage_Payment_Model_Info $paymentInfo
+     *
+     * @return Smart2Pay_Globalpay_Model_Pay
      */
     public function submitRecurringProfile(Mage_Payment_Model_Recurring_Profile $profile,
         Mage_Payment_Model_Info $paymentInfo
@@ -156,13 +159,15 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         parent::__construct();
 
         // get environment type
-        $environment = $this->getConfigData('environment'); // [demo | test | live]
+        $environment = $this->getEnvironment(); // [demo | test | live]
 
         // get config
         $this->method_config = array(
             'environment' => $environment,
+            'last_sync_demo' => $this->getConfigData('last_sync_demo'),
+            'last_sync_test' => $this->getConfigData('last_sync_test'),
+            'last_sync_live' => $this->getConfigData('last_sync_live'),
             'return_url' => $this->getConfigData('return_url'),
-            'methods' => $this->getConfigData('methods'),
             'methods_display_mode' => $this->getConfigData('methods_display_mode'),
             'show_text_img' => $this->getConfigData('show_text_img'),
             'show_methods_in_grid' => $this->getConfigData('show_methods_in_grid'),
@@ -182,7 +187,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
             'debug_form' => $this->getConfigData('debug_form'),
             'redirect_in_iframe' => $this->getConfigData('redirect_in_iframe'),
             'skin_id' => $this->getConfigData('skin_id'),
-            'site_id' => $this->getConfigData('site_id'),
             'message_data_2' => $this->getConfigData('message_data_2'),
             'message_data_3' => $this->getConfigData('message_data_3'),
             'message_data_4' => $this->getConfigData('message_data_4'),
@@ -197,37 +201,80 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
             'notify_customer' => $this->getConfigData('notify_customer'),
         );
 
-        if( $environment == 'demo' )
-        {
-            // demo environment
-            $this->method_config['post_url'] = 'https://apitest.smart2pay.com';
-            $this->method_config['signature'] = '8bf71f75-68d9';
-            $this->method_config['mid'] = '1045';
-            $this->method_config['site_id'] = '30122';
-        } elseif( in_array( $environment, array( 'test', 'live' ) ) )
-        {
-            $this->method_config['post_url'] = $this->getConfigData( 'post_url_' . $environment );
-            $this->method_config['signature'] = $this->getConfigData( 'signature_' . $environment );
-            $this->method_config['mid'] = $this->getConfigData( 'mid_' . $environment );
-        } else
-        {
-            $this->method_config['post_url'] = 'https://apitest.smart2pay.com';
-            $this->method_config['signature'] = '';
-            $this->method_config['mid'] = 0;
-        }
+        $api_settings = $this->getApiSettingsByEnvironment( $environment );
+        foreach( $api_settings as $key => $val )
+            $this->method_config[$key] = $val;
 
         // Not enabled yet
         //$this->method_config['display_surcharge'] = 0;
+    }
+
+    public function getApiSettingsByEnvironment( $environment = false )
+    {
+        if( empty( $environment ) )
+            $environment = $this->getEnvironment();
+
+        $api_settings = array();
+        if( $environment == 'demo' )
+        {
+            // demo environment
+            $api_settings['api_environment'] = 'test';
+            $api_settings['apikey'] = 'jkIyM689LNUizQFL6NxC2s9Nbr9AHKPYyGq2o/xcm3yYb/G0ca';
+            $api_settings['site_id'] = '33685';
+            $api_settings['last_sync'] = $this->getConfigData( 'last_sync_demo' );
+        } elseif( in_array( $environment, array( 'test', 'live' ) ) )
+        {
+            $api_settings['api_environment'] = $environment;
+            $api_settings['apikey'] = $this->getConfigData( 'apikey_' . $environment );
+            $api_settings['site_id'] = $this->getConfigData( 'site_id_' . $environment );
+            $api_settings['last_sync'] = $this->getConfigData( 'last_sync_' . $environment );
+        } else
+        {
+            $api_settings['api_environment'] = '';
+            $api_settings['apikey'] = '';
+            $api_settings['site_id'] = 0;
+            $api_settings['last_sync'] = false;
+        }
+
+        return $api_settings;
+    }
+
+    public function getEnvironment()
+    {
+        static $_environment = false;
+
+        if( $_environment !== false )
+            return $_environment;
+
+        if( !($_environment = $this->getConfigData('environment')) )
+            $_environment = 'demo';
+
+        $_environment = strtolower( trim( $_environment ) );
+        if( !in_array( $_environment, array( 'demo', 'live', 'test' )) )
+            $_environment = 'demo';
+
+        return $_environment;
+    }
+
+    public function upate_last_methods_sync_option( $value, $environment = false )
+    {
+        if( $environment === false )
+            $environment = $this->getEnvironment();
+
+        Mage::getConfig()->saveConfig('payment/globalpay/last_sync_'.$environment, $value, 'default', 0);
     }
 
     /**
      * Assign data to info model instance
      *
      * @param   mixed $data
-     * @return  Mage_Payment_Model_Info
+     * @return  Mage_Payment_Model_Method_Abstract
      */
     public function assignData( $data )
     {
+        /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
+        $logger_obj = Mage::getModel( 'globalpay/logger' );
+
         if( !($data instanceof Varien_Object) )
             $data = new Varien_Object($data);
 
@@ -259,10 +306,8 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
 
         $info = $this->getInfoInstance();
 
+        Mage::getSingleton('customer/session')->setGlobalPayMethod( $method_id );
         $_SESSION['globalpay_method'] = $method_id;
-
-        /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
-        $logger_obj = Mage::getModel( 'globalpay/logger' );
 
         if( !empty( $enabled_methods[$method_id]['surcharge'] )
          or !empty( $enabled_methods[$method_id]['fixed_amount'] ) )
@@ -308,13 +353,386 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         return $this;
     }
 
+    /**
+     * Return Quote or Order Object depending what the Payment is
+     *
+     * @return Mage_Sales_Model_Order|Mage_Sales_Model_Quote
+     */
+    public function currentOrderorQuote()
+    {
+        static $order_or_quote = false;
+
+        if( $order_or_quote !== false )
+            return $order_or_quote;
+
+        $info = $this->getInfoInstance();
+
+        if( $info instanceof Mage_Sales_Model_Order_Payment )
+            $order_or_quote = $info->getOrder();
+        else
+            $order_or_quote = $info->getQuote();
+
+        return $order_or_quote;
+    }
+
+    /**
+     * @param Mage_Sales_Model_Order|Mage_Sales_Model_Quote $order_or_quote
+     *
+     * @return int
+     */
+    private function _get_order_id( $order_or_quote )
+    {
+        if( $order_or_quote instanceof Mage_Sales_Model_Order )
+            return $order_or_quote->getRealOrderId();
+
+        elseif( $order_or_quote instanceof Mage_Sales_Model_Quote )
+            return $order_or_quote->getReservedOrderId();
+
+        return 0;
+    }
+
+    /**
+     * @param Mage_Sales_Model_Order|Mage_Sales_Model_Quote $order_or_quote
+     *
+     * @return string
+     */
+    private function _get_currency( $order_or_quote )
+    {
+        if( $order_or_quote instanceof Mage_Sales_Model_Order )
+            return $order_or_quote->getOrderCurrency()->getCurrencyCode();
+
+        elseif( $order_or_quote instanceof Mage_Sales_Model_Quote )
+            return $order_or_quote->getQuoteCurrencyCode();
+
+        return '';
+    }
+
+    /**
+     * @param Mage_Sales_Model_Order|Mage_Sales_Model_Quote $order_or_quote
+     *
+     * @return float
+     */
+    private function _get_shipping_amount( $order_or_quote )
+    {
+        if( $order_or_quote instanceof Mage_Sales_Model_Order )
+            return $order_or_quote->getShippingAmount();
+
+        elseif( $order_or_quote instanceof Mage_Sales_Model_Quote )
+            return $order_or_quote->getShippingAddress()->getShippingAmount();
+
+        return 0;
+    }
+
     public function getOrderPlaceRedirectUrl()
     {
-        $redirect_url = Mage::getUrl( 'globalpay', array( '_secure' => true ) );
+        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
+        $helper_obj = Mage::helper('globalpay/helper');
+        /** @var Smart2Pay_Globalpay_Helper_Sdk $sdk_obj */
+        $sdk_obj = Mage::helper('globalpay/sdk');
+        /** @var Smart2Pay_Globalpay_Model_Transactionlogger $transactions_logger_obj */
+        $transactions_logger_obj = Mage::getModel( 'globalpay/transactionlogger' );
+        /** @var Smart2Pay_Globalpay_Model_Logger $logger_obj */
+        $logger_obj = Mage::getModel( 'globalpay/logger' );
 
-        $_SESSION['s2p_handle_payment'] = true;
+        if( !($method_id = Mage::getSingleton('customer/session')->getGlobalPayMethod()) )
+        {
+            Mage::throwException( $helper_obj->__( 'Couldn\'t obtain payment method ID from customer session.' ) );
+        }
 
-        Mage::getModel('globalpay/logger')->write( $redirect_url, 'info');
+        $order = $this->currentOrderorQuote();
+
+        $api_credentials = $sdk_obj->get_api_credentials();
+
+        //
+        //  Transferred code
+        //
+        $merchant_transaction_id = $this->_get_order_id( $order ); // $order->getRealOrderId();
+
+        // assume live environment if we don't get something valid from config
+        $environment = $this->method_config['environment'];
+
+        if( $environment == 'demo' )
+            $merchant_transaction_id = base_convert( time(), 10, 36 ).'_'.$merchant_transaction_id;
+
+        if( !($surcharge_amount = $order->getPayment()->getS2pSurchargeAmount()) )
+            $surcharge_amount = 0;
+        if( !($surcharge_fixed_amount = $order->getPayment()->getS2pSurchargeFixedAmount()) )
+            $surcharge_fixed_amount = 0;
+
+        $total_surcharge_amount = $surcharge_amount + $surcharge_fixed_amount;
+
+        $order_original_amount = $amount_to_pay = $order->getGrandTotal();
+
+        $articles_params = array();
+        $articles_params['transport_amount'] = $this->_get_shipping_amount( $order ); // $order->getShippingAmount();
+        $articles_params['total_surcharge'] = $total_surcharge_amount;
+        $articles_params['amount_to_pay'] = $amount_to_pay;
+
+        ob_start();
+        var_dump( $articles_params );
+        $buf = ob_get_clean();
+
+        $helper_obj::foobar( $buf );
+
+        $order_products_arr = array();
+        if( ($order_products = $order->getAllItems())
+        and is_array( $order_products ) )
+        {
+            /** @var Mage_Sales_Model_Order_Item $product_obj */
+            foreach( $order_products as $product_obj )
+            {
+                $order_products_arr[] = $product_obj->getData();
+            }
+        }
+
+        $original_amount = $articles_params['amount_to_pay'] - $articles_params['total_surcharge'];
+
+        $articles_str = '';
+        $articles_diff = 0;
+        if( ($articles_check = $helper_obj->cart_products_to_string( $order_products_arr, $original_amount, $articles_params )) )
+        {
+            $articles_str = $articles_check['buffer'];
+
+            if( !empty( $articles_check['total_difference_amount'] )
+                and $articles_check['total_difference_amount'] >= -0.01 and $articles_check['total_difference_amount'] <= 0.01 )
+            {
+                $articles_diff = $articles_check['total_difference_amount'];
+
+                //if( $method_id == self::PAYMENT_METHOD_KLARNA_CHECKOUT
+                // or $method_id == self::PAYMENT_METHOD_KLARNA_INVOICE )
+                //    $amount_to_pay += $articles_diff;
+            }
+        }
+
+        /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
+        $include_metod_ids = array();
+        if( empty( $method_id )
+        and ($country_code = $order->getBillingAddress()->getCountry())
+        and ($countryId = Mage::getModel('globalpay/country')->load( $country_code, 'code')->getId())
+        and ($configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' ))
+        and ($enabled_methods = $configured_methods_obj->get_configured_methods( $countryId, array( 'id_in_index' => true ) ))
+        and is_array( $enabled_methods ) )
+        {
+            // MethodID is empty... take all payment methods configured from admin
+            $include_metod_ids = array_keys( $enabled_methods );
+        }
+
+        $currency = $this->_get_currency( $order );
+
+        //
+        // SDK functionality
+        //
+        $payment_arr = array();
+        $payment_arr['merchanttransactionid'] = $merchant_transaction_id;
+        $payment_arr['amount'] = number_format( $amount_to_pay, 2, '.', '' ) * 100;
+        $payment_arr['currency'] = $currency;
+        $payment_arr['methodid'] = $method_id;
+
+        if( empty( $method_id ) and !empty( $include_metod_ids ) )
+            $payment_arr['includemethodids'] = $include_metod_ids;
+
+        if( !empty( $this->method_config['product_description_ref'] )
+         or empty( $this->method_config['product_description_custom'] ) )
+            $payment_arr['description'] = 'Ref. no.: '.$merchant_transaction_id;
+        else
+            $payment_arr['description'] = $this->method_config['product_description_custom'];
+
+        if( ($remote_ip = Mage::helper('core/http')->getRemoteAddr(false)) )
+            $payment_arr['clientip'] = $remote_ip;
+
+        $payment_arr['customer'] = array();
+        $payment_arr['billingaddress'] = array();
+
+        if( ($customer_fname = $order->getBillingAddress()->getFirstname()) )
+            $payment_arr['customer']['firstname'] = $customer_fname;
+        if( ($customer_lname = $order->getBillingAddress()->getLastname()) )
+            $payment_arr['customer']['lastname'] = $customer_lname;
+        if( ($customer_email = $order->getCustomerEmail()) )
+            $payment_arr['customer']['email'] = $customer_email;
+        if( ($dateofbirth = $order->getCustomerDob()) )
+            $payment_arr['customer']['dateofbirth'] = Mage::getSingleton( 'core/date' )->gmtDate( 'Ymd', $dateofbirth );
+        if( ($customer_phone = $order->getBillingAddress()->getTelephone()) )
+            $payment_arr['customer']['phone'] = $customer_phone;
+        if( ($customer_company = $order->getBillingAddress()->getCompany()) )
+            $payment_arr['customer']['company'] = $customer_company;
+
+        if( ($baddress_country = $order->getBillingAddress()->getCountryId()) )
+            $payment_arr['billingaddress']['country'] = $baddress_country;
+        if( ($baddress_city = $order->getBillingAddress()->getCity()) )
+            $payment_arr['billingaddress']['city'] = $baddress_city;
+        if( ($baddress_zip = $order->getBillingAddress()->getPostcode()) )
+            $payment_arr['billingaddress']['zipcode'] = $baddress_zip;
+        if( ($baddress_state = $order->getBillingAddress()->getRegion()) )
+            $payment_arr['billingaddress']['state'] = $baddress_state;
+        if( ($baddress_street = $order->getBillingAddress()->getStreetFull()) )
+            $payment_arr['billingaddress']['street'] = str_replace( "\n", ' ', $baddress_street );
+
+        if( empty( $payment_arr['customer'] ) )
+            unset( $payment_arr['customer'] );
+        if( empty( $payment_arr['billingaddress'] ) )
+            unset( $payment_arr['billingaddress'] );
+
+        if( !empty( $articles_str ) )
+            $payment_arr['articles'] = $articles_str;
+
+        ob_start();
+        var_dump( $payment_arr );
+        $buf = ob_get_clean();
+
+        $helper_obj::foobar( $buf );
+
+        if( $method_id == self::PAYMENT_METHOD_SMARTCARDS )
+        {
+            if( !($payment_request = $sdk_obj->card_init_payment( $payment_arr )) )
+            {
+                if( !$sdk_obj->has_error() )
+                    $error_msg = 'Couldn\'t initiate request to server.';
+                else
+                    $error_msg = 'Call error: '.$sdk_obj->get_error();
+
+                $logger_obj->write( $error_msg, 'SDK_payment_error' );
+
+                $messages_arr = array();
+                $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
+                    'message' => $error_msg,
+                    'class' => __CLASS__,
+                    'method' => __METHOD__,
+                );
+
+                throw $helper_obj->mage_exception( self::ERR_SDK_PAYMENT_INIT, $messages_arr );
+            }
+        } else
+        {
+            if( !($payment_request = $sdk_obj->init_payment( $payment_arr )) )
+            {
+                if( !$sdk_obj->has_error() )
+                    $error_msg = 'Couldn\'t initiate request to server.';
+                else
+                    $error_msg = 'Call error: '.$sdk_obj->get_error();
+
+                $logger_obj->write( $error_msg, 'SDK_payment_error' );
+
+                $messages_arr = array();
+                $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
+                    'message' => $error_msg,
+                    'class' => __CLASS__,
+                    'method' => __METHOD__,
+                );
+
+                throw $helper_obj->mage_exception( self::ERR_SDK_PAYMENT_INIT, $messages_arr );
+            }
+        }
+
+        ob_start();
+        var_dump( $payment_request );
+        $buf = ob_get_clean();
+
+        $helper_obj::foobar( $buf );
+
+        $s2p_transaction_arr = array();
+        if( !empty( $method_id ) )
+            $s2p_transaction_arr['method_id'] = $method_id;
+        if( !empty( $payment_request['id'] ) )
+            $s2p_transaction_arr['payment_id'] = $payment_request['id'];
+        if( !empty( $merchant_transaction_id ) )
+            $s2p_transaction_arr['merchant_transaction_id'] = $merchant_transaction_id;
+        $s2p_transaction_arr['environment'] = $environment;
+        $s2p_transaction_arr['site_id'] = $api_credentials['site_id'];
+        $s2p_transaction_arr['payment_status'] = ((!empty( $payment_request['status'] ) and !empty( $payment_request['status']['id'] ))?$payment_request['status']['id']:0);
+
+        $redirect_parameters = array();
+        $redirect_parameters['_query'] = array();
+
+        $redirect_to_payment = true;
+        if( $method_id == self::PAYMENT_METHOD_BT or $method_id == self::PAYMENT_METHOD_SIBS )
+            $redirect_to_payment = false;
+
+        $extra_data_arr = array();
+        if( !empty( $payment_request['referencedetails'] ) and is_array( $payment_request['referencedetails'] ) )
+        {
+            // Hack for methods that should return amount to pay
+            if( ($method_id == self::PAYMENT_METHOD_BT or $method_id == self::PAYMENT_METHOD_SIBS)
+            and empty( $payment_request['referencedetails']['amounttopay'] ) )
+            {
+                $redirect_to_payment = true;
+
+                $account_currency = false;
+                if( !empty( $payment_request['referencedetails']['accountcurrency'] ) )
+                    $account_currency = $payment_request['referencedetails']['accountcurrency'];
+                elseif( $method_id == self::PAYMENT_METHOD_SIBS )
+                    $account_currency = 'EUR';
+
+                $helper_obj::foobar( 'Account currency: '.$account_currency.', Method ID: '.$method_id.' ('.strtolower( $currency ).' == '.strtolower( $account_currency ).')' );
+
+                if( $account_currency
+                and strtolower( $currency ) == strtolower( $account_currency ) )
+                {
+                    $payment_request['referencedetails']['amounttopay'] = number_format( $payment_arr['amount']/100, 2, '.', '' ).' '.$currency;
+                    $redirect_to_payment = false;
+                }
+            }
+
+            foreach( $payment_request['referencedetails'] as $key => $val )
+            {
+                if( is_null( $val ) )
+                    continue;
+
+                $redirect_parameters['_query'][$key] = $val;
+                $extra_data_arr[$key] = $val;
+            }
+        }
+
+        ob_start();
+        var_dump( $extra_data_arr );
+        var_dump( $payment_request['referencedetails'] );
+        var_dump( $redirect_parameters );
+        $buf = ob_get_clean();
+
+        $helper_obj::foobar( $buf );
+
+        if( !($transaction_arr = $transactions_logger_obj->write( $s2p_transaction_arr, $extra_data_arr )) )
+        {
+            $messages_arr = array();
+            $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
+                'message' => 'Failed saving transaction for order. Please try again.',
+                'class' => __CLASS__,
+                'method' => __METHOD__,
+            );
+
+            throw $helper_obj->mage_exception( self::ERR_SDK_PAYMENT_INIT, $messages_arr );
+        }
+
+        if( empty( $payment_request['redirecturl'] ) )
+        {
+            $messages_arr = array();
+            $messages_arr[Mage_Core_Model_Message::ERROR][] = array(
+                'message' => 'Redirect URL not provided in API response. Please try again.',
+                'class' => __CLASS__,
+                'method' => __METHOD__,
+            );
+
+            throw $helper_obj->mage_exception( self::ERR_SDK_PAYMENT_INIT, $messages_arr );
+        }
+
+        //
+        //  END Transferred code
+        //
+
+        // $redirect_url = Mage::getUrl( 'globalpay', array( '_secure' => true ) );
+        //
+        // $_SESSION['s2p_handle_payment'] = true;
+        //
+        // Mage::getModel('globalpay/logger')->write( $redirect_url, 'info');
+
+        if( !empty( $redirect_to_payment ) )
+            $redirect_url = $payment_request['redirecturl'];
+
+        else
+        {
+            $redirect_parameters['_secure'] = true;
+
+            $redirect_url = Mage::getUrl( 'checkout/onepage/success', $redirect_parameters );
+        }
 
         return $redirect_url;
     }
