@@ -198,6 +198,11 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         // 2. get default surcharge (s2p_gp_methods_configured.country_id = 0)
         // 3. overwrite default surcharges for particular cases (if available) (s2p_gp_methods_configured.country_id = $country_id)
 
+        /** @var Smart2Pay_Globalpay_Model_Country $country_model */
+        if( !($country_model = Mage::getModel( 'globalpay/country' ))
+         or !($international_id = $country_model->get_international_id()) )
+            $international_id = 0;
+
         //
         // START 1. get a list of methods available for provided country
         //
@@ -205,7 +210,15 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         /** @var Smart2Pay_Globalpay_Model_Resource_Countrymethod_Collection $cm_collection */
         $cm_collection = Mage::getModel( 'globalpay/countrymethod' )->getCollection();
         $cm_collection->addFieldToSelect( '*' );
-        $cm_collection->addFieldToFilter( 'main_table.country_id', $country_id );
+
+        if( !empty( $international_id ) )
+            $cm_collection->addFieldToFilter(
+                array( 'main_table.country_id', 'main_table.country_id' ),
+                array( $country_id, $international_id )
+            );
+        else
+            $cm_collection->addFieldToFilter( 'main_table.country_id', $country_id );
+
         $cm_collection->addFieldToFilter( 'main_table.environment', $params['environment'] );
 
         $cm_collection->getSelect()->joinInner(
@@ -231,6 +244,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
             $method_ids_arr[] = $method_arr['method_id'];
             $methods_arr[$method_arr['method_id']] = $method_arr;
         }
+
         //
         // END 1. get a list of methods available for provided country
         //

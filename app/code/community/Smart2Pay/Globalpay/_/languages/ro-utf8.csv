@@ -1,0 +1,302 @@
+﻿# !!!!! DON'T EDIT THIS COLUMN AT ALL !!!!!,TEXT IN THIS COLUMN SHOULD BE TRANSLATED IN DESIRED LANGUAGE
+# Please use Excel as editor for this file to be sure formatting will not be broken!!!,
+# File should be UTF8 encoded. Lines starting with # will be ignored. Column separator is comma,
+"Error adding hook [%s]. Hook doesn't have, a callable function",Eroare la adaugarea hook-ului [%s]. Hook-ul nu are o functie apelabila.
+Error handling form submit.,Eroare la trimiterea formularului.
+Unknown API type,Tipul API necunoscut
+Couldn't initiate API object.,Nu am putut initializa obiectul API.
+Error in API call.,Eroare la apelarea API-ului.
+"Couldn't finalize, API object is empty.","Nu am putut finaliza apelul, obiectul API este invalid."
+Couldn't finialize API action.,Couldn't finialize API action.
+Couldn't read input buffer.,Nu am putut citi continutul de la intrare.
+SDK demo page,Pagina demo SDK
+Found %s methods,Am gasit %s metode
+Found %s functionalities,Am gasit %s functionalitati
+Quick example on how to use method <em>%s</em> with functionality <em>%s</em>.,Quick example on how to use method <em>%s</em> with functionality <em>%s</em>.
+Choose an option,Choose an option
+Simulate API call,Simulate API call
+Couldn't guess base URL. Please set it manually using %s::base_url( url ) method.,Couldn't guess base URL. Please set it manually using %s::base_url( url ) method.
+View API result,Vizualizare rezultat API
+View API form,Vizualizare formular API
+Request headers,Header-ele request-ului
+Request body,Continutul request-ului
+Raw / Formatted response,Raspuns direct / formatat
+Response headers,Header-ele raspunsului
+Response body,Continutul raspunsului
+Processed response (array),Raspunsul procesat (in array)
+Remove,Sterge
+Key,Cheie
+Value,Valoare
+Add value,Adauga valoare
+Invalid API method.,Metoda API invalida.
+Invalid API key.,Cheia API invalida.
+Invalid API environment.,Invalid API environment.
+Couldn't extract get parameters.,Couldn't extract get parameters.
+Couldn't extract method parameters.,Couldn't extract method parameters.
+Error initializing API object.,Error initializing API object.
+API call FAILED. (%ss),API call FAILED. (%ss)
+Successfull API call. (%ss),Successfull API call. (%ss)
+Error calling finalize on result.,Error calling finalize on result.
+"To finalize this transaction go to: <a href=""%s"" target=""_blank"">%s</a>","To finalize this transaction go to: <a href=""%s"" target=""_blank"">%s</a>"
+Initialize method first.,Initialize method first.
+Invalid functionality %s.,Invalid functionality %s.
+Error instantiating method %s.,Error instantiating method %s.
+Mandatory field %s not provided.,Mandatory field %s not provided.
+Field %s failed regular expression %s.,Field %s failed regular expression %s.
+Variable %s contains invalid value [%s].,Variable %s contains invalid value [%s].
+Unknown module,Unknown module
+Module doesn't appear to be a Smart2Pay module.,Module doesn't appear to be a Smart2Pay module.
+Module initialization failed.,Module initialization failed.
+Please provide a valid hook name.,Please provide a valid hook name.
+Couldn't add callback for hook %s.,Couldn't add callback for hook %s.
+Autoloading unknown module.,Autoloading unknown module.
+Module file not found.,Module file not found.
+Class not found after autoloading.,Class not found after autoloading.
+No authentication.,No authentication.
+API Key not set in config file.,API Key not set in config file.
+Request doesn't match API Key set in config file.,Request doesn't match API Key set in config file.
+Notification body is empty.,Notification body is empty.
+Notification body is not a JSON.,Notification body is not a JSON.
+"Headers already set from file %s, line %s.","Headers already set from file %s, line %s."
+Method not set,Method not set
+API Key not set.,API Key not set.
+Couldn't obtain base URL.,Couldn't obtain base URL.
+Couldn't prepare request data.,Couldn't prepare request data.
+Couldn't prepare API request.,Couldn't prepare API request.
+Couldn't set HTTP method.,Couldn't set HTTP method.
+Couldn't set final URL.,Couldn't set final URL.
+Error sending API call,Error sending API call
+Request responded with error code %s,Request responded with error code %s
+Error parsing server response.,Error parsing server response.
+Error validating server response.,Error validating server response.
+Invalid call result or previous call failed.,Invalid call result or previous call failed.
+Couldn't finalize request after call.,Couldn't finalize request after call.
+Unknown environment,Unknown environment
+Error instantiating method.,Error instantiating method.
+Invalid method functionality,Invalid method functionality
+Couldn't initialize cURL request. Please check cURL library.,Couldn't initialize cURL request. Please check cURL library.
+Unknown source type.,Unknown source type.
+List Merchat Sites,List Merchat Sites
+Merchant Site Details,Merchant Site Details
+Create Merchant Site,Create Merchant Site
+Edit Merchant Site,Edit Merchant Site
+Regenerate Merchant Site API Key,Regenerate Merchant Site API Key
+Regenerate Merchant Site Signature,Regenerate Merchant Site Signature
+Merchant Sites,Merchant Sites
+This method helps you manage merchant sites,This method helps you manage merchant sites
+Returned by server: %s,Returned by server: %s
+Merchant site ID is empty.,Merchant site ID is empty.
+List available methods,List available methods
+Get method details,Get method details
+Get available methods for specific country,Get available methods for specific country
+Get merchant's assigned methods,Get merchant's assigned methods
+Get merchant\'s assigned methods for specific country,Get merchant\'s assigned methods for specific country
+Payment methods,Payment methods
+This method helps you manage payment methods,This method helps you manage payment methods
+Initiate a Payment,Initiate a Payment
+Initiate a Recurring Payment,Initiate a Recurring Payment
+Payment Details,Payment Details
+Capture Payment,Capture Payment
+Cancel a Payment,Cancel a Payment
+Payment Refund Types,Payment Refund Types
+Initiate a Payment Refund,Initiate a Payment Refund
+List Payments,List Payments
+Payments,Payments
+This method manages payments,This method manages payments
+API call failed with error code %s.,API call failed with error code %s.
+Payment ID is empty.,Payment ID is empty.
+Payment not cancelled.,Payment not cancelled.
+Refund ID is empty.,Refund ID is empty.
+List Preapprovals,List Preapprovals
+Preapproval Details,Preapproval Details
+Preapproval Payments List,Preapproval Payments List
+Initiate a Preapproval,Initiate a Preapproval
+Manage Preapprovals,Manage Preapprovals
+This method manages preapprovals used in recurring payments,This method manages preapprovals used in recurring payments
+Preapproval ID is empty.,Preapproval ID is empty.
+Mandatory field [%s] not found in %s.,Mandatory field [%s] not found in %s.
+No methods found in this SDK.,No methods found in this SDK.
+Functionality not set.,Functionality not set.
+Invalid functionality.,Invalid functionality.
+Functionality failed validation.,Functionality failed validation.
+Invalid functionality provided.,Invalid functionality provided.
+Couldn't extract respose data or response data is empty.,Couldn't extract respose data or response data is empty.
+Mandatory fields not found in response error.,Mandatory fields not found in response error.
+Mandatory fields not found in response.,Mandatory fields not found in response.
+Variable %s is mandatory for method %s.,Variable %s is mandatory for method %s.
+Get variable [%s] is invalid.,Get variable [%s] is invalid.
+Variable %s contains invalid value [%s].,Variable %s contains invalid value [%s].
+Couldn't extract request data or request data is empty.,Couldn't extract request data or request data is empty.
+Mandatory fields not found in request.,Mandatory fields not found in request.
+Couldn't validate definition.,Couldn't validate definition.
+Definition is not an array.,Definition is not an array.
+You should provide a name in method definition.,You should provide a name in method definition.
+Invalid HTTP method for API method %s,Invalid HTTP method for API method %s
+Invalid get variables for method %s.,Invalid get variables for method %s.
+Invalid request structure object for method %s.,Invalid request structure object for method %s.
+Invalid response structure object for method %s.,Invalid response structure object for method %s.
+Invalid error structure object for method %s.,Invalid error structure object for method %s.
+Name or structure invalid for get variable.,Name or structure invalid for get variable.
+Invalid type for variable %s.,Invalid type for variable %s.
+Invalid array type for variable %s.,Invalid array type for variable %s.
+Invalid values source for variable %s.,Invalid values source for variable %s.
+Couldn't initialize parsing variable.,Couldn't initialize parsing variable.
+Couldn't decode JSON buffer.,Couldn't decode JSON buffer.
+Invalid definition.,Invalid definition.
+Couldn't extract structure name.,Couldn't extract structure name.
+Invalid scope.,Invalid scope.
+Invalid definition for variable [%s],Invalid definition for variable [%s]
+Variable [%s] is invalid.,Variable [%s] is invalid.
+Error parsing variable [%s],Error parsing variable [%s]
+Blobs and blob arrays should have a defined structure [%s],Blobs and blob arrays should have a defined structure [%s]
+Form will be submitted to,Formularul va fi trimis la
+If this URL doesn't look right you will have to edit the script and set right base URL using $demo->base_url(); call.,"Daca acest URL nu e corect, va trebui sa precizati URL-ul corect modificind scriptul si facind un apel la metoda $demo->base_url();"
+API Key,Cheie API
+Environment,Environment
+Method,Metoda
+Functionality,Functionalitate
+Get parameters,Parametrii Get
+Method parameters,Parametrii metodei
+Welcome to Smart2Pay SDK demo page!,Bine ati venit pe pagina demo a SDK-ului Smart2Pay!
+Please note that this page contains technical information which is intended to help developers start using our SDK.,Aceasta pagina contine detalii tehnice care ar trebui sa ajute dezvoltatorii sa porneasca cu folosirea SDK-ului.
+SDK version,Versiunea SDK
+Please provide method and functionality for this form.,Pentru acest formular metoda si functionalitatea sunt mandatorii.
+"Setup","Setup"
+"Site ID","Site ID"
+"Site date of creation","Site date of creation"
+"Site URL","Site URL"
+"Site status","Site status"
+"Notification URL","Notification URL"
+"Site API signature","Site API signature"
+"Site REST API key","Site REST API key"
+"IPs Whitelist","IPs Whitelist"
+"Merchant assigned article ID","Merchant assigned article ID"
+"Article name","Article name"
+"Article quantity","Article quantity"
+"Article price","Article price"
+"VAT amount","VAT amount"
+"Discount amount","Discount amount"
+"Article type","Article type"
+"Customer ID","Customer ID"
+"Merchant assigned customer ID","Merchant assigned customer ID"
+"Customer email","Customer email"
+"Customer first name","Customer first name"
+"Customer last name","Customer last name"
+"Customer gender","Customer gender"
+"Customer social security number","Customer social security number"
+"Customer phone","Customer phone"
+"Customer company","Customer company"
+"Customer creation date","Customer creation date"
+"Method ID","Method ID"
+"Method display name","Method display name"
+"Method description","Method description"
+"Method logo URL","Method logo URL"
+"Method is guaranteed","Method is guaranteed"
+"Method status","Method status"
+"Method supports IFrame","Method supports IFrame"
+"Method IFrame width","Method IFrame width"
+"Method IFrame height","Method IFrame height"
+"Method supported countries","Method supported countries"
+"Method supported currencies","Method supported currencies"
+"Method one time payment validations","Method one time payment validations"
+"Method recurrent payment validations","Method recurrent payment validations"
+"Method options","Method options"
+"Method details URL","Method details URL"
+"Validator source","Validator source"
+"Validator regular expression","Validator regular expression"
+"Validator is mandatory","Validator is mandatory"
+"Customer account number","Customer account number"
+"Customer account holder","Customer account holder"
+"Customer IBAN","Customer IBAN"
+"Customer BIC","Customer BIC"
+"Customer prepaid card","Customer prepaid card"
+"Customer prepaid card PIN","Customer prepaid card PIN"
+"Customer serial numbers","Customer serial numbers"
+"Customer wallet","Customer wallet"
+"Payment bank code","Payment bank code"
+"Payment account number","Payment account number"
+"Payment IBAN","Payment IBAN"
+"Payment BIC","Payment BIC"
+"Payment entity ID","Payment entity ID"
+"Payment reference ID","Payment reference ID"
+"Payment entity number","Payment entity number"
+"Payment reference number","Payment reference number"
+"Payment account holder","Payment account holder"
+"Payment bank name","Payment bank name"
+"Payment SWIFT / BIC","Payment SWIFT / BIC"
+"Payment account currency","Payment account currency"
+"Payment prepaid card","Payment prepaid card"
+"Payment prepaid card PIN","Payment prepaid card PIN"
+"Payment serial numbers","Payment serial numbers"
+"Reference bank code","Reference bank code"
+"Reference bank name","Reference bank name"
+"Reference entity ID","Reference entity ID"
+"Reference entity number","Reference entity number"
+"Reference ID","Reference ID"
+"Reference number","Reference number"
+"Reference SWIFT / BIC","Reference SWIFT / BIC"
+"Reference account currency","Reference account currency"
+"Reference account number","Reference account number"
+"Reference account holder","Reference account holder"
+"Reference IBAN","Reference IBAN"
+"Payment merchant assigned transaction ID","Payment merchant assigned transaction ID"
+"Payment amount","Payment amount"
+"Payment currency","Payment currency"
+"Payment return URL","Payment return URL"
+"Payment method ID","Payment method ID"
+"Payment redirect in IFrame","Payment redirect in IFrame"
+"Payment method option ID","Payment method option ID"
+"Payment site ID","Payment site ID"
+"Payment description","Payment description"
+"Payment preapproval ID","Payment preapproval ID"
+"Payment token lifetime","Payment token lifetime"
+"Payment ID","Payment ID"
+"Payment creation time","Payment creation time"
+"Payment status","Payment status"
+"Payment redirect URL","Payment redirect URL"
+"Preapproval merchant assigned ID","Preapproval merchant assigned ID"
+"Preapproval method ID","Preapproval method ID"
+"Preapproval recurring period","Preapproval recurring period"
+"Preapproval description","Preapproval description"
+"Preapproval maximum amount","Preapproval maximum amount"
+"Preapproval currency","Preapproval currency"
+"Preapproval return URL","Preapproval return URL"
+"Preapproval ID","Preapproval ID"
+"Preapproval creation date and time","Preapproval creation date and time"
+"Preapproval site ID","Preapproval site ID"
+"Preapproval redirect URL","Preapproval redirect URL"
+"Refund customer account number","Refund customer account number"
+"Refund CPF account holder","Refund CPF account holder"
+"Refund bank name","Refund bank name"
+"Refund bank code","Refund bank code"
+"Refund bank agency code","Refund bank agency code"
+"Refund account number","Refund account number"
+"Refund bank SWIFT ID","Refund bank SWIFT ID"
+"Refund bank sort code","Refund bank sort code"
+"Refund customer IBAN","Refund customer IBAN"
+"Refund ID","Refund ID"
+"Refund merchant assigned transaction ID","Refund merchant assigned transaction ID"
+"Refund amount","Refund amount"
+"Refund currency","Refund currency"
+"Refund description","Refund description"
+"Refund token lifetime","Refund token lifetime"
+"Refund creation date and time","Refund creation date and time"
+"Refund initial payment ID","Refund initial payment ID"
+"Refund type ID","Refund type ID"
+"Refund site ID","Refund site ID"
+"Refund type name","Refund type name"
+"Refund allows partial refund","Refund allows partial refund"
+"Status ID","Status ID"
+"Status info","Status info"
+"Status reason code","Status reason code"
+"Status reason info","Status reason info"
+"mandatory","mandatory"
+"Address ID","Address ID"
+"Address country","Address country"
+"Address city","Address city"
+"Address zipcode","Address zipcode"
+"Address state","Address state"
+"Address street name","Address street name"
+"Address street number","Address street number"
+"Address house number","Address house number"
+"Address house extension","Address house extension"

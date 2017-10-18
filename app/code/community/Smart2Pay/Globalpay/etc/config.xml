@@ -3,7 +3,7 @@
 
     <modules>
         <Smart2Pay_Globalpay>
-            <version>2.0.0</version>
+            <version>2.0.1</version>
         </Smart2Pay_Globalpay>
     </modules>
 
@@ -347,7 +347,6 @@
                 <product_description_ref>1</product_description_ref>
                 <autoselect_s2p>1</autoselect_s2p>
                 <skip_payment_page>1</skip_payment_page>
-                <debug_form>0</debug_form>
                 <grid_column_number>3</grid_column_number>
                 <return_url>http://www.example.com/index.php/globalpay/index/info/</return_url>
                 <message_data_2><![CDATA[Thank you, the transaction has been processed successfuly. After we receive the final confirmation, we will release the goods.]]></message_data_2>

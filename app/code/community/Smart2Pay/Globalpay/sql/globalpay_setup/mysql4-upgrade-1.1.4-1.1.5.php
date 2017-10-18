@@ -326,7 +326,7 @@
         (178, 'PW', 'Palau'),
         (179, 'PY', 'Paraguay'),
         (180, 'QA', 'Qatar'),
-        (181, 'RE', 'R'),
+        (181, 'RE', 'Réunion'),
         (182, 'RO', 'Romania'),
         (183, 'RU', 'Russian Federation'),
         (184, 'RW', 'Rwanda'),

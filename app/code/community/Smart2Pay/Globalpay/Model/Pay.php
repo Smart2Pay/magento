@@ -184,7 +184,7 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
             'product_description_ref' => $this->getConfigData('product_description_ref'),
             'product_description_custom' => $this->getConfigData('product_description_custom'),
             'skip_payment_page' => $this->getConfigData('skip_payment_page'),
-            'debug_form' => $this->getConfigData('debug_form'),
+            'debug_form' => false,
             'redirect_in_iframe' => $this->getConfigData('redirect_in_iframe'),
             'skin_id' => $this->getConfigData('skin_id'),
             'message_data_2' => $this->getConfigData('message_data_2'),
@@ -468,12 +468,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         $articles_params['total_surcharge'] = $total_surcharge_amount;
         $articles_params['amount_to_pay'] = $amount_to_pay;
 
-        ob_start();
-        var_dump( $articles_params );
-        $buf = ob_get_clean();
-
-        $helper_obj::foobar( $buf );
-
         $order_products_arr = array();
         if( ($order_products = $order->getAllItems())
         and is_array( $order_products ) )
@@ -488,10 +482,12 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         $original_amount = $articles_params['amount_to_pay'] - $articles_params['total_surcharge'];
 
         $articles_str = '';
+        $sdk_articles_arr = array();
         $articles_diff = 0;
         if( ($articles_check = $helper_obj->cart_products_to_string( $order_products_arr, $original_amount, $articles_params )) )
         {
             $articles_str = $articles_check['buffer'];
+            $sdk_articles_arr = $articles_check['sdk_articles_arr'];
 
             if( !empty( $articles_check['total_difference_amount'] )
                 and $articles_check['total_difference_amount'] >= -0.01 and $articles_check['total_difference_amount'] <= 0.01 )
@@ -530,6 +526,9 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
 
         if( empty( $method_id ) and !empty( $include_metod_ids ) )
             $payment_arr['includemethodids'] = $include_metod_ids;
+
+        if( !empty( $this->method_config['skin_id'] ) )
+            $payment_arr['skinid'] = $this->method_config['skin_id'];
 
         if( !empty( $this->method_config['product_description_ref'] )
          or empty( $this->method_config['product_description_custom'] ) )
@@ -572,8 +571,8 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         if( empty( $payment_arr['billingaddress'] ) )
             unset( $payment_arr['billingaddress'] );
 
-        if( !empty( $articles_str ) )
-            $payment_arr['articles'] = $articles_str;
+        if( !empty( $sdk_articles_arr ) )
+            $payment_arr['articles'] = $sdk_articles_arr;
 
         ob_start();
         var_dump( $payment_arr );

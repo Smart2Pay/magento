@@ -14,10 +14,10 @@ class Smart2Pay_Globalpay_Helper_Sdk extends Mage_Payment_Helper_Data
     private static function _init_sdk()
     {
         if( empty( self::$_sdk_inited )
-        and @is_dir( __DIR__.'/sdk' )
-        and @file_exists( __DIR__.'/sdk/bootstrap.php' ) )
+        and @is_dir( __DIR__.'/../_' )
+        and @file_exists( __DIR__.'/../_/bootstrap.php' ) )
         {
-            include_once( __DIR__.'/sdk/bootstrap.php' );
+            include_once( __DIR__.'/../_/bootstrap.php' );
 
             \S2P_SDK\S2P_SDK_Module::st_debugging_mode( false );
             \S2P_SDK\S2P_SDK_Module::st_detailed_errors( false );

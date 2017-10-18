@@ -8,7 +8,7 @@ class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form
     protected function _construct()
     {
         parent::_construct();
-        // set template
+        // set templateconfig
         $this->setTemplate('smart2pay/globalpay/paymethod/form.phtml');
 
         // set method config
@@ -26,7 +26,6 @@ class Smart2Pay_Globalpay_Block_Paymethod_Form extends Mage_Payment_Block_Form
          or !($countryCode = $billingAddress->getCountryId())
          or !($countryId = Mage::getModel('globalpay/country')->load($countryCode, 'code')->getId()) )
             return $this->__( 'Couldn\'t obtain country from billing address.' );
-
 
         /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
         $configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' );

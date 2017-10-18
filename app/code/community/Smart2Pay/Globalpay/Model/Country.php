@@ -23,4 +23,9 @@ class Smart2Pay_Globalpay_Model_Country extends Mage_Core_Model_Abstract
 
         return $return_arr;
     }
+
+    public function get_international_id()
+    {
+        return $this->load( 'AA', 'code' )->getId();
+    }
 }

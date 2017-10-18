@@ -42,6 +42,7 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
         $return_arr['surcharge_difference_index'] = 0;
         $return_arr['buffer'] = '';
         $return_arr['articles_arr'] = array();
+        $return_arr['sdk_articles_arr'] = array();
         $return_arr['articles_meta_arr'] = array();
         $return_arr['transport_index'] = array();
 
@@ -67,6 +68,7 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
 
         $return_str = '';
         $articles_arr = array();
+        $sdk_articles_arr = array();
         $articles_meta_arr = array();
         $articles_knti = 0;
         $items_total_amount = 0;
@@ -76,6 +78,11 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
         {
             if( empty( $product_arr ) or !is_array( $product_arr ) )
                 continue;
+
+            // If products are from quotes we should use qty
+            if( !isset( $product_arr['qty_ordered'] )
+            and isset( $product_arr['qty'] ) )
+                $product_arr['qty_ordered'] = $product_arr['qty'];
 
             // 1 => 'Product', 2 => 'Shipping', 3 => 'Handling',
             $article_arr = array();
@@ -221,6 +228,15 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
         $return_arr['transport_index'] = $transport_index;
 
         $total_check = 0;
+        $hpp_to_sdk_keys = array(
+            'ID' => 'merchantarticleid',
+            'Name' => 'name',
+            'Quantity' => 'quantity',
+            'Price' => 'price',
+            'VAT' => 'vat',
+            'Discount' => 'discount',
+            'Type' => 'type',
+        );
         foreach( $articles_arr as $knti => $article_arr )
         {
             $total_check += (float)($article_arr['Price'] * $article_arr['Quantity']);
@@ -230,10 +246,17 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
             //$article_arr['Discount'] = $article_arr['Discount'] * 100;
 
             $article_buf = '';
+            $sdk_article = array();
             foreach( $article_arr as $key => $val )
             {
+                if( !empty( $hpp_to_sdk_keys[$key] ) )
+                    $sdk_article[$hpp_to_sdk_keys[$key]] = $val;
+
                 $article_buf .= ($article_buf!=''?'&':'').$key.'='.str_replace( array( '&', ';', '=' ), ' ', $val );
             }
+
+            if( !empty( $sdk_article ) )
+                $sdk_articles_arr[] = $sdk_article;
 
             $return_arr['buffer'] .= $article_buf.';';
         }
@@ -245,6 +268,8 @@ class Smart2Pay_Globalpay_Helper_Helper extends Mage_Core_Helper_Abstract
         $return_arr['total_check'] = $total_check;
         $return_arr['articles_arr'] = $articles_arr;
         $return_arr['articles_meta_arr'] = $articles_meta_arr;
+
+        $return_arr['sdk_articles_arr'] = $sdk_articles_arr;
 
         return $return_arr;
     }
