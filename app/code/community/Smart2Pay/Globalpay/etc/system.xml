@@ -57,7 +57,7 @@
                             <sort_order>6</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                             <config_path>payment/globalpay/site_id_live</config_path>
                         </site_id_live>
                         <site_id_test translate="label">
@@ -67,7 +67,7 @@
                             <sort_order>7</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>0</show_in_store>
+                            <show_in_store>1</show_in_store>
                             <config_path>payment/globalpay/site_id_test</config_path>
                         </site_id_test>
                         <apikey_live translate="label">
@@ -90,11 +90,20 @@
                             <show_in_store>1</show_in_store>
                             <config_path>payment/globalpay/apikey_test</config_path>
                         </apikey_test>
+                        <skin_id translate="label">
+                            <label>Skin ID</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>11</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <config_path>payment/globalpay/skin_id</config_path>
+                        </skin_id>
                         <return_url translate="label">
                             <label><![CDATA[<b>&raquo; Return URL</b>]]></label>
                             <comment></comment>
                             <frontend_type>text</frontend_type>
-                            <sort_order>11</sort_order>
+                            <sort_order>12</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
@@ -104,33 +113,12 @@
                             <label><![CDATA[Title]]></label>
                             <comment>Insert a custom title for this payment module</comment>
                             <frontend_type>text</frontend_type>
-                            <sort_order>12</sort_order>
+                            <sort_order>13</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                             <config_path>payment/globalpay/title</config_path>
                         </title>
-                        <skin_id translate="label">
-                            <label>Skin ID</label>
-                            <frontend_type>text</frontend_type>
-                            <sort_order>36</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <config_path>payment/globalpay/skin_id</config_path>
-                        </skin_id>
-                        <debug_form translate="label">
-                            <label>[ Debug Form ]</label>
-                            <comment>Show form data before submiting it to Smart2Pay</comment>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>41</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                            <config_path>payment/globalpay/debug_form</config_path>
-                        </debug_form>
-
                         </fields>
 
                     </general_settings>

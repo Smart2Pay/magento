@@ -92,8 +92,6 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
             return;
         }
 
-        $s2pHelper::foobar( 'Notification: '.$notification_obj->get_input_buffer() );
-
         if( !($notification_type = $notification_obj->get_type())
          or !($notification_title = $notification_obj::get_type_title( $notification_type )) )
         {
@@ -114,12 +112,6 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
             echo $error_msg;
             return;
         }
-
-        ob_start();
-        var_dump( $result_arr );
-        $buf = ob_get_clean();
-
-        $s2pHelper::foobar( 'Notification array: '.$buf );
 
         if( $notification_type != $notification_obj::TYPE_PAYMENT )
         {
@@ -267,6 +259,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                     break;
 
                     case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_SUCCESS:
+                    case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_CAPTURED:
                         $orderAmount =  number_format( $order->getGrandTotal(), 2, '.', '' ) * 100;
                         $orderCurrency = $order->getOrderCurrency()->getCurrencyCode();
 
@@ -661,12 +654,14 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 
         if( !isset( $query['data'] ) )
         {
-            $this->_redirectUrl( Mage::getBaseUrl( Mage_Core_Model_Store::URL_TYPE_LINK ) );
+            // $this->_redirectUrl( Mage::getBaseUrl( Mage_Core_Model_Store::URL_TYPE_LINK ) );
             $query['data'] = 0;
         }
 
+        /** @var Mage_Checkout_Model_Session $session_obj */
+        $session_obj = Mage::getSingleton( 'checkout/session' );
         /** @var Smart2Pay_Globalpay_Model_Pay $payMethod */
-        $payMethod = Mage::getModel('globalpay/pay');
+        $payMethod = Mage::getModel( 'globalpay/pay' );
         $query = $this->getRequest()->getQuery();
 
         if( empty( $query['data'] ) )
@@ -674,8 +669,14 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 
         $data = $query['data'];
 
-        if( $data == $payMethod::S2P_STATUS_SUCCESS )
+        if( $data == $payMethod::S2P_STATUS_SUCCESS
+         or $data == $payMethod::S2P_STATUS_CAPTURED )
         {
+            if( !empty( $payMethod->method_config['message_data_' . $payMethod::S2P_STATUS_SUCCESS] ) )
+                $session_obj->addSuccess( $payMethod->method_config['message_data_' . $payMethod::S2P_STATUS_SUCCESS] );
+
+            // session_write_close();
+
             if( isset( $query['ReferenceNumber'] ) )
             {
                 /**
@@ -713,28 +714,29 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                 }
                 /**/
 
-                session_write_close();
-                $this->_redirect('checkout/onepage/success', $query ); //send the payment details further to onepage/success
+                // session_write_close();
+                $this->_redirect( 'checkout/onepage/success', $query ); //send the payment details further to onepage/success
             } else
             {
-                if( !empty( $payMethod->method_config['message_data_' . $data] ) )
-                    Mage::getSingleton('checkout/session')->addSuccess( $payMethod->method_config['message_data_' . $data] );
-
-                session_write_close();
-                $this->_redirect('checkout/onepage/success');
+                $this->_redirect( 'checkout/onepage/success' );
             }
+
 		} elseif( in_array( $data, array( $payMethod::S2P_STATUS_CANCELLED, $payMethod::S2P_STATUS_FAILED ) ) )
         {
             if( !empty( $payMethod->method_config['message_data_'.$data] ) )
-                Mage::getSingleton( 'checkout/session' )->addError( $payMethod->method_config['message_data_'.$data] );
-            session_write_close();
-            $this->_redirect( 'checkout/cart' );
+                $session_obj->addError( $payMethod->method_config['message_data_'.$data] );
+
+            // session_write_close();
+
+            $this->_redirect( 'checkout/onepage/failure' );
         } else
         {
             if( !empty( $payMethod->method_config['message_data_7'] ) )
-                Mage::getSingleton('checkout/session')->addNotice( $payMethod->method_config['message_data_7'] );
-            session_write_close();
-            $this->_redirect('checkout/onepage/success');
+                $session_obj->addNotice( $payMethod->method_config['message_data_7'] );
+
+            // session_write_close();
+
+            $this->_redirect( 'checkout/onepage/success' );
         }
     }
 

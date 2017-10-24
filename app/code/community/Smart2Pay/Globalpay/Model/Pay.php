@@ -3,7 +3,8 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
 {
     const ERR_SDK_PAYMENT_INIT = 1000;
 
-    const S2P_STATUS_OPEN = 1, S2P_STATUS_SUCCESS = 2, S2P_STATUS_CANCELLED = 3, S2P_STATUS_FAILED = 4, S2P_STATUS_EXPIRED = 5, S2P_STATUS_PROCESSING = 7;
+    const S2P_STATUS_OPEN = 1, S2P_STATUS_SUCCESS = 2, S2P_STATUS_CANCELLED = 3, S2P_STATUS_FAILED = 4, S2P_STATUS_EXPIRED = 5, S2P_STATUS_PROCESSING = 7,
+          S2P_STATUS_CAPTURED = 11;
 
     const PAYMENT_METHOD_BT = 1, PAYMENT_METHOD_SIBS = 20, PAYMENT_METHOD_SMARTCARDS = 6,
           PAYMENT_METHOD_KLARNA_CHECKOUT = 1052, PAYMENT_METHOD_KLARNA_INVOICE = 75;
@@ -574,12 +575,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         if( !empty( $sdk_articles_arr ) )
             $payment_arr['articles'] = $sdk_articles_arr;
 
-        ob_start();
-        var_dump( $payment_arr );
-        $buf = ob_get_clean();
-
-        $helper_obj::foobar( $buf );
-
         if( $method_id == self::PAYMENT_METHOD_SMARTCARDS )
         {
             if( !($payment_request = $sdk_obj->card_init_payment( $payment_arr )) )
@@ -622,12 +617,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
             }
         }
 
-        ob_start();
-        var_dump( $payment_request );
-        $buf = ob_get_clean();
-
-        $helper_obj::foobar( $buf );
-
         $s2p_transaction_arr = array();
         if( !empty( $method_id ) )
             $s2p_transaction_arr['method_id'] = $method_id;
@@ -661,8 +650,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
                 elseif( $method_id == self::PAYMENT_METHOD_SIBS )
                     $account_currency = 'EUR';
 
-                $helper_obj::foobar( 'Account currency: '.$account_currency.', Method ID: '.$method_id.' ('.strtolower( $currency ).' == '.strtolower( $account_currency ).')' );
-
                 if( $account_currency
                 and strtolower( $currency ) == strtolower( $account_currency ) )
                 {
@@ -680,14 +667,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
                 $extra_data_arr[$key] = $val;
             }
         }
-
-        ob_start();
-        var_dump( $extra_data_arr );
-        var_dump( $payment_request['referencedetails'] );
-        var_dump( $redirect_parameters );
-        $buf = ob_get_clean();
-
-        $helper_obj::foobar( $buf );
 
         if( !($transaction_arr = $transactions_logger_obj->write( $s2p_transaction_arr, $extra_data_arr )) )
         {
