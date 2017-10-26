@@ -198,10 +198,12 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         // 2. get default surcharge (s2p_gp_methods_configured.country_id = 0)
         // 3. overwrite default surcharges for particular cases (if available) (s2p_gp_methods_configured.country_id = $country_id)
 
-        /** @var Smart2Pay_Globalpay_Model_Country $country_model */
-        if( !($country_model = Mage::getModel( 'globalpay/country' ))
-         or !($international_id = $country_model->get_international_id()) )
-            $international_id = 0;
+        // /** @var Smart2Pay_Globalpay_Model_Country $country_model */
+        // if( !($country_model = Mage::getModel( 'globalpay/country' ))
+        //  or !($international_id = $country_model->get_international_id()) )
+        //     $international_id = 0;
+
+        $international_id = 0;
 
         //
         // START 1. get a list of methods available for provided country
