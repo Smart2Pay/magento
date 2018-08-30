@@ -310,11 +310,23 @@
                                 <config_path>payment/globalpay/auto_ship</config_path>
                             </auto_ship>
 
+                            <use_3dsecure translate="label">
+                                <label>Use 3DSecure for SmartCards</label>
+                                <comment>When initiating payments using SmartCards payment method, use 3DSecure</comment>
+                                <frontend_type>select</frontend_type>
+                                <source_model>adminhtml/system_config_source_yesno</source_model>
+                                <sort_order>28</sort_order>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                                <show_in_store>1</show_in_store>
+                                <config_path>payment/globalpay/use_3dsecure</config_path>
+                            </use_3dsecure>
+
                             <order_status translate="label">
                                 <label>New Order status</label>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_order_status</source_model>
-                                <sort_order>28</sort_order>
+                                <sort_order>29</sort_order>
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>
                                 <show_in_store>0</show_in_store>
@@ -324,7 +336,7 @@
                                 <label>Order status on SUCCESS</label>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_order_status</source_model>
-                                <sort_order>29</sort_order>
+                                <sort_order>30</sort_order>
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>
                                 <show_in_store>0</show_in_store>
@@ -334,7 +346,7 @@
                                 <label>Order status on CANCEL</label>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_order_status</source_model>
-                                <sort_order>30</sort_order>
+                                <sort_order>31</sort_order>
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>
                                 <show_in_store>0</show_in_store>
@@ -344,7 +356,7 @@
                                 <label>Order status on FAIL</label>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_order_status</source_model>
-                                <sort_order>31</sort_order>
+                                <sort_order>32</sort_order>
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>
                                 <show_in_store>0</show_in_store>
@@ -354,7 +366,7 @@
                                 <label>Order status on EXPIRED</label>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_order_status</source_model>
-                                <sort_order>32</sort_order>
+                                <sort_order>33</sort_order>
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>
                                 <show_in_store>0</show_in_store>
@@ -381,7 +393,7 @@
                                 <label>Auto-select GlobalPay payment methods</label>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_yesno</source_model>
-                                <sort_order>33</sort_order>
+                                <sort_order>34</sort_order>
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>
                                 <show_in_store>1</show_in_store>
@@ -391,7 +403,7 @@
                                 <label>Skip payment page</label>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_yesno</source_model>
-                                <sort_order>34</sort_order>
+                                <sort_order>35</sort_order>
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>
                                 <show_in_store>1</show_in_store>
@@ -401,7 +413,7 @@
                                 <label>Redirect in iframe</label>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_yesno</source_model>
-                                <sort_order>35</sort_order>
+                                <sort_order>36</sort_order>
                                 <show_in_default>1</show_in_default>
                                 <show_in_website>1</show_in_website>
                                 <show_in_store>1</show_in_store>

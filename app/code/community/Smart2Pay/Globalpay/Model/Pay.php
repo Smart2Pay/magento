@@ -1,6 +1,10 @@
 <?php
 class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract // implements Mage_Payment_Model_Recurring_Profile_MethodInterface
 {
+    const XML_PATH_EMAIL_PAYMENT_CONFIRMATION = 'payment/globalpay/payment_confirmation_template';
+    const XML_PATH_EMAIL_PAYMENT_INSTRUCTIONS = 'payment/globalpay/payment_instructions_template';
+    const XML_PATH_EMAIL_PAYMENT_INSTRUCTIONS_SIBS = 'payment/globalpay/payment_instructions_template_sibs';
+
     const ERR_SDK_PAYMENT_INIT = 1000;
 
     const S2P_STATUS_OPEN = 1, S2P_STATUS_SUCCESS = 2, S2P_STATUS_CANCELLED = 3, S2P_STATUS_FAILED = 4, S2P_STATUS_EXPIRED = 5, S2P_STATUS_PROCESSING = 7,
@@ -199,6 +203,7 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
             'order_status_on_5' => $this->getConfigData('order_status_on_5'),
             'auto_invoice' => $this->getConfigData('auto_invoice'),
             'auto_ship' => $this->getConfigData('auto_ship'),
+            'use_3dsecure' => $this->getConfigData('use_3dsecure'),
             'notify_customer' => $this->getConfigData('notify_customer'),
         );
 
@@ -255,6 +260,14 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
             $_environment = 'demo';
 
         return $_environment;
+    }
+
+    public function getSDKVersion()
+    {
+        /** @var Smart2Pay_Globalpay_Helper_Sdk $sdk_obj */
+        $sdk_obj = Mage::helper( 'globalpay/sdk' );
+
+        return $sdk_obj::get_sdk_version();
     }
 
     public function upate_last_methods_sync_option( $value, $environment = false )
@@ -537,7 +550,9 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         else
             $payment_arr['description'] = $this->method_config['product_description_custom'];
 
-        if( ($remote_ip = Mage::helper('core/http')->getRemoteAddr(false)) )
+        /** @var Mage_Core_Helper_Http $http_helper_obj */
+        if( ($http_helper_obj = Mage::helper('core/http'))
+        and ($remote_ip = $http_helper_obj->getRemoteAddr(false)) )
             $payment_arr['clientip'] = $remote_ip;
 
         $payment_arr['customer'] = array();
@@ -577,12 +592,15 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
 
         if( $method_id == self::PAYMENT_METHOD_SMARTCARDS )
         {
+            if( $this->method_config['use_3dsecure'] )
+                $payment_arr['3dsecure'] = true;
+
             if( !($payment_request = $sdk_obj->card_init_payment( $payment_arr )) )
             {
                 if( !$sdk_obj->has_error() )
                     $error_msg = 'Couldn\'t initiate request to server.';
                 else
-                    $error_msg = 'Call error: '.$sdk_obj->get_error();
+                    $error_msg = 'Call error: '.strip_tags( $sdk_obj->get_error() );
 
                 $logger_obj->write( $error_msg, 'SDK_payment_error' );
 
@@ -602,7 +620,7 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
                 if( !$sdk_obj->has_error() )
                     $error_msg = 'Couldn\'t initiate request to server.';
                 else
-                    $error_msg = 'Call error: '.$sdk_obj->get_error();
+                    $error_msg = 'Call error: '.strip_tags( $sdk_obj->get_error() );
 
                 $logger_obj->write( $error_msg, 'SDK_payment_error' );
 
@@ -696,23 +714,132 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         //  END Transferred code
         //
 
-        // $redirect_url = Mage::getUrl( 'globalpay', array( '_secure' => true ) );
-        //
-        // $_SESSION['s2p_handle_payment'] = true;
-        //
-        // Mage::getModel('globalpay/logger')->write( $redirect_url, 'info');
+        $real_order_obj = false;
+        if( ($real_order_id = $this->_get_order_id( $order )) )
+        {
+            try
+            {
+                $real_order_obj = new Mage_Sales_Model_Order();
+                $real_order_obj->loadByIncrementId( $real_order_id );
+            } catch ( Exception $ex ) {
+                $real_order_obj = false;
+            }
+        }
 
         if( !empty( $redirect_to_payment ) )
             $redirect_url = $payment_request['redirecturl'];
 
         else
         {
+            if( !empty( $real_order_obj )
+            and !empty( $method_id )
+            and $this->method_config['notify_payment_instructions']
+            and in_array( $method_id, array( self::PAYMENT_METHOD_BT, self::PAYMENT_METHOD_SIBS ) ) )
+            {
+                // Inform customer
+                $this->sendPaymentDetailsForRealOrder( $real_order_obj, $extra_data_arr );
+            }
+
             $redirect_parameters['_secure'] = true;
 
             $redirect_url = Mage::getUrl( 'checkout/onepage/success', $redirect_parameters );
         }
 
+        if( !empty( $real_order_obj ) )
+        {
+            //send e-mail to customer about order creation before redirect to Smart2Pay
+            try
+            {
+                $real_order_obj->sendNewOrderEmail();
+            } catch ( Exception $ex ) {
+            }
+        }
+
         return $redirect_url;
+    }
+
+    public function sendPaymentDetailsForRealOrder( Mage_Sales_Model_Order $order, $payment_details_arr )
+    {
+        /** @var Smart2Pay_Globalpay_Model_Transactionlogger $s2pTransactionLogger */
+        $s2pTransactionLogger = Mage::getModel( 'globalpay/transactionlogger' );
+        /** @var Smart2Pay_Globalpay_Model_Logger $s2pLogger */
+        $s2pLogger = Mage::getModel( 'globalpay/logger' );
+
+        $payment_details_arr = $s2pTransactionLogger::validateTransactionLoggerExtraParams( $payment_details_arr, array( 'keep_default_values' => true ) );
+
+        try
+        {
+            /** @var $order Mage_Sales_Model_Order */
+            /** @var $store_obj Mage_Core_Model_Store */
+            /**
+             * get data for template
+             */
+            $store_obj = $order->getStore();
+
+            //$siteUrl = Mage::getBaseUrl( Mage_Core_Model_Store::URL_TYPE_LINK );
+            // $siteName = Mage::app()->getWebsite(1)->getName();
+            //$siteName = Mage::app()->getWebsite()->getName();
+
+            $siteUrl = $store_obj->getBaseUrl( Mage_Core_Model_Store::URL_TYPE_LINK );
+            $siteName = Mage::app()->getWebsite( $store_obj->getWebsiteId() )->getName();
+
+            $order_increment_id = $order->getRealOrderId();
+
+            $supportEmail = Mage::getStoreConfig( 'trans_email/ident_support/email', $order->getStoreId() );
+            $supportName = Mage::getStoreConfig( 'trans_email/ident_support/name', $order->getStoreId() );
+
+            $localeCode = Mage::getStoreConfig( 'general/locale/code', $order->getStoreId() );
+
+            if( ($s2p_transaction_arr = $s2pTransactionLogger->getTransactionDetailsAsArray( $order_increment_id ))
+            and $s2p_transaction_arr['method_id'] == self::PAYMENT_METHOD_SIBS )
+            {
+                $templateId = Mage::getStoreConfig( self::XML_PATH_EMAIL_PAYMENT_INSTRUCTIONS_SIBS, $order->getStoreId() );
+            } else
+            {
+                $templateId = Mage::getStoreConfig( self::XML_PATH_EMAIL_PAYMENT_INSTRUCTIONS, $order->getStoreId() );
+            }
+
+            /** @var $mailTemplate Mage_Core_Model_Email_Template */
+            $mailTemplate = Mage::getModel( 'core/email_template' );
+            if( is_numeric( $templateId ) )
+                // loads from database @table core_email_template
+                $mailTemplate->load( $templateId );
+            else
+                $mailTemplate->loadDefault( $templateId, $localeCode );
+
+            if( !($subject = $mailTemplate->getTemplateSubject()) )
+                $subject = $this->__( 'PaymentInstructionsSubject', $order_increment_id );
+
+            $subject = $siteName.' - '.$subject;
+
+            $mailTemplate->setSenderName( $supportName );
+            $mailTemplate->setSenderEmail( $supportEmail );
+
+            $mailTemplate->setTemplateSubject( $subject );
+
+            // Extra details
+            $payment_details_arr['site_url'] = $siteUrl;
+            $payment_details_arr['order_increment_id'] = $order_increment_id;
+            $payment_details_arr['site_name'] = $siteName;
+            $payment_details_arr['customer_name'] = $order->getCustomerName();
+            $payment_details_arr['order_date'] = $order->getCreatedAtDate();
+            $payment_details_arr['support_email'] = $supportEmail;
+
+            if( !$mailTemplate->send( $order->getCustomerEmail(), $order->getCustomerName(), $payment_details_arr ) )
+                $s2pLogger->write( 'Error sending payment instructions email to ['.$order->getCustomerEmail().']', 'email_template', $order_increment_id );
+
+        } catch( Exception $e )
+        {
+            $s2pLogger->write( $e->getMessage(), 'exception' );
+        }
+    }
+
+    public function __()
+    {
+        $args = func_get_args();
+        $expr = new Mage_Core_Model_Translate_Expr(array_shift($args), 'Smart2pay_Globalpay' );
+        array_unshift($args, $expr);
+        return Mage::app()->getTranslator()->translate($args);
     }
 }
 
