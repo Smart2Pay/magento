@@ -1,5 +1,5 @@
 <?php
-class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract // implements Mage_Payment_Model_Recurring_Profile_MethodInterface
+class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
 {
     const XML_PATH_EMAIL_PAYMENT_CONFIRMATION = 'payment/globalpay/payment_confirmation_template';
     const XML_PATH_EMAIL_PAYMENT_INSTRUCTIONS = 'payment/globalpay/payment_instructions_template';
@@ -20,143 +20,10 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
     // method config
     public $method_config = array();
 
-    /**
-     * Validate RP data
-     *
-     * @param Mage_Payment_Model_Recurring_Profile $profile
-     */
-    public function validateRecurringProfile(Mage_Payment_Model_Recurring_Profile $profile)
+    public function has_3d_secure( $method_id )
     {
-        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
-        $helper_obj = Mage::helper( 'globalpay/helper' );
-
-        ob_start();
-        echo "\n\n".'Profile';
-        var_dump( $profile->getData() );
-        $buf = ob_get_clean();
-
-        $helper_obj->logf( 'validateRecurringProfile: ['.$buf.']' );
-    }
-
-    /**
-     * Submit RP to the gateway
-     *
-     * @param Mage_Payment_Model_Recurring_Profile $profile
-     * @param Mage_Payment_Model_Info $paymentInfo
-     *
-     * @return Smart2Pay_Globalpay_Model_Pay
-     */
-    public function submitRecurringProfile(Mage_Payment_Model_Recurring_Profile $profile,
-        Mage_Payment_Model_Info $paymentInfo
-    ) {
-        //$token = $paymentInfo->
-        //getAdditionalInformation(Mage_Paypal_Model_Express_Checkout::PAYMENT_INFO_TRANSPORT_TOKEN);
-        //$profile->setToken($token);
-        //$this->_pro->submitRecurringProfile($profile, $paymentInfo);
-
-        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
-        $helper_obj = Mage::helper( 'globalpay/helper' );
-
-        ob_start();
-        echo "\n\n".'Profile';
-        var_dump( $profile->getData() );
-        echo "\n\n".'Payment Info';
-        var_dump( $paymentInfo->getData() );
-        $buf = ob_get_clean();
-
-        $helper_obj->logf( 'submitRecurringProfile: ['.$buf.']' );
-
-        /** @var Mage_Sales_Model_Quote $oQuote */
-        $quote = $paymentInfo->getQuote();
-
-        /** @var Mage_Customer_Model_Customer $oCustomer */
-        $customer = $quote->getCustomer();
-        //$customer->save();
-
-        $profile->setCustomerId($customer->getId());
-        $profile->setReferenceId($quote->getId());
-        $profile->setAdditionalInfo($paymentInfo->getAdditionalInformation());
-        $profile->setState(Mage_Sales_Model_Recurring_Profile::STATE_ACTIVE);
-        $profile->save();
-        return $this;
-    }
-
-    /**
-     * Fetch RP details
-     *
-     * @param string $referenceId
-     * @param Varien_Object $result
-     */
-    public function getRecurringProfileDetails( $referenceId, Varien_Object $result )
-    {
-
-        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
-        $helper_obj = Mage::helper( 'globalpay/helper' );
-
-        ob_start();
-        echo "\n\n".'referenceId';
-        var_dump( $referenceId );
-        echo "\n\n".'result';
-        var_dump( $result->getData() );
-        $buf = ob_get_clean();
-
-        $helper_obj->logf( 'getRecurringProfileDetails: ['.$buf.']' );
-
-        return true;
-    }
-
-    /**
-     * Whether can get recurring profile details
-     */
-    public function canGetRecurringProfileDetails()
-    {
-
-        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
-        $helper_obj = Mage::helper( 'globalpay/helper' );
-
-        ob_start();
-        echo "\n\n".'canGetRecurringProfileDetails';
-        $buf = ob_get_clean();
-
-        $helper_obj->logf( 'canGetRecurringProfileDetails: ['.$buf.']' );
-
-        return true;
-    }
-
-    /**
-     * Update RP data
-     *
-     * @param Mage_Payment_Model_Recurring_Profile $profile
-     */
-    public function updateRecurringProfile(Mage_Payment_Model_Recurring_Profile $profile)
-    {
-        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
-        $helper_obj = Mage::helper( 'globalpay/helper' );
-
-        ob_start();
-        echo "\n\n".'Profile';
-        var_dump( $profile->getData() );
-        $buf = ob_get_clean();
-
-        $helper_obj->logf( 'updateRecurringProfile: ['.$buf.']' );
-    }
-
-    /**
-     * Manage status
-     *
-     * @param Mage_Payment_Model_Recurring_Profile $profile
-     */
-    public function updateRecurringProfileStatus(Mage_Payment_Model_Recurring_Profile $profile)
-    {
-        /** @var Smart2Pay_Globalpay_Helper_Helper $helper_obj */
-        $helper_obj = Mage::helper( 'globalpay/helper' );
-
-        ob_start();
-        echo "\n\n".'Profile';
-        var_dump( $profile->getData() );
-        $buf = ob_get_clean();
-
-        $helper_obj->logf( 'updateRecurringProfileStatus: ['.$buf.']' );
+        $method_id = intval( $method_id );
+        return in_array( $method_id, array( self::PAYMENT_METHOD_SMARTCARDS ) );
     }
 
     public function __construct()
@@ -210,9 +77,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         $api_settings = $this->getApiSettingsByEnvironment( $environment );
         foreach( $api_settings as $key => $val )
             $this->method_config[$key] = $val;
-
-        // Not enabled yet
-        //$this->method_config['display_surcharge'] = 0;
     }
 
     public function getApiSettingsByEnvironment( $environment = false )
@@ -455,6 +319,21 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
 
         $order = $this->currentOrderorQuote();
 
+        $enabled_methods = array();
+
+        /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
+        if( !($country_code = $order->getBillingAddress()->getCountry())
+         or !($countryId = Mage::getModel('globalpay/country')->load( $country_code, 'code')->getId())
+         or !($configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' ))
+         or !($enabled_methods = $configured_methods_obj->get_configured_methods( $countryId, array( 'id_in_index' => true ) ))
+         or !is_array( $enabled_methods )
+         or empty( $enabled_methods[$method_id] ) or !is_array( $enabled_methods[$method_id] ) )
+        {
+            Mage::throwException( $helper_obj->__( 'Payment method not enabled for current order.' ) );
+        }
+
+        $include_metod_ids = array_keys( $enabled_methods );
+
         $api_credentials = $sdk_obj->get_api_credentials();
 
         //
@@ -512,19 +391,6 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
                 // or $method_id == self::PAYMENT_METHOD_KLARNA_INVOICE )
                 //    $amount_to_pay += $articles_diff;
             }
-        }
-
-        /** @var Smart2Pay_Globalpay_Model_Configuredmethods $configured_methods_obj */
-        $include_metod_ids = array();
-        if( empty( $method_id )
-        and ($country_code = $order->getBillingAddress()->getCountry())
-        and ($countryId = Mage::getModel('globalpay/country')->load( $country_code, 'code')->getId())
-        and ($configured_methods_obj = Mage::getModel( 'globalpay/configuredmethods' ))
-        and ($enabled_methods = $configured_methods_obj->get_configured_methods( $countryId, array( 'id_in_index' => true ) ))
-        and is_array( $enabled_methods ) )
-        {
-            // MethodID is empty... take all payment methods configured from admin
-            $include_metod_ids = array_keys( $enabled_methods );
         }
 
         $currency = $this->_get_currency( $order );
@@ -590,9 +456,15 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
         if( !empty( $sdk_articles_arr ) )
             $payment_arr['articles'] = $sdk_articles_arr;
 
-        if( $method_id == self::PAYMENT_METHOD_SMARTCARDS )
+        if( $this->has_3d_secure( $method_id ) )
         {
-            if( $this->method_config['use_3dsecure'] )
+            if( !isset( $enabled_methods[$method_id]['3dsecure'] ) )
+                $per_country_3dsecure = -1;
+            else
+                $per_country_3dsecure = intval( $enabled_methods[$method_id]['3dsecure'] );
+
+            if( ($per_country_3dsecure == -1 and $this->method_config['use_3dsecure'])
+             or $per_country_3dsecure == 1 )
                 $payment_arr['3dsecure'] = true;
 
             if( !($payment_request = $sdk_obj->card_init_payment( $payment_arr )) )
@@ -644,6 +516,7 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract /
             $s2p_transaction_arr['merchant_transaction_id'] = $merchant_transaction_id;
         $s2p_transaction_arr['environment'] = $environment;
         $s2p_transaction_arr['site_id'] = $api_credentials['site_id'];
+        $s2p_transaction_arr['3dsecure'] = (!empty( $payment_arr['3dsecure'] )?1:0);
         $s2p_transaction_arr['payment_status'] = ((!empty( $payment_request['status'] ) and !empty( $payment_request['status']['id'] ))?$payment_request['status']['id']:0);
 
         $redirect_parameters = array();

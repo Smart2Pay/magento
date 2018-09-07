@@ -56,6 +56,25 @@ class Smart2Pay_Globalpay_Block_Adminhtml_System_Config_Configuredmethods extend
         return $this->_toHtml();
     }
 
+    /**
+     * @return Smart2Pay_Globalpay_Model_Pay
+     */
+    public function get_payment_model()
+    {
+        /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+        $paymentModel = Mage::getModel('globalpay/pay');
+
+        return $paymentModel;
+    }
+
+    public function get_sdk_version()
+    {
+        /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
+        $paymentModel = Mage::getModel('globalpay/pay');
+
+        return $paymentModel->getSDKVersion();
+    }
+
     public function get_environment()
     {
         /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */

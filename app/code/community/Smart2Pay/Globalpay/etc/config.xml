@@ -3,7 +3,7 @@
 
     <modules>
         <Smart2Pay_Globalpay>
-            <version>2.0.3</version>
+            <version>2.1.0</version>
         </Smart2Pay_Globalpay>
     </modules>
 
@@ -333,22 +333,30 @@
             <globalpay>
                 <active>1</active>
                 <model>globalpay/pay</model>
-                <environment>demo</environment>
                 <last_sync_demo><![CDATA[]]></last_sync_demo>
                 <last_sync_test><![CDATA[]]></last_sync_test>
                 <last_sync_live><![CDATA[]]></last_sync_live>
+                <environment>demo</environment>
+                <return_url>http://www.example.com/index.php/globalpay/index/info/</return_url>
+                <title><![CDATA[Alternative payment methods]]></title>
+                <display_surcharge>0</display_surcharge>
+                <methods_display_mode>both</methods_display_mode>
+                <show_methods_in_grid>0</show_methods_in_grid>
+                <grid_column_number>3</grid_column_number>
+                <product_description_ref>1</product_description_ref>
+                <product_description_custom>0</product_description_custom>
+                <notify_customer>0</notify_customer>
+                <auto_invoice>0</auto_invoice>
+                <auto_ship>0</auto_ship>
+                <use_3dsecure>0</use_3dsecure>
                 <order_status>holded</order_status>
                 <order_status_on_2>processing</order_status_on_2>
                 <order_status_on_3>canceled</order_status_on_3>
                 <order_status_on_4>canceled</order_status_on_4>
                 <order_status_on_5>canceled</order_status_on_5>
-                <title><![CDATA[Alternative payment methods]]></title>
-                <display_surcharge>0</display_surcharge>
-                <product_description_ref>1</product_description_ref>
-                <autoselect_s2p>1</autoselect_s2p>
+                <autoselect_s2p>0</autoselect_s2p>
                 <skip_payment_page>1</skip_payment_page>
-                <grid_column_number>3</grid_column_number>
-                <return_url>http://www.example.com/index.php/globalpay/index/info/</return_url>
+                <redirect_in_iframe>0</redirect_in_iframe>
                 <message_data_2><![CDATA[Thank you, the transaction has been processed successfuly. After we receive the final confirmation, we will release the goods.]]></message_data_2>
                 <message_data_4><![CDATA[There was a problem processing your payment. Please try again.]]></message_data_4>
                 <message_data_3><![CDATA[You have canceled the payment.]]></message_data_3>

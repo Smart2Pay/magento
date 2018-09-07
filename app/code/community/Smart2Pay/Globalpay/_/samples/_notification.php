@@ -3,6 +3,25 @@
     include( '../bootstrap.php' );
 
     //
+    // !!! Uncomment following lines if you don't want to create config.php file in SDK root folder. Scenario used in composer installs.
+    // !!! Use SDK like this only if you cannot create config.php file in SDK root folder. If you use config.php file you will not have to always
+    // !!! have these calls in each entry point that uses the SDK.
+    //
+    // define( 'S2P_SDK_SITE_ID', '{PROVIDED_SITE_ID}' );
+    // define( 'S2P_SDK_API_KEY', '{PROVIDED_API_KEY}' );
+    // define( 'S2P_SDK_ENVIRONMENT', 'test' ); // live or test
+    //
+    // You can also control debugging mode, detailed errors and error throwing
+    //
+    // Set SDK in debugging mode (or not)
+    // S2P_SDK\S2P_SDK_Module::st_debugging_mode( false );
+    // display full trace with the error (or not)
+    // S2P_SDK\S2P_SDK_Module::st_detailed_errors( false );
+    // Favor throwing errors when setting errors in classes (or not)
+    // S2P_SDK\S2P_SDK_Module::st_throw_errors( false );
+    //
+
+    //
     //
     // !!!!! THIS SCRIPT IS INTEDED TO GIVE YOU A STARTING POINT ON HOW YOU SHOULD HANDLE NOTIFICATIONS
     // !!!!! PLEASE DON'T USE THIS SCRIPT AS NOTIFICATION SCRIPT, INSTEAD COPY IT IN YOUR ENVIRONMENT AND CHANGE IT. (THIS SCRIPT MIGHT CHANGE IN TIME)
@@ -11,11 +30,6 @@
     // !!!!! THIS SCRIPT WILL ONLY HAVE TO ECHO MESSAGES AS DESCRIBED IN MANUAL FOR EACH NOTIFICATION TYPE RECEIVED.
     //
     //
-
-    include_once( S2P_SDK_DIR_CLASSES . 's2p_sdk_notification.inc.php' );
-    include_once( S2P_SDK_DIR_CLASSES . 's2p_sdk_helper.inc.php' );
-    include_once( S2P_SDK_DIR_METHODS . 's2p_sdk_meth_payments.inc.php' );
-    include_once( S2P_SDK_DIR_METHODS . 's2p_sdk_meth_preapprovals.inc.php' );
 
     define( 'S2P_SDK_NOTIFICATION_IDENTIFIER', microtime( true ) );
 

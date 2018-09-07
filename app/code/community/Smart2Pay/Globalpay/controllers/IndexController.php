@@ -196,7 +196,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                     return;
                 }
 
-                $order->addStatusHistoryComment( 'Smart2Pay :: payment notification received (Status: '.$payment_arr['status']['id'].'.' );
+                $order->addStatusHistoryComment( 'S2P Notification: payment notification received (Status: '.$payment_arr['status']['id'].').' );
 
                 if( !($status_title = S2P_SDK\S2P_SDK_Meth_Payments::valid_status( $payment_arr['status']['id'] )) )
                     $status_title = '(unknown)';
@@ -265,11 +265,11 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 
                         if( strcmp( $orderAmount, $payment_arr['amount'] ) != 0
                          or $orderCurrency != $payment_arr['currency'] )
-                            $order->addStatusHistoryComment( 'Smart2Pay :: notification has different amount ['.$orderAmount.'/'.$payment_arr['amount'] . '] and/or currency ['.$orderCurrency.'/' . $payment_arr['currency'] . ']!. Please contact support@smart2pay.com', $payMethod->method_config['order_status_on_4'] );
+                            $order->addStatusHistoryComment( 'S2P Notification: notification has different amount ['.$orderAmount.'/'.$payment_arr['amount'] . '] and/or currency ['.$orderCurrency.'/' . $payment_arr['currency'] . ']!. Please contact support@smart2pay.com', $payMethod->method_config['order_status_on_4'] );
 
                         else
                         {
-                            $order->addStatusHistoryComment( 'Smart2Pay :: order has been paid. [MethodID: '. $payment_arr['methodid'] .']', $payMethod->method_config['order_status_on_2'] );
+                            $order->addStatusHistoryComment( 'S2P Notification: order has been paid. [MethodID: '. $payment_arr['methodid'] .']', $payMethod->method_config['order_status_on_2'] );
 
                             // Generate invoice
                             if( $payMethod->method_config['auto_invoice'] )
@@ -289,7 +289,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                                         ->addObject( $invoice->getOrder() );
                                     $transactionSave->save();
 
-                                    $order->addStatusHistoryComment( 'Smart2Pay :: order has been automatically invoiced.', $payMethod->method_config['order_status_on_2'] );
+                                    $order->addStatusHistoryComment( 'S2P Notification: order has been automatically invoiced.', $payMethod->method_config['order_status_on_2'] );
                                 }
                             }
 
@@ -305,7 +305,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                                     $shipment = Mage::getModel( 'sales/service_order', $order )->prepareShipment( $itemQty );
                                     $shipment = new Mage_Sales_Model_Order_Shipment_Api();
                                     $shipmentId = $shipment->create( $order->getIncrementId() );
-                                    $order->addStatusHistoryComment( 'Smart2Pay :: order has been automatically shipped.', $payMethod->method_config['order_status_on_2'] );
+                                    $order->addStatusHistoryComment( 'S2P Notification: order has been automatically shipped.', $payMethod->method_config['order_status_on_2'] );
                                 }
                             }
 
@@ -318,7 +318,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                     break;
 
                     case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_CANCELLED:
-                        $order->addStatusHistoryComment( 'Smart2Pay :: payment has been canceled.', $payMethod->method_config['order_status_on_3'] );
+                        $order->addStatusHistoryComment( 'S2P Notification: payment has been canceled.', $payMethod->method_config['order_status_on_3'] );
 
                         if( !$order->canCancel() )
                             $s2pLogger->write( 'Cannot cancel the order', 'warning', $merchanttransactionid );
@@ -327,11 +327,11 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                     break;
 
                     case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_FAILED:
-                        $order->addStatusHistoryComment( 'Smart2Pay :: payment has failed.', $payMethod->method_config['order_status_on_4'] );
+                        $order->addStatusHistoryComment( 'S2P Notification: payment has failed.', $payMethod->method_config['order_status_on_4'] );
                     break;
 
                     case S2P_SDK\S2P_SDK_Meth_Payments::STATUS_EXPIRED:
-                        $order->addStatusHistoryComment( 'Smart2Pay :: payment has expired.', $payMethod->method_config['order_status_on_5'] );
+                        $order->addStatusHistoryComment( 'S2P Notification: payment has expired.', $payMethod->method_config['order_status_on_5'] );
                     break;
                 }
 
@@ -400,7 +400,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                 $s2pLogger->write( 'Hashes match', 'info' );
 
                 $order->loadByIncrementId( $response['MerchantTransactionID'] );
-                $order->addStatusHistoryComment( 'Smart2Pay :: notification received:<br>' . $raw_input );
+                $order->addStatusHistoryComment( 'S2P Notification: notification received:<br>' . $raw_input );
 
                 /**
                  * Check status ID
@@ -448,11 +448,11 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 
                         if( strcmp( $orderAmount, $response['Amount'] ) != 0
                          or $orderCurrency != $response['Currency'] )
-                            $order->addStatusHistoryComment( 'Smart2Pay :: notification has different amount ['.$orderAmount.'/'.$response['Amount'] . '] and/or currency ['.$orderCurrency.'/' . $response['Currency'] . ']!. Please contact support@smart2pay.com', $payMethod->method_config['order_status_on_4'] );
+                            $order->addStatusHistoryComment( 'S2P Notification: notification has different amount ['.$orderAmount.'/'.$response['Amount'] . '] and/or currency ['.$orderCurrency.'/' . $response['Currency'] . ']!. Please contact support@smart2pay.com', $payMethod->method_config['order_status_on_4'] );
 
                         else
                         {
-                            $order->addStatusHistoryComment( 'Smart2Pay :: order has been paid. [MethodID: '. $response['MethodID'] .']', $payMethod->method_config['order_status_on_2'] );
+                            $order->addStatusHistoryComment( 'S2P Notification: order has been paid. [MethodID: '. $response['MethodID'] .']', $payMethod->method_config['order_status_on_2'] );
 
                             // Generate invoice
                             if( $payMethod->method_config['auto_invoice'] )
@@ -472,7 +472,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                                         ->addObject( $invoice->getOrder() );
                                     $transactionSave->save();
 
-                                    $order->addStatusHistoryComment('Smart2Pay :: order has been automatically invoiced.', $payMethod->method_config['order_status_on_2']);
+                                    $order->addStatusHistoryComment('S2P Notification: order has been automatically invoiced.', $payMethod->method_config['order_status_on_2']);
                                 }
                             }
 
@@ -488,7 +488,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                                     $shipment = Mage::getModel( 'sales/service_order', $order )->prepareShipment( $itemQty );
                                     $shipment = new Mage_Sales_Model_Order_Shipment_Api();
                                     $shipmentId = $shipment->create( $order->getIncrementId() );
-                                    $order->addStatusHistoryComment( 'Smart2Pay :: order has been automatically shipped.', $payMethod->method_config['order_status_on_2'] );
+                                    $order->addStatusHistoryComment( 'S2P Notification: order has been automatically shipped.', $payMethod->method_config['order_status_on_2'] );
                                 }
                             }
 
@@ -502,7 +502,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 
                     // Status = canceled
                     case $payMethod::S2P_STATUS_CANCELLED:
-                        $order->addStatusHistoryComment( 'Smart2Pay :: payment has been canceled.', $payMethod->method_config['order_status_on_3'] );
+                        $order->addStatusHistoryComment( 'S2P Notification: payment has been canceled.', $payMethod->method_config['order_status_on_3'] );
 
                         if( !$order->canCancel() )
                             $s2pLogger->write('Can not cancel the order', 'warning');
@@ -513,12 +513,12 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 
                     // Status = failed
                     case $payMethod::S2P_STATUS_FAILED:
-                        $order->addStatusHistoryComment( 'Smart2Pay :: payment has failed.', $payMethod->method_config['order_status_on_4'] );
+                        $order->addStatusHistoryComment( 'S2P Notification: payment has failed.', $payMethod->method_config['order_status_on_4'] );
                     break;
 
                     // Status = expired
                     case $payMethod::S2P_STATUS_EXPIRED:
-                        $order->addStatusHistoryComment( 'Smart2Pay :: payment has expired.', $payMethod->method_config['order_status_on_5'] );
+                        $order->addStatusHistoryComment( 'S2P Notification: payment has expired.', $payMethod->method_config['order_status_on_5'] );
                     break;
 
                     default:

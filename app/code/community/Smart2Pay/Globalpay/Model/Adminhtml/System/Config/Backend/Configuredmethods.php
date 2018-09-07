@@ -70,10 +70,13 @@ class Smart2Pay_Globalpay_Model_Adminhtml_System_Config_Backend_Configuredmethod
             if( !($form_s2p_fixed_amount = Mage::app()->getRequest()->getParam( 's2p_fixed_amount', array() ))
              or !is_array( $form_s2p_fixed_amount ) )
                 $form_s2p_fixed_amount = array();
+            if( !($form_s2p_per_country = Mage::app()->getRequest()->getParam( 's2p_per_country', array() ))
+             or !is_array( $form_s2p_per_country ) )
+                $form_s2p_per_country = array();
 
             $existing_methods_params_arr = array();
             $existing_methods_params_arr['method_ids'] = $form_s2p_enabled_methods;
-            $existing_methods_params_arr['include_countries'] = false;
+            $existing_methods_params_arr['include_countries'] = true;
 
             if( !($db_existing_methods = $configured_methods_obj->get_all_methods( $existing_methods_params_arr )) )
                 $db_existing_methods = array();
@@ -114,9 +117,37 @@ class Smart2Pay_Globalpay_Model_Adminhtml_System_Config_Backend_Configuredmethod
                 if( empty( $this->_methods_to_save[$method_id] ) )
                     $this->_methods_to_save[$method_id] = array();
 
-                // TODO: add country ids instead of only 0 (all countries) in case we want to customize methods per countries
+                // Country id 0 means default settings...
+                $this->_methods_to_save[$method_id][0] = array();
                 $this->_methods_to_save[$method_id][0]['surcharge'] = $form_s2p_surcharge[$method_id];
                 $this->_methods_to_save[$method_id][0]['fixed_amount'] = $form_s2p_fixed_amount[$method_id];
+                $this->_methods_to_save[$method_id][0]['3dsecure'] = -1;
+                $this->_methods_to_save[$method_id][0]['disabled'] = 0;
+
+                // Check custom country settings
+                if( !empty( $form_s2p_per_country )
+                and !empty( $form_s2p_per_country[$method_id] ) and is_array( $form_s2p_per_country[$method_id] )
+                and !empty( $method_details['countries_list'] ) and is_array( $method_details['countries_list'] ) )
+                {
+                    foreach( $method_details['countries_list'] as $country_id => $country_arr )
+                    {
+                        if( empty( $form_s2p_per_country[$method_id][$country_id] )
+                         or !is_array( $form_s2p_per_country[$method_id][$country_id] )
+                         or empty( $form_s2p_per_country[$method_id][$country_id]['is_custom'] ) )
+                            continue;
+
+                        // -1 is default
+                        if( !isset( $form_s2p_per_country[$method_id][$country_id]['3dsecure'] )
+                         or !in_array( $form_s2p_per_country[$method_id][$country_id]['3dsecure'], array( 0, 1 ) ) )
+                            $form_s2p_per_country[$method_id][$country_id]['3dsecure'] = -1;
+
+                        $this->_methods_to_save[$method_id][$country_id] = array();
+                        $this->_methods_to_save[$method_id][$country_id]['surcharge'] = (!empty( $form_s2p_per_country[$method_id][$country_id]['surcharge'] )?$form_s2p_per_country[$method_id][$country_id]['surcharge']:0);
+                        $this->_methods_to_save[$method_id][$country_id]['fixed_amount'] = (!empty( $form_s2p_per_country[$method_id][$country_id]['fixed_amount'] )?$form_s2p_per_country[$method_id][$country_id]['fixed_amount']:0);
+                        $this->_methods_to_save[$method_id][$country_id]['3dsecure'] = $form_s2p_per_country[$method_id][$country_id]['3dsecure'];
+                        $this->_methods_to_save[$method_id][$country_id]['disabled'] = (!empty( $form_s2p_per_country[$method_id][$country_id]['disabled'] )?1:0);
+                    }
+                }
             }
 
             if( !empty( $messages_arr ) )

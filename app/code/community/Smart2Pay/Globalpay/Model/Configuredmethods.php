@@ -109,6 +109,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         $methodcountries_collection = Mage::getModel( 'globalpay/countrymethod' )->getCollection();
 
         $methodcountries_collection->addFieldToSelect( '*' );
+        //$methodcountries_collection->addFieldToSelect( 'name', 's2p_c' );
 
         $methodcountries_collection->addFieldToFilter( 'method_id', $method_id );
         $methodcountries_collection->addFieldToFilter( 'environment', $environment );
@@ -120,6 +121,8 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
 
         $methodcountries_collection->setOrder( 'main_table.priority', 'ASC' );
         $methodcountries_collection->getSelect()->order( 'main_table.priority '.$methodcountries_collection::SORT_ORDER_ASC );
+        $methodcountries_collection->setOrder( 's2p_c.name', 'ASC' );
+        $methodcountries_collection->getSelect()->order( 's2p_c.name '.$methodcountries_collection::SORT_ORDER_ASC );
 
         $return_arr = array();
 
@@ -163,7 +166,7 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
         $my_collection->addFieldToFilter( 'environment', $params['environment'] );
 
         while( ($configured_method_obj = $my_collection->fetchItem())
-               and ($configured_method_arr = $configured_method_obj->getData()) )
+           and ($configured_method_arr = $configured_method_obj->getData()) )
         {
             if( empty( $configured_method_arr['method_id'] ) )
                 continue;
@@ -269,8 +272,10 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
 
             $methods_arr[$configured_method_arr['method_id']]['surcharge'] = $configured_method_arr['surcharge'];
             $methods_arr[$configured_method_arr['method_id']]['fixed_amount'] = $configured_method_arr['fixed_amount'];
+            // Using global settings for method
+            $methods_arr[$configured_method_arr['method_id']]['3dsecure'] = -1;
 
-            $enabled_method_ids_arr[$configured_method_arr['method_id']] = 1;
+            $enabled_method_ids_arr[$configured_method_arr['method_id']] = true;
         }
         //
         // END 2. get default surcharge (s2p_gp_methods_configured.country_id = 0)
@@ -292,10 +297,24 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
             if( empty( $configured_method_arr['method_id'] ) )
                 continue;
 
+            if( !empty( $configured_method_arr['disabled'] ) )
+            {
+                if( !empty( $enabled_method_ids_arr[$configured_method_arr['method_id']] ) )
+                    $enabled_method_ids_arr[$configured_method_arr['method_id']] = false;
+
+                continue;
+            }
+
+            if( !isset( $configured_method_arr['3dsecure'] ) )
+                $configured_method_arr['3dsecure'] = -1;
+            else
+                $configured_method_arr['3dsecure'] = intval( $configured_method_arr['3dsecure'] );
+
             $methods_arr[$configured_method_arr['method_id']]['surcharge'] = $configured_method_arr['surcharge'];
             $methods_arr[$configured_method_arr['method_id']]['fixed_amount'] = $configured_method_arr['fixed_amount'];
+            $methods_arr[$configured_method_arr['method_id']]['3dsecure'] = (!empty( $configured_method_arr['3dsecure'] )?$configured_method_arr['3dsecure']:0);
 
-            $enabled_method_ids_arr[$configured_method_arr['method_id']] = 1;
+            $enabled_method_ids_arr[$configured_method_arr['method_id']] = true;
         }
         //
         // END 3. overwrite default surcharges for particular cases (if available) (s2p_gp_methods_configured.country_id = $country_id)
@@ -338,28 +357,44 @@ class Smart2Pay_Globalpay_Model_Configuredmethods extends Mage_Core_Model_Abstra
 
         $saved_method_ids = array();
         $errors_arr = array();
-        foreach( $configured_methods_arr as $method_id => $surcharge_per_countries )
+        foreach( $configured_methods_arr as $method_id => $settings_per_countries )
         {
             $method_id = intval( $method_id );
             if( empty( $method_id )
-             or empty( $surcharge_per_countries ) or !is_array( $surcharge_per_countries )
-             or !($countries_ids = array_keys( $surcharge_per_countries )) )
+             or empty( $settings_per_countries ) or !is_array( $settings_per_countries )
+             or !($countries_ids = array_keys( $settings_per_countries )) )
                 continue;
 
             $provided_countries = array();
-            foreach( $surcharge_per_countries as $country_id => $country_surcharge )
+            foreach( $settings_per_countries as $country_id => $country_settings )
             {
                 $country_id = intval( $country_id );
-                if( !is_array( $country_surcharge ) )
+                if( !is_array( $country_settings ) )
                     continue;
 
-                if( empty( $country_surcharge['surcharge'] ) )
-                    $country_surcharge['surcharge'] = 0;
-                if( empty( $country_surcharge['fixed_amount'] ) )
-                    $country_surcharge['fixed_amount'] = 0;
-                $country_surcharge['environment'] = $environment;
+                $country_settings['environment'] = $environment;
+                if( empty( $country_settings['surcharge'] ) )
+                    $country_settings['surcharge'] = 0;
+                if( empty( $country_settings['fixed_amount'] ) )
+                    $country_settings['fixed_amount'] = 0;
 
-                if( !$my_resource->insert_or_update( $method_id, $country_id, $country_surcharge ) )
+                if( empty( $country_settings['disabled'] ) )
+                    $country_settings['disabled'] = 0;
+                else
+                    $country_settings['disabled'] = 1;
+
+                if( !isset( $country_settings['3dsecure'] ) )
+                    $country_settings['3dsecure'] = -1;
+
+                elseif( $country_settings['3dsecure'] != -1 )
+                {
+                    if( empty( $country_settings['3dsecure'] ) )
+                        $country_settings['3dsecure'] = 0;
+                    else
+                        $country_settings['3dsecure'] = 1;
+                }
+
+                if( !$my_resource->insert_or_update( $method_id, $country_id, $country_settings ) )
                     $errors_arr[] = $helper_obj->__( 'Error saving method ID '.$method_id.', for country '.$country_id.'.' );
 
                 $provided_countries[] = $country_id;

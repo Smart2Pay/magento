@@ -162,7 +162,13 @@ class Smart2Pay_Globalpay_Block_Info_Globalpay extends Mage_Payment_Block_Info
                 if( empty( $method_arr ) )
                     $payment_info_arr['Payment Method'] = 'N/A';
                 else
-                    $payment_info_arr['Payment Method'] = $method_arr['display_name'];
+                    $payment_info_arr['Payment Method'] = $method_arr['display_name'].($s2pHelper->isAdmin()?' (#'.$s2p_transaction_arr['method_id'].')':'');
+
+                if( $s2pPayModel->has_3d_secure( $s2p_transaction_arr['method_id'] )
+                and $s2pHelper->isAdmin() )
+                {
+                    $payment_info_arr['3DSecure'] = (!empty( $s2p_transaction_arr['3dsecure'] )?$this->__( 'Yes' ):$this->__( 'No' ));
+                }
             }
 
             if( ($payment = $order->getPayment())

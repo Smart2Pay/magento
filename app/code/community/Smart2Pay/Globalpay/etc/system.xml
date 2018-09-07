@@ -158,7 +158,7 @@
                             </methods_display_mode>
                             <show_methods_in_grid translate="label">
                                 <label><![CDATA[Show methods in grid]]></label>
-                                <comment>By default, methods will be displayed as a two columns table, having paymentm method's logo or name and description. When set to yes, description is omitted, and columns number can be specified bellow.</comment>
+                                <comment>By default, methods will be displayed as a two columns table, having payment method's logo or name and description. When set to yes, description is omitted, and columns number can be specified bellow.</comment>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_yesno</source_model>
                                 <sort_order>15</sort_order>
@@ -311,8 +311,8 @@
                             </auto_ship>
 
                             <use_3dsecure translate="label">
-                                <label>Use 3DSecure for SmartCards</label>
-                                <comment>When initiating payments using SmartCards payment method, use 3DSecure</comment>
+                                <label>Use 3DSecure</label>
+                                <comment>By default, use 3D secure for SmartCards. You can enable/disable per country below.</comment>
                                 <frontend_type>select</frontend_type>
                                 <source_model>adminhtml/system_config_source_yesno</source_model>
                                 <sort_order>28</sort_order>
@@ -399,6 +399,7 @@
                                 <show_in_store>1</show_in_store>
                                 <config_path>payment/globalpay/autoselect_s2p</config_path>
                             </autoselect_s2p>
+                            <!--
                             <skip_payment_page translate="label">
                                 <label>Skip payment page</label>
                                 <frontend_type>select</frontend_type>
@@ -409,6 +410,7 @@
                                 <show_in_store>1</show_in_store>
                                 <config_path>payment/globalpay/skip_payment_page</config_path>
                             </skip_payment_page>
+                            -->
                             <redirect_in_iframe translate="label">
                                 <label>Redirect in iframe</label>
                                 <frontend_type>select</frontend_type>

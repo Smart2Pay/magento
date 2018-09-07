@@ -89,6 +89,7 @@ class Smart2Pay_Globalpay_Model_Transactionlogger extends Mage_Core_Model_Abstra
             'site_id' => 0,
             'environment' => '',
             'extra_data' => '',
+            '3dsecure' => 0,
         );
     }
 

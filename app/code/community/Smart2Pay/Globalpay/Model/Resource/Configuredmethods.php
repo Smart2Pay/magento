@@ -56,6 +56,22 @@ class Smart2Pay_Globalpay_Model_Resource_Configuredmethods extends Mage_Core_Mod
         if( empty( $params['fixed_amount'] ) )
             $params['fixed_amount'] = 0;
 
+        if( empty( $params['disabled'] ) )
+            $params['disabled'] = 0;
+        else
+            $params['disabled'] = 1;
+
+        if( !isset( $params['3dsecure'] ) )
+            $params['3dsecure'] = -1;
+
+        elseif( $params['3dsecure'] != -1 )
+        {
+            if( empty( $params['3dsecure'] ) )
+                $params['3dsecure'] = 0;
+            else
+                $params['3dsecure'] = 1;
+        }
+
         if( !isset( $params['environment'] ) or empty( $params['environment'] ) )
         {
             /** @var Smart2Pay_Globalpay_Model_Pay $paymentModel */
@@ -67,12 +83,14 @@ class Smart2Pay_Globalpay_Model_Resource_Configuredmethods extends Mage_Core_Mod
         $insert_arr = array();
         $insert_arr['surcharge'] = $params['surcharge'];
         $insert_arr['fixed_amount'] = $params['fixed_amount'];
+        $insert_arr['3dsecure'] = $params['3dsecure'];
+        $insert_arr['disabled'] = $params['disabled'];
 
         try
         {
-            if( ( $existing_id = $conn_read->fetchOne( 'SELECT id FROM ' . $this->getMainTable() . ' '.
+            if( ($existing_id = $conn_read->fetchOne( 'SELECT id FROM ' . $this->getMainTable() . ' '.
                                                        ' WHERE method_id = \''.$method_id.'\' AND country_id = \''.$country_id.'\' AND environment = \''.$params['environment'].'\''.
-                                                       ' LIMIT 0, 1' ) ) )
+                                                       ' LIMIT 0, 1' )) )
             {
                 // we should update record
                 $conn_write->update( $this->getMainTable(), $insert_arr, 'id = \'' . $existing_id . '\'' );
