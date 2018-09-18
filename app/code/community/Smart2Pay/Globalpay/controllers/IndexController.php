@@ -65,10 +65,6 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
 
         $s2pLogger->write( 'SDK version: '.$sdk_version, 'info' );
 
-        include_once( S2P_SDK_DIR_CLASSES . 's2p_sdk_notification.inc.php' );
-        include_once( S2P_SDK_DIR_CLASSES . 's2p_sdk_helper.inc.php' );
-        include_once( S2P_SDK_DIR_METHODS . 's2p_sdk_meth_payments.inc.php' );
-
         if( !defined( 'S2P_SDK_NOTIFICATION_IDENTIFIER' ) )
             define( 'S2P_SDK_NOTIFICATION_IDENTIFIER', microtime( true ) );
 
