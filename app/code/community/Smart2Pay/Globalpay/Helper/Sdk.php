@@ -306,7 +306,7 @@ class Smart2Pay_Globalpay_Helper_Sdk extends Mage_Payment_Helper_Data
         if( !isset( $api_parameters['method_params']['payment']['retry'] ) )
             $api_parameters['method_params']['payment']['retry'] = false;
         if( !isset( $api_parameters['method_params']['payment']['3dsecure'] ) )
-            $api_parameters['method_params']['payment']['3dsecure'] = true;
+            $api_parameters['method_params']['payment']['3dsecure'] = false;
         if( !isset( $api_parameters['method_params']['payment']['generatecreditcardtoken'] ) )
             $api_parameters['method_params']['payment']['generatecreditcardtoken'] = false;
 
