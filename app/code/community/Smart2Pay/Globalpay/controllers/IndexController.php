@@ -293,7 +293,7 @@ class Smart2pay_Globalpay_IndexController extends Mage_Core_Controller_Front_Act
                             if( $payMethod->method_config['auto_ship'] )
                             {
                                 if( !$order->canShip() )
-                                    $s2pLogger->write( 'Order can not be shipped', 'warning' );
+                                    $s2pLogger->write( 'Order can not be shipped', 'warning', $merchanttransactionid );
 
                                 else
                                 {

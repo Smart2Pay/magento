@@ -464,7 +464,7 @@ class Smart2Pay_Globalpay_Model_Pay extends Mage_Payment_Model_Method_Abstract
 
         if( $this->is_card_method( $method_id ) )
         {
-            if( !$this->has_3d_secure( $method_id ) )
+            if( $this->has_3d_secure( $method_id ) )
             {
                 if( !isset( $enabled_methods[$method_id]['3dsecure'] ) )
                     $per_country_3dsecure = -1;
